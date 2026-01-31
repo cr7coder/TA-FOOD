@@ -14,7 +14,8 @@ class DoiTacVanChuyen extends Model
     protected $fillable = [
         'ten_doi_tac',
         'so_dien_thoai',
-        'email',
+        'dia_chi_tru_so',
+        'email_lien_he',
         'phi_van_chuyen',
         'trang_thai',
     ];

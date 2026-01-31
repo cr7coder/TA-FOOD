@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('doi_tac_van_chuyens', function (Blueprint $table) {
             $table->id();
-            $table->string('ten_doi_tac', 100);
-            $table->string('so_dien_thoai', 20)->nullable();
-            $table->string('email', 150)->nullable();
+            $table->string('ten_doi_tac', 255);
+            $table->string('so_dien_thoai', 20);
+            $table->text('dia_chi_tru_so')->nullable();
+            $table->string('email_lien_he', 255)->unique();
             $table->decimal('phi_van_chuyen', 10, 2)->default(0);
             $table->enum('trang_thai', ['Hoạt động', 'Ngừng hoạt động'])->default('Hoạt động');
             $table->timestamps();

@@ -529,14 +529,26 @@
                 }
 
                 try {
-                    const formData = new FormData(this);
-                    const response = await fetch('{{ route("register.post") }}', {
+                    // Chuẩn bị data theo RESTful API format (JSON)
+                    const registerData = {
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value,
+                        password_confirmation: document.getElementById('password_confirmation').value,
+                        name: document.getElementById('fullname').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        device_name: 'web-browser'
+                    };
+
+                    // Gọi RESTful API endpoint
+                    const response = await fetch('/api/v1/register', {
                         method: 'POST',
-                        body: formData,
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify(registerData)
                     });
 
                     const data = await response.json();
@@ -544,12 +556,16 @@
                     if (data.success) {
                         showAlert('success', data.message);
 
-                        if (data.user) {
-                            localStorage.setItem('user', JSON.stringify(data.user));
+                        // Lưu thông tin user và token vào localStorage
+                        if (data.data) {
+                            localStorage.setItem('user', JSON.stringify(data.data.user));
+                            localStorage.setItem('auth_token', data.data.token);
+                            localStorage.setItem('token_type', data.data.token_type);
                         }
 
+                        // Redirect về trang chủ sau 1.5 giây
                         setTimeout(() => {
-                            window.location.href = data.redirect;
+                            window.location.href = '{{ route("foods.index") }}';
                         }, 1500);
                     } else {
                         if (data.errors) {
@@ -568,6 +584,7 @@
                         loadingSpinner.style.display = 'none';
                     }
                 } catch (error) {
+                    console.error('Register error:', error);
                     showAlert('danger', 'Có lỗi xảy ra. Vui lòng thử lại!');
                     submitBtn.disabled = false;
                     btnText.style.opacity = '1';

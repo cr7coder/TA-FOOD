@@ -134,7 +134,10 @@ class AuthController extends Controller
             'VaiTro' => 'KhachHang', // Default role
         ]);
 
-        // Tạo token
+        // Đăng nhập session cho web browser
+        Auth::login($user, true);
+
+        // Tạo API token
         $deviceName = $request->input('device_name', 'api-client');
         $token = $user->createToken($deviceName)->plainTextToken;
 

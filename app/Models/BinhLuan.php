@@ -14,6 +14,7 @@ class BinhLuan extends Model
     protected $fillable = [
         'ma_mon_an',
         'ma_nguoi_dung',
+        'ma_don_hang',
         'diem_danh_gia',
         'noi_dung',
         'hinh_anh',
@@ -67,5 +68,14 @@ class BinhLuan extends Model
     public function scopeDaMua($query)
     {
         return $query->where('da_mua', true);
+    }
+
+    // Helper methods
+    public static function hasReviewed($maNguoiDung, $maMonAn, $maDonHang)
+    {
+        return self::where('ma_nguoi_dung', $maNguoiDung)
+            ->where('ma_mon_an', $maMonAn)
+            ->where('ma_don_hang', $maDonHang)
+            ->exists();
     }
 }

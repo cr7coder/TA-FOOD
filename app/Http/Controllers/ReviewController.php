@@ -27,20 +27,10 @@ class ReviewController extends Controller
             ->where('MaNguoiDung', Auth::user()->MaNguoiDung)
             ->firstOrFail();
 
-        // Kiểm tra đơn hàng đã hoàn thành chưa
-        if (!$donHang->canReview()) {
-            return redirect()->back()->with('error', 'Chỉ có thể đánh giá đơn hàng đã hoàn thành');
-        }
-
         // Kiểm tra món ăn có trong đơn hàng không
         $monAnInOrder = $donHang->chiTiet->where('MaMonAn', $maMonAn)->first();
         if (!$monAnInOrder) {
             return redirect()->back()->with('error', 'Món ăn không có trong đơn hàng này');
-        }
-
-        // Kiểm tra đã đánh giá chưa
-        if (BinhLuan::hasReviewed(Auth::user()->MaNguoiDung, $maMonAn, $maDonHang)) {
-            return redirect()->back()->with('error', 'Bạn đã đánh giá món ăn này rồi');
         }
 
         $monAn = $monAnInOrder->monAn;

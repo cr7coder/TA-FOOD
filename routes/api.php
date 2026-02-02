@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,10 +82,15 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher']);
     Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder']);
     
-    // Orders
-    Route::get('/orders', [CheckoutController::class, 'getOrderHistory']);
-    Route::get('/orders/{id}', [CheckoutController::class, 'getOrder']);
+    // Orders - RESTful API
+    Route::get('/orders', [OrderController::class, 'index']); // Danh sách đơn hàng
+    Route::get('/orders/{id}', [OrderController::class, 'show']); // Chi tiết đơn hàng
     Route::post('/orders/{id}/payment', [CheckoutController::class, 'processPayment']);
+    
+    // Reviews - RESTful API
+    Route::get('/reviews', [ReviewController::class, 'index']); // Danh sách đánh giá của user
+    Route::post('/reviews', [ReviewController::class, 'store']); // Tạo đánh giá mới
+    Route::get('/reviews/check/{orderId}/{foodId}', [ReviewController::class, 'checkReviewed']); // Kiểm tra đã đánh giá
     
     // Profile
     Route::get('/profile', [ProfileController::class, 'show']);

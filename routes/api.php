@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\FoodDetailController;
 use App\Http\Controllers\Api\RestaurantController;
@@ -28,6 +29,11 @@ Route::prefix('v1')->group(function () {
     // Authentication routes
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
+    
+    // Food routes (public)
+    Route::get('/foods', [FoodController::class, 'index']);
+    Route::get('/foods/categories', [FoodController::class, 'categories']);
+    Route::get('/foods/{id}', [FoodController::class, 'show']);
 });
 
 // Protected routes (cần authentication)

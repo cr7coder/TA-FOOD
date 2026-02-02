@@ -500,9 +500,437 @@ Copy token từ response: `data.token`
 ### Reviews (1 endpoint)
 - ✅ POST `/api/v1/foods/{id}/reviews` - Thêm đánh giá (protected)
 
-**Tổng cộng**: 20 API endpoints đã hoàn thiện
+### Checkout & Orders (6 endpoints)
+- ✅ GET `/api/v1/checkout` - Lấy thông tin checkout (protected)
+- ✅ POST `/api/v1/checkout/apply-voucher` - Áp dụng mã giảm giá (protected)
+- ✅ POST `/api/v1/checkout/create-order` - Tạo đơn hàng (protected)
+- ✅ GET `/api/v1/orders` - Lịch sử đơn hàng (protected)
+- ✅ GET `/api/v1/orders/{id}` - Chi tiết đơn hàng (protected)
+- ✅ POST `/api/v1/orders/{id}/payment` - Xử lý thanh toán (protected)
+
+**Tổng cộng**: 26 API endpoints đã hoàn thiện
+
+---
+
+## 5. CHECKOUT & ORDERS APIs
+
+### 5.1. Lấy thông tin checkout
+- **Endpoint**: `GET /api/v1/checkout`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Lấy thông tin giỏ hàng, tổng tiền và danh sách voucher khả dụng
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Accept: application/json
+```
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "data": {
+        "cart_items": [
+            {
+                "id": 1,
+                "MaMonAn": 5,
+                "TenMonAn": "Cơm tấm sườn",
+                "HinhAnh": "https://example.com/image.jpg",
+                "Gia": 45000,
+                "SoLuong": 2,
+                "ThanhTien": 90000,
+                "MaNhaHang": 3,
+                "TenNhaHang": "Nhà hàng ABC"
+            }
+        ],
+        "subtotal": 90000,
+        "available_vouchers": [
+            {
+                "MaGiamGia": 1,
+                "Code": "FREESHIP",
+                "MoTa": "Miễn phí vận chuyển",
+                "LoaiGiamGia": "percent",
+                "GiaTriGiam": 100,
+                "GiaTriDonHangToiThieu": 50000,
+                "SoLuongConLai": 100,
+                "NgayBatDau": "2026-01-01",
+                "NgayKetThuc": "2026-12-31"
+            }
+        ]
+    }
+}
+```
+
+**Response Error (401)**:
+```json
+{
+    "success": false,
+    "message": "Unauthenticated"
+}
+```
+
+---
+
+### 5.2. Áp dụng mã giảm giá
+- **Endpoint**: `POST /api/v1/checkout/apply-voucher`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Kiểm tra và áp dụng mã giảm giá
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+```
+
+**Request Body**:
+```json
+{
+    "voucher_code": "FREESHIP",
+    "subtotal": 90000
+}
+```
+
+**Validation Rules**:
+- `voucher_code`: required, string
+- `subtotal`: required, numeric, min:0
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "message": "Áp dụng mã giảm giá thành công",
+    "data": {
+        "voucher": {
+            "MaGiamGia": 1,
+            "Code": "FREESHIP",
+            "MoTa": "Miễn phí vận chuyển",
+            "LoaiGiamGia": "percent",
+            "GiaTriGiam": 100
+        },
+        "discount_amount": 30000,
+        "total": 60000
+    }
+}
+```
+
+**Response Error (400)**:
+```json
+{
+    "success": false,
+    "message": "Mã giảm giá không hợp lệ hoặc đã hết hạn"
+}
+```
+
+**Response Error (422)**:
+```json
+{
+    "success": false,
+    "message": "Giá trị đơn hàng tối thiểu phải từ 50000đ"
+}
+```
+
+---
+
+### 5.3. Tạo đơn hàng
+- **Endpoint**: `POST /api/v1/checkout/create-order`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Tạo đơn hàng mới từ giỏ hàng
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+```
+
+**Request Body**:
+```json
+{
+    "DiaChiGiaoHang": "123 Nguyễn Văn A, Quận 1, TP.HCM",
+    "PhuongThucThanhToan": "COD",
+    "GhiChu": "Giao hàng ngoài giờ hành chính",
+    "MaGiamGia": 1
+}
+```
+
+**Validation Rules**:
+- `DiaChiGiaoHang`: required, string, max:500
+- `PhuongThucThanhToan`: required, in:COD,Online,VNPay,Momo
+- `GhiChu`: nullable, string, max:1000
+- `MaGiamGia`: nullable, integer, exists:giam_gia,MaGiamGia
+
+**Response Success (201)**:
+```json
+{
+    "success": true,
+    "message": "Đơn hàng đã được tạo thành công",
+    "data": {
+        "order": {
+            "MaDonHang": 100,
+            "MaNguoiDung": 5,
+            "TongTien": 90000,
+            "PhiVanChuyen": 30000,
+            "TienGiamGia": 0,
+            "TongThanhToan": 120000,
+            "DiaChiGiaoHang": "123 Nguyễn Văn A, Quận 1, TP.HCM",
+            "TrangThai": "Chờ xác nhận",
+            "PhuongThucThanhToan": "COD",
+            "GhiChu": "Giao hàng ngoài giờ hành chính",
+            "NgayDatHang": "2026-02-02 14:30:00",
+            "items": [
+                {
+                    "MaChiTietDonHang": 150,
+                    "MaMonAn": 5,
+                    "TenMonAn": "Cơm tấm sườn",
+                    "SoLuong": 2,
+                    "DonGia": 45000,
+                    "ThanhTien": 90000
+                }
+            ]
+        },
+        "payment": {
+            "MaThanhToan": 80,
+            "MaDonHang": 100,
+            "SoTien": 120000,
+            "PhuongThucThanhToan": "COD",
+            "TrangThai": "Chờ thanh toán",
+            "NgayThanhToan": null
+        }
+    }
+}
+```
+
+**Response Error (400)**:
+```json
+{
+    "success": false,
+    "message": "Giỏ hàng trống. Vui lòng thêm món ăn trước khi đặt hàng"
+}
+```
+
+**Response Error (422)**:
+```json
+{
+    "success": false,
+    "message": "Validation failed",
+    "errors": {
+        "DiaChiGiaoHang": ["Địa chỉ giao hàng là bắt buộc"],
+        "PhuongThucThanhToan": ["Phương thức thanh toán không hợp lệ"]
+    }
+}
+```
+
+**Response Error (500)**:
+```json
+{
+    "success": false,
+    "message": "Không thể tạo đơn hàng. Vui lòng thử lại",
+    "error": "Database transaction failed"
+}
+```
+
+---
+
+### 5.4. Lịch sử đơn hàng
+- **Endpoint**: `GET /api/v1/orders`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Lấy danh sách đơn hàng của người dùng (có phân trang)
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Accept: application/json
+```
+
+**Query Parameters**:
+- `page` (optional, default: 1): Số trang
+- `per_page` (optional, default: 10): Số đơn hàng mỗi trang
+- `status` (optional): Lọc theo trạng thái (Chờ xác nhận, Đang chuẩn bị, Đang giao, Hoàn thành, Đã hủy)
+
+**Example**: `GET /api/v1/orders?page=1&per_page=10&status=Hoàn thành`
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "data": {
+        "orders": [
+            {
+                "MaDonHang": 100,
+                "TongThanhToan": 120000,
+                "TrangThai": "Hoàn thành",
+                "PhuongThucThanhToan": "COD",
+                "NgayDatHang": "2026-02-02 14:30:00",
+                "items_count": 2,
+                "payment_status": "Đã thanh toán"
+            }
+        ],
+        "pagination": {
+            "current_page": 1,
+            "per_page": 10,
+            "total": 25,
+            "last_page": 3,
+            "from": 1,
+            "to": 10
+        }
+    }
+}
+```
+
+---
+
+### 5.5. Chi tiết đơn hàng
+- **Endpoint**: `GET /api/v1/orders/{id}`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Lấy thông tin chi tiết một đơn hàng
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Accept: application/json
+```
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "data": {
+        "order": {
+            "MaDonHang": 100,
+            "MaNguoiDung": 5,
+            "TongTien": 90000,
+            "PhiVanChuyen": 30000,
+            "TienGiamGia": 0,
+            "TongThanhToan": 120000,
+            "DiaChiGiaoHang": "123 Nguyễn Văn A, Quận 1, TP.HCM",
+            "TrangThai": "Hoàn thành",
+            "PhuongThucThanhToan": "COD",
+            "GhiChu": "Giao hàng ngoài giờ hành chính",
+            "NgayDatHang": "2026-02-02 14:30:00",
+            "user": {
+                "MaNguoiDung": 5,
+                "HoTen": "Nguyễn Văn A",
+                "SoDienThoai": "0123456789",
+                "Email": "nguyenvana@example.com"
+            },
+            "items": [
+                {
+                    "MaChiTietDonHang": 150,
+                    "MaMonAn": 5,
+                    "TenMonAn": "Cơm tấm sườn",
+                    "HinhAnh": "https://example.com/image.jpg",
+                    "SoLuong": 2,
+                    "DonGia": 45000,
+                    "ThanhTien": 90000,
+                    "restaurant": {
+                        "MaNhaHang": 3,
+                        "TenNhaHang": "Nhà hàng ABC",
+                        "DiaChi": "456 Lê Văn B, Quận 2"
+                    }
+                }
+            ],
+            "payment": {
+                "MaThanhToan": 80,
+                "SoTien": 120000,
+                "PhuongThucThanhToan": "COD",
+                "TrangThai": "Đã thanh toán",
+                "NgayThanhToan": "2026-02-02 15:00:00"
+            },
+            "voucher": null
+        }
+    }
+}
+```
+
+**Response Error (403)**:
+```json
+{
+    "success": false,
+    "message": "Bạn không có quyền xem đơn hàng này"
+}
+```
+
+**Response Error (404)**:
+```json
+{
+    "success": false,
+    "message": "Không tìm thấy đơn hàng"
+}
+```
+
+---
+
+### 5.6. Xử lý thanh toán
+- **Endpoint**: `POST /api/v1/orders/{id}/payment`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Xử lý thanh toán cho đơn hàng (Online/VNPay/Momo)
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+```
+
+**Request Body**:
+```json
+{
+    "payment_method": "VNPay"
+}
+```
+
+**Validation Rules**:
+- `payment_method`: required, in:Online,VNPay,Momo
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "message": "Thanh toán thành công",
+    "data": {
+        "payment": {
+            "MaThanhToan": 80,
+            "MaDonHang": 100,
+            "SoTien": 120000,
+            "PhuongThucThanhToan": "VNPay",
+            "TrangThai": "Đã thanh toán",
+            "NgayThanhToan": "2026-02-02 15:00:00"
+        },
+        "order": {
+            "MaDonHang": 100,
+            "TrangThai": "Đang chuẩn bị",
+            "TongThanhToan": 120000
+        }
+    }
+}
+```
+
+**Response Error (400)**:
+```json
+{
+    "success": false,
+    "message": "Đơn hàng không thể thanh toán (đã thanh toán hoặc đã hủy)"
+}
+```
+
+**Response Error (403)**:
+```json
+{
+    "success": false,
+    "message": "Bạn không có quyền thanh toán đơn hàng này"
+}
+```
+
+**Response Error (404)**:
+```json
+{
+    "success": false,
+    "message": "Không tìm thấy đơn hàng"
+}
+```
 
 ---
 
 **Ngày cập nhật**: 02/02/2026  
-**Phiên bản**: 2.0.0
+**Phiên bản**: 3.0.0

@@ -313,7 +313,7 @@ class CheckoutController extends Controller
                 'MaDonHang'   => $donHang->MaDonHang,
                 'PhuongThuc'  => $paymentMethod,         // COD | Online
                 'SoTien'      => $tongTien,
-                'TrangThai'   => $paymentMethod === 'COD' ? 'Thành công' : 'Chờ xử lý',
+                'TrangThai'   => $paymentMethod === 'COD' ? 'Đã thanh toán' : 'Chờ thanh toán',
                 'NgayThanhToan' => now(),
             ]);
 
@@ -328,7 +328,8 @@ class CheckoutController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             report($e);
-            return back()->withErrors('Không thể tạo đơn hàng. Vui lòng thử lại.')->withInput();
+            // Hiển thị lỗi chi tiết để debug
+            return back()->withErrors('Lỗi: ' . $e->getMessage())->withInput();
         }
 
         // Điều hướng
@@ -365,7 +366,7 @@ class CheckoutController extends Controller
                 'SoTien'     => $donHang->TongTien,
             ]);
 
-            $thanhToan->TrangThai = $simulateSuccess ? 'Thành công' : 'Thất bại';
+            $thanhToan->TrangThai = $simulateSuccess ? 'Đã thanh toán' : 'Thất bại';
             $thanhToan->NgayThanhToan = now();
             $thanhToan->save();
 

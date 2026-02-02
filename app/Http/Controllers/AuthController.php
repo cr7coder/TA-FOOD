@@ -10,6 +10,84 @@ use App\Models\User;
 class AuthController extends Controller
 {
     /**
+     * Xử lý đăng ký
+     */
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|unique:nguoi_dung,TenDangNhap',
+            'fullname' => 'required|string',
+            'email' => 'required|email|unique:nguoi_dung,Email',
+            'password' => 'required|string|min:6|confirmed',
+            'phone' => 'nullable|string',
+        ], [
+            'username.required' => 'Vui lòng nhập tên đăng nhập',
+            'fullname.required' => 'Vui lòng nhập họ và tên',
+            'email.required' => 'Vui lòng nhập email',
+            'email.email' => 'Email không hợp lệ',
+            'email.unique' => 'Email đã tồn tại',
+            'password.required' => 'Vui lòng nhập mật khẩu',
+            'password.min' => 'Mật khẩu tối thiểu 6 ký tự',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = new User();
+        $user->TenDangNhap = $request->input('username');
+        $user->HoTen = $request->input('fullname');
+        $user->Email = $request->input('email');
+        $user->MatKhau = bcrypt($request->input('password'));
+        $user->SoDienThoai = $request->input('phone');
+        $user->VaiTro = 'user'; // Hoặc xác định vai trò theo logic của bạn
+        $user->save();
+
+        Auth::login($user);
+
+        $redirect = $this->redirectAfterLogin($user, $request);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng ký thành công',
+            'user' => [
+                'id' => $user->MaNguoiDung,
+                'name' => $user->HoTen,
+                'email' => $user->Email,
+                'role' => $user->VaiTro,
+            ],
+            'redirect' => $redirect
+        ]);
+    }
+
+    /**
+     * Chuyển hướng sau đăng nhập/đăng ký theo role
+     */
+    private function redirectAfterLogin(User $user, ?Request $request = null): string
+    {
+        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+            return route('admin.vouchers.index');
+        }
+
+        if (method_exists($user, 'isSeller') && $user->isSeller()) {
+            return route('seller.foods.index');
+        }
+
+        if ($request) {
+            $intended = $request->session()->pull('url.intended');
+            if ($intended && !str_contains($intended, '/admin')) {
+                return $intended;
+            }
+        }
+
+        return route('foods.index');
+    }
+
+    /**
      * Hiển thị form đăng nhập
      */
     public function showLoginForm()

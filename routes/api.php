@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\FoodDetailController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\CheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,4 +70,17 @@ Route::prefix('v1')->group(function () {
 // Protected routes - Food Reviews (yêu cầu auth)
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/foods/{id}/reviews', [FoodDetailController::class, 'storeReview']);
+});
+
+// Checkout & Orders routes (yêu cầu auth)
+Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+    // Checkout
+    Route::get('/checkout', [CheckoutController::class, 'getCheckoutInfo']);
+    Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher']);
+    Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder']);
+    
+    // Orders
+    Route::get('/orders', [CheckoutController::class, 'getOrderHistory']);
+    Route::get('/orders/{id}', [CheckoutController::class, 'getOrder']);
+    Route::post('/orders/{id}/payment', [CheckoutController::class, 'processPayment']);
 });

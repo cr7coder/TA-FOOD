@@ -8,6 +8,7 @@ use App\Models\GioHang;
 use App\Models\GioHangChiTiet;
 use App\Models\MonAn;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -20,7 +21,13 @@ class CartController extends Controller
             return GioHang::firstOrCreate(['MaNguoiDung' => $user->MaNguoiDung]);
         }
         
+        // Ensure session is started
+        if (!session()->isStarted()) {
+            session()->start();
+        }
+        
         $sessionId = session()->getId();
+        \Log::info('Cart Session ID: ' . $sessionId); // DEBUG
         return GioHang::firstOrCreate(['session_id' => $sessionId]);
     }
 
@@ -28,7 +35,7 @@ class CartController extends Controller
     public function index()
     {
         $cart = $this->resolveCart();
-        $items = $cart->chiTiets()->with('monAn.nhaHang')->get();
+        $items = $cart->chiTiet()->with('monAn.nhaHang')->get();
         
         $total = $items->sum(function ($item) {
             return $item->monAn->Gia * $item->SoLuong;
@@ -48,7 +55,7 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'MaMonAn' => 'required|exists:mon_ans,MaMonAn',
+            'MaMonAn' => 'required|exists:mon_an,MaMonAn',
             'SoLuong' => 'integer|min:1'
         ]);
 
@@ -79,10 +86,20 @@ class CartController extends Controller
             ]);
         }
 
+        // Reload cart để trả về format đúng
+        $items = $cart->chiTiet()->with('monAn.nhaHang')->get();
+        $total = $items->sum(function ($item) {
+            return $item->monAn->Gia * $item->SoLuong;
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'Đã thêm món vào giỏ hàng!',
-            'data' => $cartItem->load('monAn')
+            'data' => [
+                'items' => $items,
+                'total' => $total,
+                'count' => $items->count()
+            ]
         ]);
     }
 
@@ -94,25 +111,31 @@ class CartController extends Controller
         ]);
 
         $cart = $this->resolveCart();
-        $cartItem = GioHangChiTiet::where('MaGioHangChiTiet', $id)
+        $cartItem = GioHangChiTiet::where('MaChiTiet', $id)
             ->where('MaGioHang', $cart->MaGioHang)
             ->firstOrFail();
 
         if ($request->SoLuong == 0) {
             $cartItem->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'Đã xóa món khỏi giỏ hàng!'
-            ]);
+        } else {
+            $cartItem->SoLuong = $request->SoLuong;
+            $cartItem->save();
         }
 
-        $cartItem->SoLuong = $request->SoLuong;
-        $cartItem->save();
+        // Reload cart
+        $items = $cart->chiTiet()->with('monAn.nhaHang')->get();
+        $total = $items->sum(function ($item) {
+            return $item->monAn->Gia * $item->SoLuong;
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã cập nhật số lượng!',
-            'data' => $cartItem->load('monAn')
+            'message' => $request->SoLuong == 0 ? 'Đã xóa món khỏi giỏ hàng!' : 'Đã cập nhật số lượng!',
+            'data' => [
+                'items' => $items,
+                'total' => $total,
+                'count' => $items->count()
+            ]
         ]);
     }
 
@@ -120,15 +143,26 @@ class CartController extends Controller
     public function destroy($id)
     {
         $cart = $this->resolveCart();
-        $cartItem = GioHangChiTiet::where('MaGioHangChiTiet', $id)
+        $cartItem = GioHangChiTiet::where('MaChiTiet', $id)
             ->where('MaGioHang', $cart->MaGioHang)
             ->firstOrFail();
 
         $cartItem->delete();
 
+        // Reload cart
+        $items = $cart->chiTiet()->with('monAn.nhaHang')->get();
+        $total = $items->sum(function ($item) {
+            return $item->monAn->Gia * $item->SoLuong;
+        });
+
         return response()->json([
             'success' => true,
-            'message' => 'Đã xóa món khỏi giỏ hàng!'
+            'message' => 'Đã xóa món khỏi giỏ hàng!',
+            'data' => [
+                'items' => $items,
+                'total' => $total,
+                'count' => $items->count()
+            ]
         ]);
     }
 
@@ -136,7 +170,7 @@ class CartController extends Controller
     public function clear()
     {
         $cart = $this->resolveCart();
-        $cart->chiTiets()->delete();
+        $cart->chiTiet()->delete();
 
         return response()->json([
             'success' => true,

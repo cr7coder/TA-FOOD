@@ -88,10 +88,20 @@ class FoodController extends Controller
             $food = MonAn::with(['nhaHang', 'binhLuans.nguoiDung'])
                 ->findOrFail($id);
 
+            // Lấy món ăn liên quan (cùng danh mục)
+            $relatedFoods = MonAn::where('DanhMuc', $food->DanhMuc)
+                ->where('MaMonAn', '!=', $id)
+                ->where('TrangThai', 'Còn bán')
+                ->limit(4)
+                ->get();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Lấy thông tin món ăn thành công',
-                'data' => $food
+                'data' => [
+                    'food' => $food,
+                    'related_foods' => $relatedFoods
+                ]
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([

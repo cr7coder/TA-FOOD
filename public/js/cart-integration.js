@@ -1,21 +1,14 @@
-// Cart integration with backend using dynamic routes injected from Blade
+// Cart integration with RESTful API
 class CartManager {
     constructor() {
         this.cart = JSON.parse(localStorage.getItem('cart')) || [];
         this.isLoggedIn = this.checkLoginStatus();
-        this.routes = window.CABA_ROUTES || {};
+        this.apiBaseUrl = '/api/v1';
         this.init();
     }
 
     checkLoginStatus() {
         return document.querySelector('meta[name="user-id"]') !== null;
-    }
-
-    // Helpers to build URLs with dynamic id
-    url(name, id) {
-        const tpl = this.routes[name];
-        if (!tpl) return '';
-        return typeof id === 'undefined' ? tpl : tpl.replace(':id', id);
     }
 
     async init() {
@@ -28,82 +21,58 @@ class CartManager {
 
     async syncWithBackend() {
         try {
-            const response = await fetch(this.url('getCart'), {
+            const response = await fetch(`${this.apiBaseUrl}/cart`, {
+                method: 'GET',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                 }
             });
 
             if (response.ok) {
                 const data = await response.json();
-                if (data.success) {
-                    if (data.data.length > 0) {
-                        this.cart = data.data;
-                        this.saveCart();
-                    } else if (this.cart.length > 0) {
-                        await this.syncToBackendReplace();
-                    }
+                if (data.success && data.data.items.length > 0) {
+                    this.cart = data.data.items.map(item => ({
+                        id: String(item.ma_mon_an || item.MaMonAn),
+                        name: item.mon_an?.TenMonAn || item.monAn?.TenMonAn,
+                        price: item.mon_an?.Gia || item.monAn?.Gia,
+                        quantity: item.so_luong || item.SoLuong,
+                        image: item.mon_an?.HinhAnh ? `/images/${item.mon_an.HinhAnh}` : '/images/no-image.png'
+                    }));
+                    this.saveCart();
+                } else if (this.cart.length > 0) {
+                    await this.syncLocalToBackend();
                 }
             }
         } catch (error) {
-            console.log('Sync failed, using localStorage');
+            console.log('Sync failed, using localStorage:', error);
         }
     }
 
-    async syncToBackendReplace() {
-        if (!this.isLoggedIn) return true;
-        if (this.cart.length === 0) return true;
+    async syncLocalToBackend() {
+        if (!this.isLoggedIn || this.cart.length === 0) return;
 
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const payload = {
-            mode: 'replace',
-            items: this.cart.map(x => ({
-                id: Number(x.id),
-                quantity: Number(x.quantity)
-            }))
-        };
-
-        const res = await fetch(this.url('syncCart'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token,
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-            throw new Error(data.message || 'Sync failed');
+        for (const item of this.cart) {
+            await this.addToBackend(item.id, item.quantity);
         }
-
-        if (data.data?.items) {
-            this.cart = data.data.items.map(it => ({
-                id: String(it.id),
-                name: it.name,
-                price: it.price,
-                quantity: it.quantity,
-                image: it.image
-            }));
-            this.saveCart();
-            this.updateCartDisplay();
-        }
-        return true;
     }
 
     async addToBackend(foodId, quantity = 1) {
-        if (!this.isLoggedIn) return;
+        if (!this.isLoggedIn) return false;
 
         try {
-            const response = await fetch(this.url('addCart', foodId), {
+            const response = await fetch(`${this.apiBaseUrl}/cart`, {
                 method: 'POST',
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                 },
-                body: JSON.stringify({ quantity })
+                body: JSON.stringify({ 
+                    MaMonAn: foodId, 
+                    SoLuong: quantity 
+                })
             });
 
             const data = await response.json();
@@ -114,17 +83,18 @@ class CartManager {
         }
     }
 
-    async updateBackend(foodId, quantity) {
-        if (!this.isLoggedIn) return;
+    async updateBackend(cartItemId, quantity) {
+        if (!this.isLoggedIn) return false;
 
         try {
-            const response = await fetch(this.url('updateCart', foodId), {
+            const response = await fetch(`${this.apiBaseUrl}/cart/${cartItemId}`, {
                 method: 'PUT',
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                 },
-                body: JSON.stringify({ quantity })
+                body: JSON.stringify({ SoLuong: quantity })
             });
 
             const data = await response.json();
@@ -135,13 +105,15 @@ class CartManager {
         }
     }
 
-    async removeFromBackend(foodId) {
-        if (!this.isLoggedIn) return;
+    async removeFromBackend(cartItemId) {
+        if (!this.isLoggedIn) return false;
 
         try {
-            const response = await fetch(this.url('removeCart', foodId), {
+            const response = await fetch(`${this.apiBaseUrl}/cart/${cartItemId}`, {
                 method: 'DELETE',
                 headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                 }
             });
@@ -155,12 +127,14 @@ class CartManager {
     }
 
     async clearBackend() {
-        if (!this.isLoggedIn) return;
+        if (!this.isLoggedIn) return false;
 
         try {
-            const response = await fetch(this.url('clearCart'), {
+            const response = await fetch(`${this.apiBaseUrl}/cart`, {
                 method: 'DELETE',
                 headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                 }
             });
@@ -363,14 +337,13 @@ class CartManager {
 
         if (!this.isLoggedIn) {
             alert('Vui lòng đăng nhập để thanh toán!');
-            // window.location.href = this.routes.login || '/login';
+            window.location.href = '/login';
             return;
         }
 
-        // Đồng bộ toàn bộ sang server trước khi đi checkout
-        await this.syncToBackendReplace();
-
-        window.location.href = this.url('checkout');
+        // Sync with backend before checkout
+        await this.syncWithBackend();
+        window.location.href = '/checkout';
     }
 }
 

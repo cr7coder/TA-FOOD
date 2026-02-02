@@ -476,5 +476,8 @@
         }
     </style>
 
+    <!-- Load food detail from RESTful API -->
+    <script src="{{ asset('js/api-food-detail.js') }}"></script>
+    
     @include('foods._cart-scripts')
 @endsection

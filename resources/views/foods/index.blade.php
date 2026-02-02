@@ -1057,6 +1057,10 @@
                                                                                                                                                 `;
         document.head.appendChild(style);
     </script>
+    
+    <!-- Load foods from RESTful API -->
+    <script src="{{ asset('js/api-food-loader.js') }}"></script>
+    
     {{--
     <script src="{{ asset('js/cart-validator.js') }}"></script> --}}
     @include('foods._cart-scripts')

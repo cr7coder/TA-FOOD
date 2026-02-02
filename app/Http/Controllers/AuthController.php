@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
 class AuthController extends Controller
+{
     /**
      * Xử lý đăng ký
      */
@@ -85,7 +86,7 @@ class AuthController extends Controller
 
         return route('foods.index');
     }
-{
+
     /**
      * Hiển thị form đăng nhập
      */

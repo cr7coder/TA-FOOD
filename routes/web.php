@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MonAnController;
 use App\Http\Controllers\NhaHangController;
 use App\Http\Controllers\GioHangController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderHistoryController;
 
 // Homepage Route
 Route::get('/', [MonAnController::class, 'menu'])->name('foods.index');
@@ -21,6 +23,19 @@ Route::post('/cart', [GioHangController::class, 'store'])->name('cart.store');
 Route::put('/cart/{id}', [GioHangController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{id}', [GioHangController::class, 'destroy'])->name('cart.destroy');
 Route::delete('/cart', [GioHangController::class, 'clear'])->name('cart.clear');
+
+// Checkout Routes
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
+Route::post('/checkout/get-best-voucher', [CheckoutController::class, 'getBestVoucher'])->name('checkout.get-best-voucher');
+Route::get('/checkout/payment/{maDonHang}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::post('/checkout/process-payment/{maDonHang}', [CheckoutController::class, 'processPayment'])->name('checkout.process-payment');
+Route::get('/checkout/success/{maDonHang}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+// Order History Routes
+Route::get('/orders/history', [OrderHistoryController::class, 'index'])->name('orders.history');
+Route::get('/orders/{id}', [OrderHistoryController::class, 'show'])->name('orders.show');
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

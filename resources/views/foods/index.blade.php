@@ -231,7 +231,7 @@
                                             <small class="text-muted d-block">{{ Auth::user()->Email }}</small>
                                         </div>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Thông tin cá nhân</a>
+                                        <a class="dropdown-item" href="{{ route('profile.index') }}"><i class="fa fa-user"></i> Thông tin cá nhân</a>
                                         <a class="dropdown-item" href="{{ route('orders.history') }}"><i
                                                 class="fa fa-history"></i> Lịch sử đơn hàng</a>
                                         <a class="dropdown-item" href="#"><i class="fa fa-heart"></i> Món ăn yêu thích</a>

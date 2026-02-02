@@ -211,6 +211,288 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Home APIs",
+			"item": [
+				{
+					"name": "Get Foods",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/foods?category=Cơm&search=chicken&page=1&per_page=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "foods"],
+							"query": [
+								{"key": "category", "value": "Cơm", "description": "Filter theo danh mục"},
+								{"key": "search", "value": "chicken", "description": "Tìm kiếm theo tên món"},
+								{"key": "page", "value": "1"},
+								{"key": "per_page", "value": "12"}
+							]
+						},
+						"description": "Lấy danh sách món ăn (phân trang, filter)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Food Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/foods/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "foods", "1"]
+						},
+						"description": "Lấy chi tiết món ăn kèm related foods và reviews"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/restaurants?search=&page=1&per_page=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "restaurants"],
+							"query": [
+								{"key": "search", "value": "", "description": "Tìm kiếm theo tên nhà hàng"},
+								{"key": "page", "value": "1"},
+								{"key": "per_page", "value": "12"}
+							]
+						},
+						"description": "Lấy danh sách nhà hàng (kèm số lượng món còn bán)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurant Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/restaurants/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "restaurants", "1"]
+						},
+						"description": "Lấy chi tiết nhà hàng kèm danh sách món ăn"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurant Foods",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/restaurants/1/foods?category=&search=&per_page=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "restaurants", "1", "foods"],
+							"query": [
+								{"key": "category", "value": ""},
+								{"key": "search", "value": ""},
+								{"key": "per_page", "value": "12"}
+							]
+						},
+						"description": "Lấy danh sách món ăn của nhà hàng"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Offers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/offers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "offers"]
+						},
+						"description": "Lấy danh sách khuyến mãi"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reviews",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "reviews"]
+						},
+						"description": "Lấy danh sách đánh giá khách hàng"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart APIs",
+			"item": [
+				{
+					"name": "Get Cart",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/cart",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "cart"]
+						},
+						"description": "Xem giỏ hàng hiện tại (hỗ trợ guest & authenticated)"
+					},
+					"response": []
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"MaMonAn\": 1,\n    \"SoLuong\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/cart",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "cart"]
+						},
+						"description": "Thêm món vào giỏ hàng"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"SoLuong\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/cart/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "cart", "1"]
+						},
+						"description": "Cập nhật số lượng món trong giỏ (SoLuong = 0 để xóa)"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Cart Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/cart/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "cart", "1"]
+						},
+						"description": "Xóa món khỏi giỏ hàng"
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/cart",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "cart"]
+						},
+						"description": "Xóa toàn bộ giỏ hàng"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Add Food Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "diem_danh_gia",
+									"value": "5",
+									"type": "text",
+									"description": "Điểm đánh giá (1-5)"
+								},
+								{
+									"key": "noi_dung",
+									"value": "Món ăn rất ngon, giao hàng nhanh!",
+									"type": "text",
+									"description": "Nội dung đánh giá"
+								},
+								{
+									"key": "hinh_anh",
+									"type": "file",
+									"description": "Hình ảnh đánh giá (optional)",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/foods/1/reviews",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "foods", "1", "reviews"]
+						},
+						"description": "Thêm đánh giá cho món ăn (yêu cầu authentication)"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"variable": [

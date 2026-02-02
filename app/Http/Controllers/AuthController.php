@@ -88,6 +88,14 @@ class AuthController extends Controller
     }
 
     /**
+     * Hiển thị form đăng ký
+     */
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    /**
      * Đăng xuất
      */
     public function logout(Request $request)

@@ -491,36 +491,47 @@
                 loadingSpinner.style.display = 'block';
 
                 try {
-                    const formData = new FormData(this);
-                    const response = await fetch('{{ route("login.post") }}', {
+                    // Chuẩn bị data theo RESTful API format (JSON)
+                    const loginData = {
+                        login: document.getElementById('login').value,
+                        password: document.getElementById('password').value,
+                        remember: document.getElementById('remember').checked,
+                        device_name: 'web-browser'
+                    };
+
+                    // Gọi RESTful API endpoint
+                    const response = await fetch('/api/v1/login', {
                         method: 'POST',
-                        body: formData,
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify(loginData)
                     });
 
                     const data = await response.json();
 
-                    // Kiểm tra lỗi từ server và hiện thông báo đúng mã lỗi
                     if (data.success) {
                         showAlert('success', data.message);
 
-                        if (data.user) {
-                            localStorage.setItem('user', JSON.stringify(data.user));
+                        // Lưu thông tin user và token vào localStorage
+                        if (data.data) {
+                            localStorage.setItem('user', JSON.stringify(data.data.user));
+                            localStorage.setItem('auth_token', data.data.token);
+                            localStorage.setItem('token_type', data.data.token_type);
                         }
 
+                        // Redirect về trang chủ sau 1 giây
                         setTimeout(() => {
-                            window.location.href = data.redirect;
+                            window.location.href = '{{ route("foods.index") }}';
                         }, 1000);
                     } else {
-                        // Hiển thị lỗi server trả về đúng như 1E.2 hoặc 1E.4
-                        // Server cần trả về message là "Tên đăng nhập không tồn tại (1E.2)" hoặc "Mật khẩu không đúng (1E.4)"
                         showAlert('danger', data.message);
                         resetSubmitButton();
                     }
                 } catch (error) {
+                    console.error('Login error:', error);
                     showAlert('danger', 'Có lỗi xảy ra. Vui lòng thử lại!');
                     resetSubmitButton();
                 }

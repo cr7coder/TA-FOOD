@@ -1,0 +1,322 @@
+/* CabaFood Theme Enhancements */
+
+/* Color variables and glass */
+:root {
+    --cbf-brand: #ffbe33;
+    --cbf-dark: #222831;
+    --cbf-muted: #6b7280;
+    --cbf-card: #ffffff;
+    --cbf-border: rgba(0, 0, 0, .06);
+    --cbf-shadow: 0 8px 24px rgba(2, 6, 23, .08);
+    --cbf-shadow-strong: 0 16px 40px rgba(2, 6, 23, .12);
+    --cbf-grad-1: #ff8c1a;
+    --cbf-grad-2: #ffbe33;
+
+    --cbf-header-bg: linear-gradient(135deg, rgba(34, 40, 49, .92), rgba(34, 40, 49, .86));
+}
+
+/* NAV Gradient border bottom subtle */
+.cbf-header-gradient {
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+/* User dropdown polish (migrated from inline) */
+.user-dropdown {
+    padding: 8px 15px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.08);
+    transition: all 0.25s ease;
+}
+
+.user-dropdown:hover {
+    background: rgba(255, 255, 255, 0.18);
+    text-decoration: none !important;
+    color: white !important;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--cbf-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #222;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .12);
+}
+
+.dropdown-menu {
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, .06);
+    box-shadow: var(--cbf-shadow-strong);
+    min-width: 260px;
+    overflow: hidden;
+}
+
+.dropdown-header {
+    padding: 12px 16px;
+    background: #f8f9fa;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    transition: .2s ease;
+}
+
+.dropdown-item i {
+    width: 18px;
+    margin-right: 8px;
+    text-align: center;
+    color: var(--cbf-muted);
+}
+
+.dropdown-item:hover {
+    background: #f3f4f6;
+}
+
+/* Location card */
+.cbf-location-card {
+    padding: 24px;
+    background: rgba(0, 0, 0, .45);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 18px;
+    width: min(680px, 90%);
+    margin: 22px auto;
+    backdrop-filter: blur(6px);
+    text-align: left;
+}
+
+.cbf-location-card h4 {
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+    margin-bottom: 12px;
+}
+
+.cbf-location-form {
+    position: relative;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+}
+
+.cbf-location-form .bi-geo-alt-fill {
+    position: absolute;
+    left: 16px;
+    font-size: 18px;
+    color: #cbd5e1;
+}
+
+.cbf-location-form input {
+    padding-left: 42px;
+    padding-right: 42px;
+    height: 44px;
+}
+
+.cbf-location-form .cbf-locate {
+    position: absolute;
+    right: 14px;
+    font-size: 18px;
+    color: #cbd5e1;
+    cursor: pointer;
+}
+
+/* Offer card improvements */
+.cbf-offer {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #222831;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .06);
+    box-shadow: var(--cbf-shadow);
+}
+
+.cbf-offer .img-box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cbf-offer .img-box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, .35) 100%);
+}
+
+.cbf-offer .img-box img {
+    transform: scale(1);
+    transition: transform .35s ease;
+}
+
+.cbf-offer:hover .img-box img {
+    transform: scale(1.06);
+}
+
+.cbf-offer .detail-box h5 {
+    font-size: 22px;
+}
+
+.cbf-offer .detail-box h6 span {
+    color: var(--cbf-brand);
+}
+
+.cbf-offer .detail-box a {
+    background: var(--cbf-brand);
+    color: #111;
+    border-radius: 999px;
+    padding: 8px 18px;
+}
+
+.cbf-offer-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    background: #fff;
+    color: #111;
+    font-weight: 800;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    box-shadow: var(--cbf-shadow);
+}
+
+.cbf-offer-badge.badge-alt {
+    background: #fff8dc;
+    color: #c2410c;
+}
+
+/* Filters pill */
+.cbf-filters {
+    gap: 8px;
+    display: flex;
+    justify-content: center;
+}
+
+.cbf-filters li {
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--cbf-border);
+    background: #fff;
+    color: #111;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .04);
+    transition: all .2s ease;
+}
+
+.cbf-filters li:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .08);
+}
+
+.cbf-filters li.active {
+    background: linear-gradient(135deg, var(--cbf-grad-1), var(--cbf-grad-2));
+    color: #111;
+    font-weight: 700;
+    border-color: transparent;
+}
+
+/* Food card overhaul (keep structure) */
+.cbf-food-card {
+    border-radius: 18px;
+    border: 1px solid var(--cbf-border);
+    box-shadow: var(--cbf-shadow);
+    overflow: hidden;
+    transition: transform .25s ease, box-shadow .25s ease;
+    background: linear-gradient(to bottom, #f9fafb 25px, #222831 25px);
+}
+
+.cbf-food-card .img-box {
+    position: relative;
+}
+
+.cbf-food-card .detail-box {
+    background: #222831;
+    color: #e5e7eb;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.cbf-food-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--cbf-shadow-strong);
+}
+
+.cbf-title {
+    color: #fff;
+}
+
+.cbf-desc {
+    color: #cbd5e1;
+}
+
+/* Status badge on product image */
+.status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #fff;
+    color: #111;
+    box-shadow: var(--cbf-shadow);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-badge i {
+    color: #16a34a;
+}
+
+.status-inactive {
+    background: #ffe4e6;
+    color: #9f1239;
+}
+
+.status-inactive i {
+    color: #dc2626;
+}
+
+/* Animate on scroll utility */
+.will-animate {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .45s ease, transform .45s ease;
+}
+
+.will-animate.in {
+    opacity: 1;
+    transform: none;
+}
+
+/* Restaurant card harmony */
+.restaurant-card {
+    border: 1px solid var(--cbf-border);
+    box-shadow: var(--cbf-shadow);
+    border-radius: 16px;
+}
+
+/* Header search & button polishing */
+.custom_nav-container .navbar-nav .form-control {
+    border-radius: 999px !important;
+}
+
+.custom_nav-container .navbar-nav .btn-outline-light {
+    border-radius: 999px !important;
+}
+
+/* Small helpers */
+.text-shadow-soft {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .16);
+}
+
+.btn-warning {
+    border-radius: 999px;
+    font-weight: 700;
+}

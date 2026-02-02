@@ -8,6 +8,7 @@ use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 
 // Homepage Route
 Route::get('/', [MonAnController::class, 'menu'])->name('foods.index');
@@ -46,6 +47,10 @@ Route::middleware('auth')->group(function () {
     // Order History Routes
     Route::get('/orders/history', [OrderHistoryController::class, 'index'])->name('orders.history');
     Route::get('/orders/{id}', [OrderHistoryController::class, 'show'])->name('orders.show');
+
+    // Review Routes
+    Route::get('/reviews/create/{donHang}/{monAn}', [ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/reviews/{donHang}/{monAn}', [ReviewController::class, 'store'])->name('reviews.store');
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

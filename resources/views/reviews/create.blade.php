@@ -3,209 +3,555 @@
 @section('title', 'Đánh giá món ăn')
 
 @section('content')
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-warning text-dark">
-                        <h4 class="mb-0">
-                            <i class="fas fa-star"></i> Đánh giá món ăn
-                        </h4>
+<style>
+    .review-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 16px;
+        background: white;
+    }
+
+    .page-title {
+        font-family: 'Arimo', sans-serif;
+        font-size: 36px;
+        line-height: 24px;
+        color: #0a0a0a;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: #4a5565;
+        font-family: 'Arimo', sans-serif;
+        font-size: 16px;
+        margin-bottom: 24px;
+        transition: all 0.2s;
+    }
+
+    .back-button:hover {
+        color: #ff6900;
+        transform: translateX(-5px);
+    }
+
+    .back-button i {
+        font-size: 20px;
+    }
+
+    .review-header {
+        background: #fdc700;
+        border-radius: 10px;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .review-header i {
+        font-size: 24px;
+        color: #101828;
+    }
+
+    .review-header-title {
+        font-family: 'Arimo', sans-serif;
+        font-size: 20px;
+        line-height: 28px;
+        color: #101828;
+        font-weight: 500;
+    }
+
+    .review-form-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+    }
+
+    .food-preview {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .food-preview-image {
+        width: 96px;
+        height: 96px;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+
+    .food-preview-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .food-preview-name {
+        font-family: 'Arimo', sans-serif;
+        font-size: 20px;
+        line-height: 28px;
+        color: #101828;
+        font-weight: 500;
+    }
+
+    .food-preview-order {
+        font-family: 'Arimo', sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        color: #4a5565;
+    }
+
+    .food-preview-date {
+        font-family: 'Arimo', sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        color: #6a7282;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        font-family: 'Arimo', sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        color: #101828;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .form-label .required {
+        color: #fb2c36;
+        margin-left: 4px;
+    }
+
+    .form-label .optional {
+        color: #6a7282;
+        font-weight: normal;
+        margin-left: 4px;
+    }
+
+    .star-rating {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .star-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        font-size: 48px;
+        color: #d1d5dc;
+        transition: all 0.2s;
+        line-height: 1;
+    }
+
+    .star-btn:hover,
+    .star-btn.active {
+        color: #fdc700;
+        transform: scale(1.1);
+    }
+
+    .star-rating-text {
+        font-family: 'Arimo', sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        color: #6a7282;
+    }
+
+    .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 0.8px solid #d1d5dc;
+        border-radius: 10px;
+        font-family: 'Arimo', sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        color: #0a0a0a;
+        resize: vertical;
+        min-height: 128px;
+        transition: all 0.2s;
+    }
+
+    .form-textarea:focus {
+        outline: none;
+        border-color: #fdc700;
+        box-shadow: 0 0 0 3px rgba(253, 199, 0, 0.1);
+    }
+
+    .char-count {
+        font-family: 'Arimo', sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        color: #6a7282;
+        text-align: right;
+        margin-top: 4px;
+    }
+
+    .image-upload {
+        border: 1.6px dashed #d1d5dc;
+        border-radius: 10px;
+        padding: 32px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .image-upload:hover {
+        border-color: #fdc700;
+        background: rgba(253, 199, 0, 0.05);
+    }
+
+    .image-upload-icon {
+        font-size: 32px;
+        color: #6a7282;
+        margin-bottom: 8px;
+    }
+
+    .image-upload-text {
+        font-family: 'Arimo', sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        color: #6a7282;
+        margin-bottom: 8px;
+    }
+
+    .image-upload-hint {
+        font-family: 'Arimo', sans-serif;
+        font-size: 12px;
+        line-height: 16px;
+        color: #99a1af;
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .file-selected {
+        font-family: 'Arimo', sans-serif;
+        font-size: 12px;
+        line-height: 16px;
+        color: #6a7282;
+        margin-top: 8px;
+    }
+
+    .image-preview {
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .image-preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .image-preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-preview-remove {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: rgba(0, 0, 0, 0.6);
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .image-preview-remove:hover {
+        background: #fb2c36;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 16px;
+        margin-top: 32px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px 24px;
+        border-radius: 26843500px;
+        font-family: 'Arimo', sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+
+    .btn-cancel {
+        background: white;
+        border: 0.8px solid #d1d5dc;
+        color: #364153;
+    }
+
+    .btn-cancel:hover {
+        background: #f8f9fa;
+        border-color: #99a1af;
+    }
+
+    .btn-submit {
+        background: #fdc700;
+        color: #101828;
+        font-weight: 500;
+    }
+
+    .btn-submit:hover {
+        background: #e5b500;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(253, 199, 0, 0.3);
+    }
+
+    .btn-submit:disabled {
+        background: #d1d5dc;
+        color: #6a7282;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .alert {
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 24px;
+        font-family: 'Arimo', sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .alert-success {
+        background: #d1f4e0;
+        color: #00a63e;
+        border: 1px solid #00a63e;
+    }
+
+    .alert-error {
+        background: #ffe5e5;
+        color: #fb2c36;
+        border: 1px solid #fb2c36;
+    }
+</style>
+
+<div class="review-container">
+    <a href="{{ route('orders.show', $maDonHang) }}" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Quay lại
+    </a>
+
+    <h1 class="page-title">Đánh giá món ăn</h1>
+
+    <div class="review-header">
+            <i class="fas fa-star"></i>
+            <span class="review-header-title">Đánh giá món ăn</span>
+        </div>
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="review-form-card">
+            <div class="food-preview">
+                @if($monAn->HinhAnh)
+                    <img src="{{ asset('images/' . $monAn->HinhAnh) }}" 
+                         alt="{{ $monAn->TenMonAn }}" 
+                         class="food-preview-image">
+                @else
+                    <div class="food-preview-image" style="background: linear-gradient(45deg, #ffc107, #ff9800); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-utensils" style="color: white; font-size: 32px;"></i>
                     </div>
-
-                    <div class="card-body">
-                        <!-- Thông tin món ăn -->
-                        <div class="food-info mb-4 p-3 bg-light rounded">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <img src="{{ $monAn->HinhAnh ? asset('images/' . $monAn->HinhAnh) : asset('images/no-image.png') }}"
-                                        alt="{{ $monAn->TenMonAn }}" class="img-fluid rounded"
-                                        style="width: 100%; height: 120px; object-fit: cover;">
-                                </div>
-                                <div class="col-md-9">
-                                    <h5>{{ $monAn->TenMonAn }}</h5>
-                                    <p class="text-muted mb-1">Đơn hàng #{{ $donHang->MaDonHang }}</p>
-                                    <p class="text-muted mb-0">{{ $donHang->created_at->format('d/m/Y H:i') }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Form đánh giá -->
-                        <form action="{{ route('reviews.store', ['maDonHang' => $maDonHang, 'maMonAn' => $maMonAn]) }}"
-                            method="POST" enctype="multipart/form-data" id="reviewForm">
-                            @csrf
-
-                            <!-- Đánh giá sao -->
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    <strong>Chất lượng món ăn <span class="text-danger">*</span></strong>
-                                </label>
-                                <div class="star-rating">
-                                    <input type="hidden" name="diem_danh_gia" id="rating"
-                                        value="{{ old('diem_danh_gia') }}">
-                                    <div class="stars" id="starRating">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="fas fa-star star" data-rating="{{ $i }}"></i>
-                                        @endfor
-                                    </div>
-                                    <div class="rating-text mt-2">
-                                        <span id="ratingText">Chọn số sao để đánh giá</span>
-                                    </div>
-                                </div>
-                                @error('diem_danh_gia')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Nội dung đánh giá -->
-                            <div class="mb-4">
-                                <label for="noi_dung" class="form-label">
-                                    <strong>Nội dung đánh giá <span class="text-danger">*</span></strong>
-                                </label>
-                                <textarea class="form-control" id="noi_dung" name="noi_dung" rows="4" maxlength="1000"
-                                    placeholder="Chia sẻ cảm nhận của bạn về món ăn này...">{{ old('noi_dung') }}</textarea>
-                                <div class="form-text">
-                                    <span id="charCount">0</span>/1000 ký tự
-                                </div>
-                                @error('noi_dung')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Upload hình ảnh -->
-                            <div class="mb-4">
-                                <label for="hinh_anh" class="form-label">
-                                    <strong>Hình ảnh minh họa</strong> <span class="text-muted">(Tùy chọn)</span>
-                                </label>
-                                <input type="file" class="form-control" id="hinh_anh" name="hinh_anh"
-                                    accept="image/jpg,image/jpeg,image/png">
-                                <div class="form-text">
-                                    Định dạng: JPG, JPEG, PNG. Kích thước tối đa: 5MB
-                                </div>
-                                @error('hinh_anh')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-
-                                <!-- Preview hình ảnh -->
-                                <div id="imagePreview" class="mt-2" style="display: none;">
-                                    <img id="previewImg" src="" alt="Preview" class="img-thumbnail"
-                                        style="max-width: 200px; max-height: 200px;">
-                                    <button type="button" class="btn btn-sm btn-danger ml-2" id="removeImage">
-                                        <i class="fas fa-times"></i> Xóa
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Upload video -->
-                            <div class="mb-4">
-                                <label for="video" class="form-label">
-                                    <strong>Video minh họa</strong> <span class="text-muted">(Tùy chọn)</span>
-                                </label>
-                                <input type="file" class="form-control" id="video" name="video"
-                                    accept="video/mp4,video/mov">
-                                <div class="form-text">
-                                    Định dạng: MP4, MOV. Kích thước tối đa: 20MB
-                                </div>
-                                @error('video')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-
-                                <!-- Preview video -->
-                                <div id="videoPreview" class="mt-2" style="display: none;">
-                                    <video id="previewVideo" controls style="max-width: 300px; max-height: 200px;">
-                                    </video>
-                                    <button type="button" class="btn btn-sm btn-danger ml-2" id="removeVideo">
-                                        <i class="fas fa-times"></i> Xóa
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Nút submit -->
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ route('orders.show', $maDonHang) }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Quay lại
-                                </a>
-                                <button type="submit" class="btn btn-warning" id="submitBtn">
-                                    <i class="fas fa-paper-plane"></i> Gửi đánh giá
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                @endif
+                
+                <div class="food-preview-info">
+                    <div class="food-preview-name">{{ $monAn->TenMonAn }}</div>
+                    <div class="food-preview-order">Đơn hàng #{{ $maDonHang }}</div>
+                    <div class="food-preview-date">{{ $donHang->created_at->format('Y-m-d H:i') }}</div>
                 </div>
             </div>
+
+            <form action="{{ route('reviews.store', ['donHang' => $maDonHang, 'monAn' => $maMonAn]) }}" method="POST" enctype="multipart/form-data" id="reviewForm">
+                @csrf
+                <input type="hidden" name="diem_danh_gia" id="ratingValue" value="5">
+
+                <!-- Star Rating -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Chất lượng món ăn
+                        <span class="required">*</span>
+                    </label>
+                    <div class="star-rating" id="starRating">
+                        <button type="button" class="star-btn active" data-rating="1">★</button>
+                        <button type="button" class="star-btn active" data-rating="2">★</button>
+                        <button type="button" class="star-btn active" data-rating="3">★</button>
+                        <button type="button" class="star-btn active" data-rating="4">★</button>
+                        <button type="button" class="star-btn active" data-rating="5">★</button>
+                    </div>
+                    <div class="star-rating-text">Chọn số sao để đánh giá: <span id="ratingText">5</span>/5</div>
+                </div>
+
+                <!-- Review Content -->
+                <div class="form-group">
+                    <label class="form-label" for="noiDung">
+                        Nội dung đánh giá
+                        <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        class="form-textarea" 
+                        id="noiDung" 
+                        name="noi_dung" 
+                        maxlength="1000" 
+                        placeholder="Ngon quá sước tưởng tượng lại còn rẻ nữa"
+                        required>{{ old('noi_dung') }}</textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span>/1000 ký tự
+                    </div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Hình ảnh minh họa
+                        <span class="optional">(Tùy chọn)</span>
+                    </label>
+                    <div class="image-upload" id="imageUpload">
+                        <div class="image-upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="image-upload-text">Chọn tệp</div>
+                        <div class="image-upload-hint">Định dạng: JPG, JPEG, PNG. Kích thước tối đa: 5MB</div>
+                        <input type="file" 
+                               class="file-input" 
+                               id="hinhAnh" 
+                               name="hinh_anh" 
+                               accept="image/jpeg,image/jpg,image/png">
+                    </div>
+                    <div class="file-selected" id="fileSelected">Không có tệp nào được chọn</div>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{{ route('orders.show', $maDonHang) }}" class="btn btn-cancel">Hủy</a>
+                    <button type="submit" class="btn btn-submit">Gửi đánh giá</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <style>
-        .star-rating {
-            text-align: center;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Star Rating
+    const starBtns = document.querySelectorAll('.star-btn');
+    const ratingValue = document.getElementById('ratingValue');
+    const ratingText = document.getElementById('ratingText');
+    
+    starBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const rating = parseInt(this.dataset.rating);
+            ratingValue.value = rating;
+            ratingText.textContent = rating;
+            
+            starBtns.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        });
+    });
+    
+    // Character Counter
+    const textarea = document.getElementById('noiDung');
+    const charCount = document.getElementById('charCount');
+    
+    function updateCharCount() {
+        charCount.textContent = textarea.value.length;
+    }
+    
+    textarea.addEventListener('input', updateCharCount);
+    updateCharCount();
+    
+    // Image Upload
+    const imageUpload = document.getElementById('imageUpload');
+    const fileInput = document.getElementById('hinhAnh');
+    const fileSelected = document.getElementById('fileSelected');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    imageUpload.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            fileSelected.textContent = `Đã chọn: ${file.name}`;
+            
+            // Preview image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.innerHTML = `
+                    <div class="image-preview-item">
+                        <img src="${e.target.result}" class="image-preview-img" alt="Preview">
+                        <button type="button" class="image-preview-remove" onclick="removeImage()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            fileSelected.textContent = 'Không có tệp nào được chọn';
+            imagePreview.innerHTML = '';
         }
+    });
+});
 
-        .stars i {
-            font-size: 2.5rem;
-            color: #ddd;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 0 5px;
-        }
-
-        .stars i:hover,
-        .stars i.active {
-            color: #ffc107;
-            transform: scale(1.1);
-        }
-
-        .rating-text {
-            font-weight: 500;
-            color: #666;
-        }
-
-        .food-info {
-            border: 2px solid #e9ecef;
-        }
-
-        #charCount {
-            font-weight: 500;
-        }
-
-        .form-control:focus {
-            border-color: #ffc107;
-            box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
-        }
-
-        .btn-warning {
-            background-color: #ffc107;
-            border-color: #ffc107;
-            color: #000;
-            font-weight: 500;
-        }
-
-        .btn-warning:hover {
-            background-color: #e0a800;
-            border-color: #d39e00;
-            color: #000;
-        }
-
-        /* Validation error styling */
-        .is-invalid {
-            border-color: #dc3545 !important;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-        }
-
-        .validation-error {
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        /* Star rating error styling */
-        .star-rating.error {
-            border: 2px solid #dc3545;
-            background-color: #f8d7da;
-        }
-    </style>
-
-    <script src="{{ asset('js/review-validator.js') }}"></script>
+function removeImage() {
+    const fileInput = document.getElementById('hinhAnh');
+    const fileSelected = document.getElementById('fileSelected');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    fileInput.value = '';
+    fileSelected.textContent = 'Không có tệp nào được chọn';
+    imagePreview.innerHTML = '';
+}
+</script>
 @endsection

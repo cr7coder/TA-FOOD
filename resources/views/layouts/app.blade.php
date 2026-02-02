@@ -212,9 +212,11 @@
                     </div>
 
                     <div class="quote_btn-container">
+                        @if (!in_array(Route::currentRouteName(), ['orders.history', 'orders.show', 'reviews.create']))
                         <a href="{{ route('cart.index') }}" class="order_online" style="margin-right: 15px;">
                             <i class="fa fa-shopping-cart"></i> Giỏ hàng
                         </a>
+                        @endif
 
                         @if(Auth::check())
                             <div class="dropdown">
@@ -232,8 +234,7 @@
                                     </div>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('profile.index') }}"><i class="fa fa-user"></i> Thông tin cá nhân</a>
-                                    <a class="dropdown-item" href="{{ route('orders.history') }}"><i
-                                            class="fa fa-history"></i> Lịch sử đơn hàng</a>
+                                    <a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fa fa-history"></i> Lịch sử đơn hàng</a>
                                     <a class="dropdown-item" href="#"><i class="fa fa-heart"></i> Món ăn yêu thích</a>
                                     <div class="dropdown-divider"></div>
                                     @if(Auth::user()->isAdmin())

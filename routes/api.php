@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\FoodDetailController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Api\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,4 +84,10 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/orders', [CheckoutController::class, 'getOrderHistory']);
     Route::get('/orders/{id}', [CheckoutController::class, 'getOrder']);
     Route::post('/orders/{id}/payment', [CheckoutController::class, 'processPayment']);
+    
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
+    Route::delete('/profile', [ProfileController::class, 'destroy']);
 });

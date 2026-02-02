@@ -1253,7 +1253,7 @@ a:focus {
 
 /* Custom: Tăng khoảng cách giữa các nút action trong food card */
 .food_section .box .detail-box .options .d-flex.gap-3 > *:not(:last-child) {
-  margin-right: 10px !important;
+  margin-right: 5% !important;
 }
 
 /* Đảm bảo nút tròn và có khoảng cách rõ ràng */

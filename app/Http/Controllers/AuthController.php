@@ -44,7 +44,7 @@ class AuthController extends Controller
         $user->Email = $request->input('email');
         $user->MatKhau = bcrypt($request->input('password'));
         $user->SoDienThoai = $request->input('phone');
-        $user->VaiTro = 'user'; // Hoặc xác định vai trò theo logic của bạn
+        $user->VaiTro = 'KhachHang'; // Vai trò mặc định cho người dùng mới
         $user->save();
 
         Auth::login($user);

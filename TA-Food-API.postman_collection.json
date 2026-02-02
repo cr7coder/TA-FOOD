@@ -211,6 +211,84 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Home APIs",
+			"item": [
+				{
+					"name": "Get Foods",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/foods?category=Cơm&search=chicken&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "foods"],
+							"query": [
+								{"key": "category", "value": "Cơm"},
+								{"key": "search", "value": "chicken"},
+								{"key": "page", "value": "1"}
+							]
+						},
+						"description": "Lấy danh sách món ăn (phân trang, filter)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/restaurants?search=KFC&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "restaurants"],
+							"query": [
+								{"key": "search", "value": "KFC"},
+								{"key": "page", "value": "1"}
+							]
+						},
+						"description": "Lấy danh sách nhà hàng (kèm số lượng món còn bán)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Offers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/offers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "offers"]
+						},
+						"description": "Lấy danh sách khuyến mãi"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reviews",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "reviews"]
+						},
+						"description": "Lấy danh sách đánh giá khách hàng"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"variable": [

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,4 +38,12 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     
     // Logout from all devices
     Route::post('/logout-all', [AuthController::class, 'logoutAll']);
+});
+
+// Home routes
+Route::prefix('v1')->group(function () {
+    Route::get('/foods', [HomeController::class, 'foods']);
+    Route::get('/restaurants', [HomeController::class, 'restaurants']);
+    Route::get('/offers', [HomeController::class, 'offers']);
+    Route::get('/reviews', [HomeController::class, 'reviews']);
 });

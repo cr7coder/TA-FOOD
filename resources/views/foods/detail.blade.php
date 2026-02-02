@@ -63,8 +63,8 @@
                                             <small class="text-muted d-block">{{ Auth::user()->Email }}</small>
                                         </div>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Thông tin cá nhân</a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-list-alt"></i> Đơn hàng của tôi</a>
+                                        <a class="dropdown-item" href="{{ route('profile.index') }}"><i class="fa fa-user"></i> Thông tin cá nhân</a>
+                                        <a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fa fa-list-alt"></i> Đơn hàng của tôi</a>
                                         <div class="dropdown-divider"></div>
                                         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                                             @csrf

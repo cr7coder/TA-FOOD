@@ -7,6 +7,7 @@ use App\Http\Controllers\NhaHangController;
 use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderHistoryController;
+use App\Http\Controllers\ProfileController;
 
 // Homepage Route
 Route::get('/', [MonAnController::class, 'menu'])->name('foods.index');
@@ -24,22 +25,31 @@ Route::put('/cart/{id}', [GioHangController::class, 'update'])->name('cart.updat
 Route::delete('/cart/{id}', [GioHangController::class, 'destroy'])->name('cart.destroy');
 Route::delete('/cart', [GioHangController::class, 'clear'])->name('cart.clear');
 
-// Checkout Routes
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
-Route::post('/checkout/get-best-voucher', [CheckoutController::class, 'getBestVoucher'])->name('checkout.get-best-voucher');
-Route::get('/checkout/payment/{maDonHang}', [CheckoutController::class, 'payment'])->name('checkout.payment');
-Route::post('/checkout/process-payment/{maDonHang}', [CheckoutController::class, 'processPayment'])->name('checkout.process-payment');
-Route::get('/checkout/success/{maDonHang}', [CheckoutController::class, 'success'])->name('checkout.success');
-
-// Order History Routes
-Route::get('/orders/history', [OrderHistoryController::class, 'index'])->name('orders.history');
-Route::get('/orders/{id}', [OrderHistoryController::class, 'show'])->name('orders.show');
-
-// Authentication Routes
+// Authentication Routes (must be before protected routes)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Protected Routes (require authentication)
+Route::middleware('auth')->group(function () {
+    // Checkout Routes
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
+    Route::post('/checkout/get-best-voucher', [CheckoutController::class, 'getBestVoucher'])->name('checkout.get-best-voucher');
+    Route::get('/checkout/payment/{maDonHang}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+    Route::post('/checkout/process-payment/{maDonHang}', [CheckoutController::class, 'processPayment'])->name('checkout.process-payment');
+    Route::get('/checkout/success/{maDonHang}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+    // Order History Routes
+    Route::get('/orders/history', [OrderHistoryController::class, 'index'])->name('orders.history');
+    Route::get('/orders/{id}', [OrderHistoryController::class, 'show'])->name('orders.show');
+
+    // Profile Routes
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+});

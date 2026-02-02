@@ -674,6 +674,130 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profile"]
+						},
+						"description": "Lấy thông tin chi tiết của người dùng đang đăng nhập"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"HoTen\": \"Nguyễn Văn B\",\n    \"Email\": \"nta2004@example.com\",\n    \"SoDienThoai\": \"0987654321\",\n    \"DiaChi\": \"123 Nguyễn Trãi, Thanh Xuân, Hà Nội\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profile"]
+						},
+						"description": "Cập nhật thông tin cá nhân của người dùng"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_password\": \"123456\",\n    \"password\": \"newpassword123\",\n    \"password_confirmation\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile/password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profile", "password"]
+						},
+						"description": "Thay đổi mật khẩu người dùng"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "profile"]
+						},
+						"description": "Xóa vĩnh viễn tài khoản người dùng (cần xác nhận mật khẩu)"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"variable": [

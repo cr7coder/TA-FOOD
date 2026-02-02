@@ -508,7 +508,13 @@ Copy token từ response: `data.token`
 - ✅ GET `/api/v1/orders/{id}` - Chi tiết đơn hàng (protected)
 - ✅ POST `/api/v1/orders/{id}/payment` - Xử lý thanh toán (protected)
 
-**Tổng cộng**: 26 API endpoints đã hoàn thiện
+### Profile (4 endpoints)
+- ✅ GET `/api/v1/profile` - Xem thông tin cá nhân (protected)
+- ✅ PUT `/api/v1/profile` - Cập nhật thông tin cá nhân (protected)
+- ✅ PUT `/api/v1/profile/password` - Đổi mật khẩu (protected)
+- ✅ DELETE `/api/v1/profile` - Xóa tài khoản (protected)
+
+**Tổng cộng**: 30 API endpoints đã hoàn thiện
 
 ---
 
@@ -932,5 +938,207 @@ Accept: application/json
 
 ---
 
+## 6. PROFILE APIs
+
+### 6.1. Xem thông tin cá nhân
+- **Endpoint**: `GET /api/v1/profile`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Lấy thông tin chi tiết của người dùng đang đăng nhập
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Accept: application/json
+```
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "data": {
+        "MaNguoiDung": 5,
+        "TenDangNhap": "nta2004",
+        "HoTen": "Nguyễn Văn A",
+        "Email": "nta2004@example.com",
+        "SoDienThoai": "0123456789",
+        "DiaChi": "Xóm Trong, xã Đông Anh, Hà Nội",
+        "VaiTro": "khach_hang",
+        "NgayTao": "2026-01-15 10:30:00"
+    }
+}
+```
+
+**Response Error (401)**:
+```json
+{
+    "success": false,
+    "message": "Unauthenticated"
+}
+```
+
+---
+
+### 6.2. Cập nhật thông tin cá nhân
+- **Endpoint**: `PUT /api/v1/profile`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Cập nhật thông tin cá nhân của người dùng
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+```
+
+**Request Body**:
+```json
+{
+    "HoTen": "Nguyễn Văn B",
+    "Email": "nta2004@example.com",
+    "SoDienThoai": "0987654321",
+    "DiaChi": "123 Nguyễn Trãi, Thanh Xuân, Hà Nội"
+}
+```
+
+**Validation Rules**:
+- `HoTen`: required, string, max:255
+- `Email`: required, email, max:255, unique (trừ email hiện tại)
+- `SoDienThoai`: nullable, string, max:20
+- `DiaChi`: nullable, string, max:500
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "message": "Cập nhật thông tin thành công",
+    "data": {
+        "MaNguoiDung": 5,
+        "TenDangNhap": "nta2004",
+        "HoTen": "Nguyễn Văn B",
+        "Email": "nta2004@example.com",
+        "SoDienThoai": "0987654321",
+        "DiaChi": "123 Nguyễn Trãi, Thanh Xuân, Hà Nội",
+        "VaiTro": "khach_hang"
+    }
+}
+```
+
+**Response Error (422)**:
+```json
+{
+    "success": false,
+    "message": "Dữ liệu không hợp lệ",
+    "errors": {
+        "HoTen": ["Họ và tên là bắt buộc"],
+        "Email": ["Email đã được sử dụng"]
+    }
+}
+```
+
+---
+
+### 6.3. Đổi mật khẩu
+- **Endpoint**: `PUT /api/v1/profile/password`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Thay đổi mật khẩu người dùng
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+```
+
+**Request Body**:
+```json
+{
+    "current_password": "123456",
+    "password": "newpassword123",
+    "password_confirmation": "newpassword123"
+}
+```
+
+**Validation Rules**:
+- `current_password`: required, string
+- `password`: required, confirmed, min:6
+- `password_confirmation`: required, same as password
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "message": "Đổi mật khẩu thành công"
+}
+```
+
+**Response Error (422) - Wrong Current Password**:
+```json
+{
+    "success": false,
+    "message": "Mật khẩu hiện tại không đúng",
+    "errors": {
+        "current_password": ["Mật khẩu hiện tại không đúng"]
+    }
+}
+```
+
+**Response Error (422) - Validation Error**:
+```json
+{
+    "success": false,
+    "message": "Dữ liệu không hợp lệ",
+    "errors": {
+        "password": ["Xác nhận mật khẩu không khớp"]
+    }
+}
+```
+
+---
+
+### 6.4. Xóa tài khoản
+- **Endpoint**: `DELETE /api/v1/profile`
+- **Auth**: Yes (Bearer Token)
+- **Mô tả**: Xóa vĩnh viễn tài khoản người dùng (cần xác nhận mật khẩu)
+
+**Request Headers**:
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+```
+
+**Request Body**:
+```json
+{
+    "password": "123456"
+}
+```
+
+**Validation Rules**:
+- `password`: required, string (phải khớp với mật khẩu hiện tại)
+
+**Response Success (200)**:
+```json
+{
+    "success": true,
+    "message": "Xóa tài khoản thành công"
+}
+```
+
+**Response Error (422)**:
+```json
+{
+    "success": false,
+    "message": "Mật khẩu không đúng",
+    "errors": {
+        "password": ["Mật khẩu không đúng"]
+    }
+}
+```
+
+**Lưu ý**: Sau khi xóa tài khoản, tất cả API tokens của người dùng sẽ bị thu hồi.
+
+---
+
 **Ngày cập nhật**: 02/02/2026  
-**Phiên bản**: 3.0.0
+**Phiên bản**: 4.0.0

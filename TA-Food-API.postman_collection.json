@@ -798,6 +798,142 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Get Order History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{auth_token}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/orders?per_page=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "orders"],
+							"query": [
+								{"key": "per_page", "value": "10", "description": "Số lượng đơn hàng mỗi trang"}
+							]
+						},
+						"description": "Lấy danh sách đơn hàng của người dùng hiện tại"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{auth_token}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/orders/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "orders", "1"]
+						},
+						"description": "Lấy chi tiết đơn hàng theo ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Create Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{auth_token}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{"key": "order_id", "value": "1", "type": "text", "description": "Mã đơn hàng"},
+								{"key": "food_id", "value": "5", "type": "text", "description": "Mã món ăn"},
+								{"key": "rating", "value": "5", "type": "text", "description": "Điểm đánh giá (1-5)"},
+								{"key": "content", "value": "Món ăn rất ngon, đóng gói cẩn thận", "type": "text", "description": "Nội dung đánh giá"},
+								{"key": "image", "type": "file", "description": "Hình ảnh minh họa (optional)", "disabled": true}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reviews",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "reviews"]
+						},
+						"description": "Tạo đánh giá mới cho món ăn trong đơn hàng"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Reviews",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{auth_token}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reviews?per_page=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "reviews"],
+							"query": [
+								{"key": "per_page", "value": "10", "description": "Số lượng đánh giá mỗi trang"}
+							]
+						},
+						"description": "Lấy danh sách đánh giá của người dùng hiện tại"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Reviewed",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{auth_token}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{"key": "Accept", "value": "application/json"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reviews/check/1/5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "reviews", "check", "1", "5"]
+						},
+						"description": "Kiểm tra người dùng đã đánh giá món ăn trong đơn hàng chưa"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"variable": [

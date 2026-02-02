@@ -202,16 +202,14 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <div class="navbar-nav mx-auto">
                             <form class="form-inline my-2 my-lg-0">
-                                <div class="input-group">
+                                <div class="input-group" style="gap: 5px; display: flex; align-items: center;">
                                     <input type="text" class="form-control rounded-pill"
                                         placeholder="Tìm món hoặc quán ăn..." aria-label="Search"
                                         style="width: 160px; height: 38px; font-size: 13px;">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-light rounded-pill" type="submit"
-                                            style="height: 38px; padding: 0 12px;">
-                                            <i class="fa fa-search" style="font-size: 14px; color: white;"></i>
-                                        </button>
-                                    </div>
+                                    <button class="btn btn-outline-light rounded-pill" type="submit"
+                                        style="height: 38px; padding: 0 12px; margin-left: 1px;">
+                                        <i class="fa fa-search" style="font-size: 14px; color: white;"></i>
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -354,8 +352,6 @@
                                         </g>
                                         <g>
                                         </g>
-                                        <g>
-                                        </g>
                                     </svg>
                                 </a>
                             </div>
@@ -400,8 +396,6 @@
                                                     d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
                                                                                                                                                                                                                  c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z" />
                                             </g>
-                                        </g>
-                                        <g>
                                         </g>
                                         <g>
                                         </g>

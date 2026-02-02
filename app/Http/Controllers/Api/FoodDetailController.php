@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MonAn;
 use App\Models\BinhLuan;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class FoodDetailController extends Controller
 {
+    // GET /api/v1/foods/{id}
     public function show($id)
     {
         $food = MonAn::with(['nhaHang', 'binhLuans.nguoiDung'])->findOrFail($id);
@@ -21,10 +23,17 @@ class FoodDetailController extends Controller
             ->limit(4)
             ->get();
 
-        return view('foods.detail', compact('food', 'relatedFoods'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'food' => $food,
+                'relatedFoods' => $relatedFoods
+            ]
+        ]);
     }
 
-    public function storeBinhLuan(Request $request, $id)
+    // POST /api/v1/foods/{id}/reviews
+    public function storeReview(Request $request, $id)
     {
         $request->validate([
             'diem_danh_gia' => 'required|integer|min:1|max:5',
@@ -33,7 +42,10 @@ class FoodDetailController extends Controller
         ]);
 
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để bình luận.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn cần đăng nhập để bình luận.'
+            ], 401);
         }
 
         $food = MonAn::findOrFail($id);
@@ -54,6 +66,10 @@ class FoodDetailController extends Controller
 
         $binhLuan->save();
 
-        return redirect()->back()->with('success', 'Đánh giá của bạn đã được thêm thành công!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Đánh giá của bạn đã được thêm thành công!',
+            'data' => $binhLuan
+        ]);
     }
 }

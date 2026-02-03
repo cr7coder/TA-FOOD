@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test validateQuantity Function</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+
+        .pass {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .fail {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .summary {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .test-input {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #alerts {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .alert {
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 4px;
+            min-width: 250px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Test validateQuantity Function</h1>
+
+    <div class="test-container">
+        <h2>Manual Test</h2>
+        <p>Nhập giá trị để test hàm validateQuantity:</p>
+        <input type="text" id="testInput" class="test-input" placeholder="Nhập số lượng...">
+        <button onclick="runManualTest()">Test</button>
+        <div id="manualResult"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>Automated Tests</h2>
+        <button onclick="runAllTests()">Chạy tất cả tests</button>
+        <div id="testResults"></div>
+        <div id="testSummary"></div>
+    </div>
+
+    <div id="alerts"></div>
+
+    <script>
+        // Mock showAlert function để capture alerts
+        let capturedAlerts = [];
+        function showAlert(type, message) {
+            capturedAlerts.push({ type, message });
+
+            // Hiển thị alert trên UI
+            const alertsContainer = document.getElementById('alerts');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertsContainer.appendChild(alertDiv);
+
+            // Tự động xóa sau 3 giây
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 3000);
+        }
+
+        // Copy hàm validateQuantity từ _cart-scripts.blade.php
+        async function validateQuantity(id, input) {
+            let Number = input.value.trim();
+            if (!/^-?\d+$/.test(Number)) {
+                showAlert('danger', 'Vui lòng nhập số nguyên dương');
+                return null;
+            }
+            if (Number < 0) {
+                showAlert('danger', 'Số lượng món ăn phải lớn hơn hoặc bằng 0');
+                return null;
+            }
+            return Number;
+        }
+
+        // Test cases
+        const testCases = [
+            // Valid cases
+            { input: '1', expected: '1', description: 'Valid positive integer 1' },
+            { input: '5', expected: '5', description: 'Valid positive integer 5' },
+            { input: '10', expected: '10', description: 'Valid positive integer 10' },
+            { input: '0', expected: '0', description: 'Valid zero value' },
+            { input: '  5  ', expected: '5', description: 'Valid number with spaces' },
+
+            // Invalid cases
+            { input: '', expected: null, description: 'Empty string should return null' },
+            { input: 'abc', expected: null, description: 'Non-numeric string should return null' },
+            { input: '2.5', expected: null, description: 'Decimal number should return null' },
+            { input: '-5', expected: null, description: 'Negative number should return null' },
+            { input: '-1', expected: null, description: 'Negative one should return null' },
+            { input: 'không', expected: null, description: 'Vietnamese text should return null' },
+            { input: '5.0', expected: null, description: 'Decimal with .0 should return null' },
+            { input: '+5', expected: null, description: 'Number with plus sign should return null' },
+            { input: '1e5', expected: null, description: 'Scientific notation should return null' },
+            { input: '  ', expected: null, description: 'Only spaces should return null' },
+        ];
+
+        async function runSingleTest(testCase, index) {
+            capturedAlerts = []; // Reset alerts
+
+            // Create mock input element
+            const mockInput = { value: testCase.input };
+
+            // Run the function
+            const result = await validateQuantity('test-id', mockInput);
+
+            // Check result
+            const passed = result === testCase.expected;
+
+            return {
+                passed,
+                testCase,
+                result,
+                alerts: [...capturedAlerts],
+                index: index + 1
+            };
+        }
+
+        async function runAllTests() {
+            const resultsContainer = document.getElementById('testResults');
+            const summaryContainer = document.getElementById('testSummary');
+
+            resultsContainer.innerHTML = '<p>Đang chạy tests...</p>';
+            summaryContainer.innerHTML = '';
+
+            let passedCount = 0;
+            let totalCount = testCases.length;
+            let results = [];
+
+            for (let i = 0; i < testCases.length; i++) {
+                const testResult = await runSingleTest(testCases[i], i);
+                results.push(testResult);
+
+                if (testResult.passed) {
+                    passedCount++;
+                }
+            }
+
+            // Display results
+            resultsContainer.innerHTML = results.map(result => {
+                const alertInfo = result.alerts.length > 0
+                    ? `<br><small>Alerts: ${result.alerts.map(a => `${a.type}: ${a.message}`).join('; ')}</small>`
+                    : '';
+
+                return `
+                    <div class="test-result ${result.passed ? 'pass' : 'fail'}">
+                        <strong>Test ${result.index}:</strong> ${result.testCase.description}<br>
+                        <strong>Input:</strong> "${result.testCase.input}" 
+                        <strong>Expected:</strong> ${result.testCase.expected} 
+                        <strong>Got:</strong> ${result.result}
+                        ${alertInfo}
+                    </div>
+                `;
+            }).join('');
+
+            // Display summary
+            const summaryClass = passedCount === totalCount ? 'pass' : 'fail';
+            summaryContainer.innerHTML = `
+                <div class="summary ${summaryClass}">
+                    Test Summary: ${passedCount}/${totalCount} tests passed
+                    ${passedCount === totalCount ? '🎉 All tests passed!' : '❌ Some tests failed'}
+                </div>
+            `;
+        }
+
+        async function runManualTest() {
+            const input = document.getElementById('testInput');
+            const resultContainer = document.getElementById('manualResult');
+
+            capturedAlerts = [];
+            const result = await validateQuantity('manual-test', input);
+
+            const alertInfo = capturedAlerts.length > 0
+                ? `<br><strong>Alerts:</strong> ${capturedAlerts.map(a => `${a.type}: ${a.message}`).join('; ')}`
+                : '';
+
+            resultContainer.innerHTML = `
+                <div class="test-result ${result !== null ? 'pass' : 'fail'}">
+                    <strong>Input:</strong> "${input.value}"<br>
+                    <strong>Result:</strong> ${result}
+                    ${alertInfo}
+                </div>
+            `;
+        }
+
+        // Auto run tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded. Ready to run tests.');
+        });
+    </script>
+</body>
+
+</html>

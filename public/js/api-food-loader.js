@@ -113,8 +113,10 @@ function renderFoods(foods) {
         </div>
     `).join('');
 
-    // Re-attach cart button event listeners
-    attachCartButtonListeners();
+    // Re-attach cart button event listeners for newly rendered foods
+    if (typeof window.attachAddToCartListeners === 'function') {
+        window.attachAddToCartListeners();
+    }
 }
 
 // Render restaurants list

@@ -88,6 +88,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'getCheckoutInfo']);
     Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher']);
     Route::post('/checkout/create-order', [CheckoutController::class, 'createOrder']);
+    Route::post('/checkout/process-payment/{orderId}', [CheckoutController::class, 'processPayment']);
     
     // Orders - RESTful API
     Route::get('/orders', [OrderController::class, 'index']); // Danh sách đơn hàng
@@ -110,4 +111,9 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
     Route::delete('/profile', [ProfileController::class, 'destroy']);
+});
+
+// Routes for Web (without v1 prefix) - for web interface with web session
+Route::middleware('web')->group(function () {
+    Route::post('/checkout/process-payment/{orderId}', [CheckoutController::class, 'processPayment']);
 });

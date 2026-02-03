@@ -312,10 +312,19 @@ class CheckoutController extends Controller
     public function processPayment(Request $request, $orderId)
     {
         $request->validate([
-            'success' => 'required|boolean'
+            'payment_method' => 'required|in:MoMo,ZaloPay,VNPay,ShopeePay,COD',
+            'simulate_success' => 'nullable|boolean'
         ]);
 
-        $user = Auth::user();
+        // Hỗ trợ cả Sanctum (API) và Session (Web)
+        $user = Auth::guard('sanctum')->user() ?? Auth::user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng đăng nhập'
+            ], 401);
+        }
 
         $donHang = DonHang::with('thanhToan')
             ->where('MaDonHang', $orderId)
@@ -329,41 +338,61 @@ class CheckoutController extends Controller
             ], 404);
         }
 
-        $simulateSuccess = $request->boolean('success');
+        $paymentMethod = $request->input('payment_method');
+        $simulateSuccess = $request->boolean('simulate_success', true);
 
         try {
             DB::beginTransaction();
 
+            // Cập nhật thanh toán
             $thanhToan = $donHang->thanhToan;
             if ($thanhToan) {
-                $thanhToan->TrangThai = $simulateSuccess ? 'Đã thanh toán' : 'Thất bại';
-                $thanhToan->save();
+                $thanhToan->update([
+                    'PhuongThuc' => $paymentMethod,
+                    'TrangThai' => $simulateSuccess ? 'Đã thanh toán' : 'Thất bại'
+                ]);
+            } else {
+                // Tạo mới nếu chưa có
+                $thanhToan = ThanhToan::create([
+                    'MaDonHang'  => $donHang->MaDonHang,
+                    'PhuongThuc' => $paymentMethod,
+                    'SoTien'     => $donHang->TongTien,
+                    'TrangThai'  => $simulateSuccess ? 'Đã thanh toán' : 'Thất bại'
+                ]);
             }
 
-            if ($simulateSuccess) {
-                $donHang->TrangThai = 'Đã thanh toán';
-                $donHang->save();
-            }
+            // Cập nhật đơn hàng
+            $donHang->update([
+                'PhuongThucThanhToan' => $paymentMethod,
+                'TrangThai' => $simulateSuccess ? 'Đã thanh toán' : $donHang->TrangThai
+            ]);
 
             DB::commit();
 
-            return response()->json([
-                'success' => $simulateSuccess,
-                'message' => $simulateSuccess ? 'Thanh toán thành công' : 'Thanh toán thất bại',
-                'data' => [
-                    'order_id' => $donHang->MaDonHang,
-                    'payment_status' => $thanhToan?->TrangThai,
-                    'order_status' => $donHang->TrangThai
-                ]
-            ]);
+            if ($simulateSuccess) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Thanh toán thành công!',
+                    'data' => [
+                        'order_id' => $donHang->MaDonHang,
+                        'payment_method' => $paymentMethod,
+                        'total_amount' => $donHang->TongTien,
+                        'redirect_url' => route('checkout.payment-confirmation', $donHang->MaDonHang)
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thanh toán thất bại. Vui lòng thử lại.'
+                ], 400);
+            }
 
         } catch (\Throwable $e) {
             DB::rollBack();
             
             return response()->json([
                 'success' => false,
-                'message' => 'Lỗi xử lý thanh toán',
-                'error' => config('app.debug') ? $e->getMessage() : null
+                'message' => 'Lỗi xử lý thanh toán: ' . $e->getMessage()
             ], 500);
         }
     }

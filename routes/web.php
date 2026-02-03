@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/get-best-voucher', [CheckoutController::class, 'getBestVoucher'])->name('checkout.get-best-voucher');
     Route::get('/checkout/payment/{maDonHang}', [CheckoutController::class, 'payment'])->name('checkout.payment');
     Route::post('/checkout/process-payment/{maDonHang}', [CheckoutController::class, 'processPayment'])->name('checkout.process-payment');
+    Route::get('/checkout/payment-confirmation/{maDonHang}', [CheckoutController::class, 'paymentConfirmation'])->name('checkout.payment-confirmation');
     Route::get('/checkout/success/{maDonHang}', [CheckoutController::class, 'success'])->name('checkout.success');
 
     // Order History Routes

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('MaNguoiDung');
             $table->unsignedInteger('MaGiamGia')->nullable();
             $table->decimal('TongTien', 18, 2)->unsigned();
-            $table->enum('PhuongThucThanhToan', ['COD', 'Online'])->default('COD');
+            $table->enum('PhuongThucThanhToan', ['COD', 'MoMo', 'ZaloPay', 'VNPay', 'ShopeePay', 'Online'])->default('COD');
             $table->enum('TrangThai', [
                 'Chờ xử lý', 
                 'Đã thanh toán', 

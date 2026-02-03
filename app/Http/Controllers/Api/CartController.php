@@ -106,36 +106,45 @@ class CartController extends Controller
     // PUT /api/v1/cart/{id}
     public function update(Request $request, $id)
     {
+        // Validate input
         $request->validate([
-            'SoLuong' => 'required|integer|min:0'
+            'SoLuong' => 'required|integer|min:1|max:100'
+        ], [
+            'SoLuong.required' => 'Số lượng là bắt buộc',
+            'SoLuong.integer' => 'Số lượng phải là số nguyên',
+            'SoLuong.min' => 'Số lượng không hợp lệ (7E.2)',
+            'SoLuong.max' => 'Số lượng vượt quá giới hạn (7E.3)',
         ]);
 
         $cart = $this->resolveCart();
+        
+        // Find cart item
         $cartItem = GioHangChiTiet::where('MaChiTiet', $id)
             ->where('MaGioHang', $cart->MaGioHang)
-            ->firstOrFail();
+            ->first();
 
-        if ($request->SoLuong == 0) {
-            $cartItem->delete();
-        } else {
-            $cartItem->SoLuong = $request->SoLuong;
-            $cartItem->save();
+        if (!$cartItem) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Món ăn không có trong giỏ hàng (7E.1)'
+            ], 404);
         }
 
-        // Reload cart
-        $items = $cart->chiTiet()->with('monAn.nhaHang')->get();
-        $total = $items->sum(function ($item) {
-            return $item->monAn->Gia * $item->SoLuong;
-        });
+        // Check if food is still available
+        $monAn = MonAn::find($cartItem->MaMonAn);
+        if (!$monAn || $monAn->TrangThai !== 'Còn bán') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Món ăn đã hết hàng (7E.4)'
+            ], 422);
+        }
+
+        $cartItem->SoLuong = $request->SoLuong;
+        $cartItem->save();
 
         return response()->json([
             'success' => true,
-            'message' => $request->SoLuong == 0 ? 'Đã xóa món khỏi giỏ hàng!' : 'Đã cập nhật số lượng!',
-            'data' => [
-                'items' => $items,
-                'total' => $total,
-                'count' => $items->count()
-            ]
+            'message' => 'Cập nhật số lượng thành công!'
         ]);
     }
 

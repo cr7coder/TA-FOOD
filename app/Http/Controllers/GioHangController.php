@@ -85,7 +85,13 @@ class GioHangController extends Controller
 
     public function update(Request $request, $maMonAn)
     {
-        $request->validate(['SoLuong' => 'required|integer|min:0']);
+        // Validate input
+        $request->validate(['SoLuong' => 'required|integer|min:1|max:100'], [
+            'SoLuong.required' => 'Số lượng là bắt buộc',
+            'SoLuong.integer' => 'Số lượng phải là số nguyên',
+            'SoLuong.min' => 'Số lượng không hợp lệ (7E.2)',
+            'SoLuong.max' => 'Số lượng vượt quá giới hạn (7E.3)',
+        ]);
 
         $gioHang = $this->resolveCart();
 
@@ -94,17 +100,28 @@ class GioHangController extends Controller
             ->first();
 
         if (!$ct) {
-            return $this->formatCartResponse($gioHang);
+            return response()->json([
+                'success' => false,
+                'message' => 'Món ăn không có trong giỏ hàng (7E.1)'
+            ], 404);
         }
 
-        if ($request->SoLuong == 0) {
-            $ct->delete();
-        } else {
-            $ct->SoLuong = $request->SoLuong;
-            $ct->save();
+        // Check if food is still available
+        $monAn = MonAn::find($maMonAn);
+        if (!$monAn || $monAn->TrangThai !== 'Còn bán') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Món ăn đã hết hàng (7E.4)'
+            ], 422);
         }
 
-        return $this->formatCartResponse($gioHang);
+        $ct->SoLuong = $request->SoLuong;
+        $ct->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật số lượng thành công!'
+        ]);
     }
 
     public function destroy($maMonAn)

@@ -334,7 +334,7 @@ class MonAnController extends Controller
      */
     public function detail($id)
     {
-        $food = MonAn::with(['nhaHang', 'binhLuans.user'])
+        $food = MonAn::with(['nhaHang', 'binhLuans.nguoiDung'])
             ->findOrFail($id);
 
         // Lấy món ăn liên quan (cùng danh mục)

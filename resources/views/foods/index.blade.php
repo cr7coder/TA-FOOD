@@ -1058,6 +1058,31 @@
         document.head.appendChild(style);
     </script>
     
+    <script>
+        // Dropdown click outside to close
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+
+            if (dropdownToggle && dropdownMenu) {
+                // Toggle dropdown on click
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (dropdown && !dropdown.contains(e.target)) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+        });
+    </script>
+
     <!-- Load foods from RESTful API -->
     <script src="{{ asset('js/api-food-loader.js') }}"></script>
     

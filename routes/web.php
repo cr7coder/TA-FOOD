@@ -45,13 +45,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout/payment-confirmation/{maDonHang}', [CheckoutController::class, 'paymentConfirmation'])->name('checkout.payment-confirmation');
     Route::get('/checkout/success/{maDonHang}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-    // Order History Routes
-    Route::get('/orders/history', [OrderHistoryController::class, 'index'])->name('orders.history');
-    Route::get('/orders/{id}', [OrderHistoryController::class, 'show'])->name('orders.show');
+    // Order History Routes - Using RESTful API
+    Route::get('/orders/history', function() {
+        return view('orders.api-history');
+    })->name('orders.history');
+    Route::get('/orders/{id}', function($id) {
+        return view('orders.api-detail', ['orderId' => $id]);
+    })->name('orders.show');
 
-    // Review Routes
-    Route::get('/reviews/create/{donHang}/{monAn}', [ReviewController::class, 'create'])->name('reviews.create');
-    Route::post('/reviews/{donHang}/{monAn}', [ReviewController::class, 'store'])->name('reviews.store');
+    // Review Routes - Using RESTful API
+    Route::get('/reviews/create/{donHang}/{monAn}', function($donHang, $monAn) {
+        return view('reviews.api-create', ['orderId' => $donHang, 'foodId' => $monAn]);
+    })->name('reviews.create');
 
     // Profile Routes - Using RESTful API
     Route::get('/profile', function() {

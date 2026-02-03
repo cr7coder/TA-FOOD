@@ -1,6 +1,47 @@
 @extends('foods.master')
 
 @section('content')
+    <!-- Floating Cart Button -->
+    <div id="floatingCart" class="floating-cart">
+        <div class="cart-icon">
+            <i class="fa fa-shopping-cart"></i>
+            <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </div>
+
+    <!-- Cart Popup Modal -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-modal-content">
+            <div class="cart-header">
+                <h3><i class="fa fa-shopping-cart"></i> Giỏ hàng của bạn</h3>
+                <span class="close-cart" id="closeCart">&times;</span>
+            </div>
+            <div class="cart-body" id="cartBody">
+                <div class="empty-cart" id="emptyCart">
+                    <i class="fa fa-shopping-cart fa-3x text-muted"></i>
+                    <p>Giỏ hàng trống</p>
+                    <small>Hãy thêm món ăn vào giỏ hàng!</small>
+                </div>
+                <div class="cart-items" id="cartItems" style="display: none;">
+                    <!-- Cart items sẽ được load bằng JavaScript -->
+                </div>
+            </div>
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <div class="cart-total">
+                    <strong>Tổng cộng: <span id="cartTotal">0</span> đ</strong>
+                </div>
+                <div class="cart-actions">
+                    <button class="btn btn-outline-secondary" onclick="clearCart()">
+                        <i class="fa fa-trash"></i> Xóa tất cả
+                    </button>
+                    <button class="btn btn-warning" onclick="goToCheckout()">
+                        <i class="fa fa-credit-card"></i> Thanh toán
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show position-fixed"
             style="top: 20px; right: 20px; z-index: 9999; max-width: 400px;" role="alert">
@@ -474,7 +515,291 @@
             margin-right: 10px;
             text-align: center;
         }
+
+        /* Floating Cart Styles */
+        .floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cart-icon {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 4px 25px rgba(255, 107, 53, 0.8);
+            }
+
+            100% {
+                box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+            }
+        }
+
+        /* Cart Modal Styles */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .cart-modal-content {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+            max-height: calc(100vh - 40px);
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .cart-header {
+            flex: 0 0 auto;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-cart {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-cart:hover {
+            transform: scale(1.2);
+        }
+
+        .cart-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-cart i {
+            margin-bottom: 15px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #e9ecef;
+        }
+
+        .quantity {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .remove-item {
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .remove-item:hover {
+            color: #c82333;
+        }
+
+        .cart-footer {
+            flex: 0 0 auto;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .cart-total {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cart-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        @media (max-width: 768px) {
+            .cart-modal-content {
+                width: 95%;
+                right: 2.5%;
+                left: auto;
+                top: 20px;
+                max-height: calc(100vh - 40px);
+            }
+        }
     </style>
+
+    <script>
+        // Dropdown click outside to close
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+
+            if (dropdownToggle && dropdownMenu) {
+                // Toggle dropdown on click
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (dropdown && !dropdown.contains(e.target)) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+        });
+    </script>
 
     <!-- Load food detail from RESTful API -->
     <script src="{{ asset('js/api-food-detail.js') }}"></script>

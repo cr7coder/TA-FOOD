@@ -45,6 +45,7 @@ class LoginTest extends TestCase
     /** @test 1E.3 - Mật khẩu không được bỏ trống */
     public function test_1e3_password_empty_returns_error()
     {
+        /** @var User $user */
         $user = User::factory()->create(['TenDangNhap' => 'testuser']);
 
         $response = $this->postJson('/login', [
@@ -64,6 +65,7 @@ class LoginTest extends TestCase
     /** @test 1E.4 - Mật khẩu không đúng */
     public function test_1e4_password_incorrect_returns_error()
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'TenDangNhap' => 'testuser',
             'MatKhau' => bcrypt('correctpassword')
@@ -117,6 +119,7 @@ class LoginTest extends TestCase
     /** @test 1S.1 - Đăng nhập thành công với username */
     public function test_1s1_login_success_with_username_returns_success_message()
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'TenDangNhap' => 'testuser',
             'HoTen' => 'Test User',
@@ -148,6 +151,7 @@ class LoginTest extends TestCase
     /** @test 1S.2 - Đăng nhập thành công với email */
     public function test_1s2_login_success_with_email_returns_success_message()
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'TenDangNhap' => 'testuser',
             'HoTen' => 'Test User',
@@ -185,6 +189,7 @@ class LoginTest extends TestCase
     /** @test 1S.3 - Đăng nhập với remember me */
     public function test_1s3_login_with_remember_me()
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'TenDangNhap' => 'testuser',
             'HoTen' => 'Test User',
@@ -211,6 +216,7 @@ class LoginTest extends TestCase
     /** @test 1S.4 - Redirect về trang chủ khi đã đăng nhập và truy cập login form */
     public function test_1s4_redirect_to_home_when_already_logged_in()
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'VaiTro' => 'KhachHang'
         ]);

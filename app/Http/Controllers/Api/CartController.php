@@ -27,7 +27,7 @@ class CartController extends Controller
         }
         
         $sessionId = session()->getId();
-        \Log::info('Cart Session ID: ' . $sessionId); // DEBUG
+        Log::info('Cart Session ID: ' . $sessionId); // DEBUG
         return GioHang::firstOrCreate(['session_id' => $sessionId]);
     }
 

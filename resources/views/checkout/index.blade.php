@@ -245,10 +245,8 @@
                                             <i class="fa fa-gift text-warning"></i> Mã giảm giá khả dụng
                                         </label>
                                         <button type="button" class="btn btn-sm btn-outline-primary"
-                                            data-bs-toggle="collapse" data-bs-target="#vouchersCollapse"
-                                            aria-expanded="{{ isset($bestVoucherApplied) && $bestVoucherApplied ? 'false' : 'true' }}"
                                             id="toggleVouchersBtn">
-                                            <i class="fa fa-chevron-down" id="toggleIcon"></i>
+                                            <i class="fa {{ isset($bestVoucherApplied) && $bestVoucherApplied ? 'fa-chevron-down' : 'fa-chevron-up' }}" id="toggleIcon"></i>
                                             <span
                                                 id="toggleText">{{ isset($bestVoucherApplied) && $bestVoucherApplied ? 'Hiển thị' : 'Thu gọn' }}</span>
                                         </button>
@@ -745,6 +743,12 @@
                 };
                 updatePricing(autoVoucherData);
                 appliedVoucher = autoVoucherData;
+                
+                // Mark the auto-applied voucher card as selected
+                const autoVoucherCard = document.querySelector(`.voucher-card[data-code="{{ $bestVoucherApplied["code"] }}"]`);
+                if (autoVoucherCard) {
+                    autoVoucherCard.classList.add('selected');
+                }
             @endif
         });
 
@@ -780,17 +784,26 @@
             const toggleText = document.getElementById('toggleText');
             const vouchersCollapse = document.getElementById('vouchersCollapse');
 
-            if (toggleBtn && vouchersCollapse) {
-                vouchersCollapse.addEventListener('shown.bs.collapse', function () {
-                    toggleIcon.className = 'fa fa-chevron-up';
-                    toggleText.textContent = 'Thu gọn';
-                });
+            if (!toggleBtn || !vouchersCollapse) return;
 
-                vouchersCollapse.addEventListener('hidden.bs.collapse', function () {
+            // Manual toggle on button click
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const isShown = vouchersCollapse.classList.contains('show');
+                
+                if (isShown) {
+                    // Hide vouchers
+                    vouchersCollapse.classList.remove('show');
                     toggleIcon.className = 'fa fa-chevron-down';
                     toggleText.textContent = 'Hiển thị';
-                });
-            }
+                } else {
+                    // Show vouchers
+                    vouchersCollapse.classList.add('show');
+                    toggleIcon.className = 'fa fa-chevron-up';
+                    toggleText.textContent = 'Thu gọn';
+                }
+            });
         }
 
         function setupRemoveVoucher() {
@@ -806,8 +819,13 @@
 
                     // Show voucher list if hidden
                     const vouchersCollapse = document.getElementById('vouchersCollapse');
+                    const toggleIcon = document.getElementById('toggleIcon');
+                    const toggleText = document.getElementById('toggleText');
+                    
                     if (vouchersCollapse && !vouchersCollapse.classList.contains('show')) {
-                        new bootstrap.Collapse(vouchersCollapse, { show: true });
+                        vouchersCollapse.classList.add('show');
+                        if (toggleIcon) toggleIcon.className = 'fa fa-chevron-up';
+                        if (toggleText) toggleText.textContent = 'Thu gọn';
                     }
                 });
             }
@@ -816,8 +834,36 @@
                 removeManualBtn.addEventListener('click', function () {
                     clearVoucherSelection();
                     hideManualAppliedVoucher();
-                    resetPricing();
-                    showVoucherMessage('Đã bỏ mã giảm giá', 'info');
+                    
+                    // Check if there's an auto-applied voucher to restore
+                    @if(isset($bestVoucherApplied) && $bestVoucherApplied)
+                        const autoSection = document.getElementById('autoAppliedVoucherSection');
+                        if (autoSection) {
+                            autoSection.style.display = 'block';
+                            
+                            // Restore auto voucher data
+                            const autoVoucherData = {
+                                code: '{{ $bestVoucherApplied["code"] }}',
+                                discount: '{{ $bestVoucherApplied["discount"] }}',
+                                total: '{{ $bestVoucherApplied["total"] }}',
+                                discount_value: {{ $bestVoucherApplied["discount_value"] }},
+                                total_value: {{ $bestVoucherApplied["total_value"] }}
+                            };
+                            updatePricing(autoVoucherData);
+                            appliedVoucher = autoVoucherData;
+                            
+                            // Mark card as selected
+                            const autoVoucherCard = document.querySelector(`.voucher-card[data-code="{{ $bestVoucherApplied["code"] }}"]`);
+                            if (autoVoucherCard) {
+                                autoVoucherCard.classList.add('selected');
+                            }
+                            
+                            showVoucherMessage('Đã khôi phục mã giảm giá tự động', 'info');
+                        }
+                    @else
+                        resetPricing();
+                        showVoucherMessage('Đã bỏ mã giảm giá', 'info');
+                    @endif
                 });
             }
         }
@@ -882,8 +928,24 @@
                     if (data.success) {
                         showVoucherMessage(data.message, 'success');
                         updatePricing(data.voucher);
+                        
+                        // Hide auto-applied section when applying new voucher manually
+                        hideAutoAppliedVoucher();
+                        
+                        // Show manual applied section
                         showAppliedVoucher(data.voucher);
                         appliedVoucher = data.voucher;
+                        
+                        // Auto collapse voucher list after applying
+                        const vouchersCollapse = document.getElementById('vouchersCollapse');
+                        const toggleIcon = document.getElementById('toggleIcon');
+                        const toggleText = document.getElementById('toggleText');
+                        
+                        if (vouchersCollapse && vouchersCollapse.classList.contains('show')) {
+                            vouchersCollapse.classList.remove('show');
+                            if (toggleIcon) toggleIcon.className = 'fa fa-chevron-down';
+                            if (toggleText) toggleText.textContent = 'Hiển thị';
+                        }
                     } else {
                         showVoucherMessage(data.message, 'danger');
                         clearVoucherSelection();

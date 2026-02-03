@@ -396,4 +396,11 @@ class CheckoutController extends Controller
         $donHang = DonHang::with(['chiTiet.monAn', 'thanhToan', 'giamGia'])->findOrFail($maDonHang);
         return view('checkout.success', compact('donHang'));
     }
+
+    // Trang xác nhận thanh toán (COD và Online)
+    public function paymentConfirmation($maDonHang)
+    {
+        $donHang = DonHang::with(['chiTiet.monAn', 'thanhToan', 'giamGia'])->findOrFail($maDonHang);
+        return view('checkout.payment-cod', compact('donHang'));
+    }
 }

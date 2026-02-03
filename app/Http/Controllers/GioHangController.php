@@ -118,10 +118,7 @@ class GioHangController extends Controller
         $ct->SoLuong = $request->SoLuong;
         $ct->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Cập nhật số lượng thành công!'
-        ]);
+        return $this->formatCartResponse($gioHang);
     }
 
     public function destroy($maMonAn)

@@ -12,7 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE thanh_toan MODIFY COLUMN PhuongThuc ENUM('COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay', 'ShopeePay', 'VISA', 'Mastercard', 'ATM') DEFAULT 'COD'");
+        // Skip for SQLite (testing)
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE thanh_toan MODIFY COLUMN PhuongThuc ENUM('COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay', 'ShopeePay', 'VISA', 'Mastercard', 'ATM') DEFAULT 'COD'");
+        }
     }
 
     /**
@@ -20,6 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE thanh_toan MODIFY COLUMN PhuongThuc ENUM('COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay') DEFAULT 'COD'");
+        // Skip for SQLite (testing)
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE thanh_toan MODIFY COLUMN PhuongThuc ENUM('COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay') DEFAULT 'COD'");
+        }
     }
 };

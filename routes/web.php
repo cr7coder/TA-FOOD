@@ -53,9 +53,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/reviews/create/{donHang}/{monAn}', [ReviewController::class, 'create'])->name('reviews.create');
     Route::post('/reviews/{donHang}/{monAn}', [ReviewController::class, 'store'])->name('reviews.store');
 
-    // Profile Routes
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    // Profile Routes - Using RESTful API
+    Route::get('/profile', function() {
+        return view('profile.api-index');
+    })->name('profile.index');
+    Route::get('/profile/edit', function() {
+        return view('profile.api-edit');
+    })->name('profile.edit');
 });

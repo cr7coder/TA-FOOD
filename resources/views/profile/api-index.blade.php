@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Thông tin cá nhân - TA-FOOD</title>
     <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,7 +27,6 @@
             padding-bottom: 40px;
         }
 
-        /* Header with back button */
         .header-container {
             background-color: white;
             padding: 16px 166px;
@@ -53,7 +53,6 @@
             height: 20px;
         }
 
-        /* Main profile card */
         .profile-container {
             max-width: 864px;
             margin: 40px auto;
@@ -63,7 +62,6 @@
             box-shadow: 0px 4px 6px -1px rgba(0,0,0,0.1), 0px 2px 4px -2px rgba(0,0,0,0.1);
         }
 
-        /* Header section with gradient */
         .profile-header {
             background: linear-gradient(to right, #ff6900, #f54900);
             padding: 48px 32px;
@@ -135,7 +133,6 @@
             height: 16px;
         }
 
-        /* Profile body section */
         .profile-body {
             padding: 32px;
         }
@@ -195,7 +192,50 @@
             text-decoration: underline;
         }
 
-        /* Responsive */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: #ff6900;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 48px 32px;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            color: #dc3545;
+            margin-bottom: 16px;
+        }
+
+        .error-message {
+            font-size: 18px;
+            color: #4a5565;
+            margin-bottom: 24px;
+        }
+
+        .retry-button {
+            background-color: #ff6900;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .retry-button:hover {
+            background-color: #f54900;
+        }
+
         @media (max-width: 992px) {
             .header-container {
                 padding: 16px 24px;
@@ -245,9 +285,8 @@
 </head>
 <body>
     <div class="page-container">
-        <!-- Header with back button -->
         <div class="header-container">
-            <a href="{{ url()->previous() }}" class="back-button">
+            <a href="{{ route('foods.index') }}" class="back-button">
                 <svg class="back-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -255,18 +294,28 @@
             </a>
         </div>
 
-        <!-- Profile Card -->
-        <div class="profile-container">
-            <!-- Profile Header with Gradient -->
+        <div id="loadingSpinner" class="loading-spinner">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+
+        <div id="errorContainer" class="error-container" style="display: none;">
+            <i class="fas fa-exclamation-triangle error-icon"></i>
+            <div class="error-message" id="errorMessage"></div>
+            <button class="retry-button" onclick="loadProfile()">
+                <i class="fas fa-redo me-2"></i>Thử lại
+            </button>
+        </div>
+
+        <div id="profileContainer" class="profile-container" style="display: none;">
             <div class="profile-header">
                 <div class="profile-header-content">
                     <div class="profile-info">
-                        <div class="avatar-circle">
-                            {{ substr($user->TenDangNhap, 0, 1) }}
-                        </div>
+                        <div class="avatar-circle" id="avatarInitial"></div>
                         <div class="user-details">
-                            <h1>{{ $user->TenDangNhap }}</h1>
-                            <p>{{ $user->Email }}</p>
+                            <h1 id="userName"></h1>
+                            <p id="userEmail"></p>
                         </div>
                     </div>
                     <a href="{{ route('profile.edit') }}" class="edit-button">
@@ -278,37 +327,30 @@
                 </div>
             </div>
 
-            <!-- Profile Body -->
             <div class="profile-body">
                 <h2 class="section-title">Thông tin cá nhân</h2>
 
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+                <div id="successAlert" class="alert alert-success alert-dismissible fade" role="alert" style="display: none;">
+                    <span id="successMessage"></span>
+                    <button type="button" class="btn-close" onclick="closeAlert('successAlert')"></button>
+                </div>
 
                 <div class="info-grid">
-                    <!-- Row 1: Full Name and Username -->
                     <div class="info-row two-columns">
                         <div class="info-field">
                             <label class="info-label">Họ và tên</label>
-                            <div class="info-value">{{ $user->HoTen ?? 'Chưa cập nhật' }}</div>
+                            <div class="info-value" id="fullName">Chưa cập nhật</div>
                         </div>
                         <div class="info-field">
                             <label class="info-label">Tên đăng nhập</label>
-                            <div class="info-value">{{ $user->TenDangNhap }}</div>
+                            <div class="info-value" id="username"></div>
                         </div>
                     </div>
 
-                    <!-- Row 2: Email and Password -->
                     <div class="info-row two-columns">
                         <div class="info-field">
                             <label class="info-label">Email</label>
-                            <div class="info-value">
-                                <a href="mailto:{{ $user->Email }}">{{ $user->Email }}</a>
-                            </div>
+                            <div class="info-value" id="email"></div>
                         </div>
                         <div class="info-field">
                             <label class="info-label">Mật khẩu</label>
@@ -316,19 +358,17 @@
                         </div>
                     </div>
 
-                    <!-- Row 3: Phone Number -->
                     <div class="info-row">
                         <div class="info-field">
                             <label class="info-label">Số điện thoại</label>
-                            <div class="info-value">{{ $user->SoDienThoai ?? 'Chưa cập nhật' }}</div>
+                            <div class="info-value" id="phone">Chưa cập nhật</div>
                         </div>
                     </div>
 
-                    <!-- Row 4: Address -->
                     <div class="info-row">
                         <div class="info-field">
                             <label class="info-label">Địa chỉ</label>
-                            <div class="info-value">{{ $user->DiaChi ?? 'Chưa cập nhật' }}</div>
+                            <div class="info-value" id="address">Chưa cập nhật</div>
                         </div>
                     </div>
                 </div>
@@ -337,5 +377,103 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load profile data from API
+        async function loadProfile() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorContainer = document.getElementById('errorContainer');
+            const profileContainer = document.getElementById('profileContainer');
+
+            // Show loading
+            loadingSpinner.style.display = 'flex';
+            errorContainer.style.display = 'none';
+            profileContainer.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/v1/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    const data = result.data;
+
+                    // Update avatar initial
+                    document.getElementById('avatarInitial').textContent = data.TenDangNhap ? data.TenDangNhap.charAt(0).toUpperCase() : '?';
+                    
+                    // Update header
+                    document.getElementById('userName').textContent = data.TenDangNhap || 'N/A';
+                    document.getElementById('userEmail').textContent = data.Email || 'N/A';
+
+                    // Update profile fields
+                    document.getElementById('fullName').textContent = data.HoTen || 'Chưa cập nhật';
+                    document.getElementById('username').textContent = data.TenDangNhap || 'N/A';
+                    
+                    const emailElement = document.getElementById('email');
+                    if (data.Email) {
+                        emailElement.innerHTML = `<a href="mailto:${data.Email}">${data.Email}</a>`;
+                    } else {
+                        emailElement.textContent = 'Chưa cập nhật';
+                    }
+                    
+                    document.getElementById('phone').textContent = data.SoDienThoai || 'Chưa cập nhật';
+                    document.getElementById('address').textContent = data.DiaChi || 'Chưa cập nhật';
+
+                    // Show success message if exists
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const successMsg = urlParams.get('success');
+                    if (successMsg) {
+                        showSuccess(successMsg);
+                        // Remove query parameter from URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+
+                    // Show profile
+                    loadingSpinner.style.display = 'none';
+                    profileContainer.style.display = 'block';
+
+                } else {
+                    throw new Error(result.message || 'Không thể tải thông tin người dùng');
+                }
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                loadingSpinner.style.display = 'none';
+                errorContainer.style.display = 'block';
+                document.getElementById('errorMessage').textContent = error.message || 'Đã xảy ra lỗi khi tải thông tin';
+            }
+        }
+
+        function showSuccess(message) {
+            const alert = document.getElementById('successAlert');
+            const messageElement = document.getElementById('successMessage');
+            messageElement.textContent = message;
+            alert.style.display = 'block';
+            alert.classList.add('show');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                closeAlert('successAlert');
+            }, 5000);
+        }
+
+        function closeAlert(alertId) {
+            const alert = document.getElementById(alertId);
+            alert.classList.remove('show');
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 150);
+        }
+
+        // Load profile when page loads
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
 </body>
 </html>

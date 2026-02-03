@@ -116,4 +116,12 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 // Routes for Web (without v1 prefix) - for web interface with web session
 Route::middleware('web')->group(function () {
     Route::post('/checkout/process-payment/{orderId}', [CheckoutController::class, 'processPayment']);
+    
+    // Profile routes for web session authentication
+    Route::prefix('v1')->middleware('auth')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'show']);
+        Route::put('/profile', [ProfileController::class, 'update']);
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
+        Route::delete('/profile', [ProfileController::class, 'destroy']);
+    });
 });

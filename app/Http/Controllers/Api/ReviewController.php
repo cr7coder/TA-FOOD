@@ -88,7 +88,7 @@ class ReviewController extends Controller
             'diem_danh_gia' => $request->rating,
             'noi_dung' => $request->content,
             'da_mua' => true,
-            'trang_thai' => 'Chờ duyệt',
+            'trang_thai' => 'Đã duyệt',
         ];
 
         // Upload hình ảnh nếu có

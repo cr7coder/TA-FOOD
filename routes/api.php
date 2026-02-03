@@ -117,11 +117,20 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 Route::middleware('web')->group(function () {
     Route::post('/checkout/process-payment/{orderId}', [CheckoutController::class, 'processPayment']);
     
-    // Profile routes for web session authentication
+    // Profile, Orders, Reviews routes for web session authentication
     Route::prefix('v1')->middleware('auth')->group(function () {
+        // Profile
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::put('/profile', [ProfileController::class, 'update']);
         Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
         Route::delete('/profile', [ProfileController::class, 'destroy']);
+        
+        // Orders
+        Route::get('/orders', [OrderController::class, 'index']);
+        Route::get('/orders/{id}', [OrderController::class, 'show']);
+        
+        // Reviews
+        Route::post('/reviews', [ReviewController::class, 'store']);
+        Route::get('/reviews/check/{orderId}/{foodId}', [ReviewController::class, 'checkReviewed']);
     });
 });

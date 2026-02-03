@@ -1,6 +1,7 @@
 // API Configuration
 const API_BASE_URL = '/api/v1';
 let currentPage = 1;
+let currentFilters = {};
 let foodsData = [];
 let restaurantsData = [];
 
@@ -8,6 +9,10 @@ let restaurantsData = [];
 async function loadFoods(page = 1, filters = {}) {
     try {
         showLoading();
+        
+        // Store current filters
+        currentFilters = filters;
+        currentPage = page;
         
         // Build query parameters
         const params = new URLSearchParams({
@@ -26,13 +31,12 @@ async function loadFoods(page = 1, filters = {}) {
 
         const result = await response.json();
 
-        if (result.success) {
-            foodsData = result.data.foods.data;
-            restaurantsData = result.data.restaurants;
+        if (response.ok) {
+            // API returns paginated data directly
+            foodsData = result.data;
             
             renderFoods(foodsData);
-            renderRestaurants(restaurantsData);
-            renderPagination(result.data.foods);
+            renderPagination(result);
             
             hideLoading();
         } else {
@@ -159,8 +163,59 @@ function renderRestaurants(restaurants) {
 
 // Render pagination
 function renderPagination(pagination) {
-    // Implement pagination if needed
-    currentPage = pagination.current_page;
+    const paginationContainer = document.querySelector('.pagination-container');
+    if (!paginationContainer || !pagination) return;
+
+    const { current_page, last_page, per_page, total } = pagination;
+    
+    if (last_page <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    let paginationHTML = '<nav><ul class="pagination justify-content-center">';
+    
+    // Previous button
+    if (current_page > 1) {
+        paginationHTML += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadFoods(${current_page - 1}, currentFilters); return false;">
+                    <i class="fa fa-chevron-left"></i>
+                </a>
+            </li>
+        `;
+    }
+    
+    // Page numbers
+    const startPage = Math.max(1, current_page - 2);
+    const endPage = Math.min(last_page, current_page + 2);
+    
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+            <li class="page-item ${i === current_page ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="loadFoods(${i}, currentFilters); return false;">
+                    ${i}
+                </a>
+            </li>
+        `;
+    }
+    
+    // Next button
+    if (current_page < last_page) {
+        paginationHTML += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="loadFoods(${current_page + 1}, currentFilters); return false;">
+                    <i class="fa fa-chevron-right"></i>
+                </a>
+            </li>
+        `;
+    }
+    
+    paginationHTML += '</ul></nav>';
+    paginationHTML += `<p class="text-center text-muted mt-2">Hiển thị ${per_page} trong tổng ${total} món ăn</p>`;
+    
+    paginationContainer.innerHTML = paginationHTML;
+    currentPage = current_page;
 }
 
 // Helper functions
@@ -194,39 +249,44 @@ function formatPrice(price) {
 }
 
 function truncate(text, length) {
+    if (!text) return '';
     if (text.length <= length) return text;
     return text.substring(0, length) + '...';
 }
 
 function showLoading() {
-    const container = document.querySelector('.filters-content .row.grid');
-    if (container) {
-        container.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <div class="spinner-border text-warning" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-3 text-muted">Đang tải món ăn...</p>
-            </div>
-        `;
-    }
+    const spinner = document.getElementById('loadingSpinner');
+    const errorMsg = document.getElementById('errorMessage');
+    const content = document.querySelector('.filters-content');
+    
+    if (spinner) spinner.style.display = 'block';
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (content) content.style.opacity = '0.5';
 }
 
 function hideLoading() {
-    // Loading is replaced by content
+    const spinner = document.getElementById('loadingSpinner');
+    const content = document.querySelector('.filters-content');
+    
+    if (spinner) spinner.style.display = 'none';
+    if (content) content.style.opacity = '1';
 }
 
 function showError(message) {
-    const container = document.querySelector('.filters-content .row.grid');
-    if (container) {
-        container.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <i class="fa fa-exclamation-triangle fa-3x text-danger mb-3"></i>
-                <p class="text-danger">${message}</p>
-                <button class="btn btn-warning mt-3" onclick="loadFoods()">Thử lại</button>
-            </div>
-        `;
-    }
+    const errorMsg = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    const spinner = document.getElementById('loadingSpinner');
+    const content = document.querySelector('.filters-content');
+    
+    if (spinner) spinner.style.display = 'none';
+    if (errorMsg) errorMsg.style.display = 'block';
+    if (errorText) errorText.textContent = message;
+    if (content) content.style.display = 'none';
+}
+
+function attachCartButtonListeners() {
+    // Re-attach event listeners for add to cart buttons
+    // Cart button listeners are handled by _cart-scripts.blade.php
 }
 
 function attachCartButtonListeners() {
@@ -236,7 +296,37 @@ function attachCartButtonListeners() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // DISABLED: API loading - using server-side rendering instead
+    // Search form handler
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    
+    if (searchForm && searchInput) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchTerm = searchInput.value.trim();
+            
+            if (searchTerm) {
+                loadFoods(1, { search: searchTerm });
+            } else {
+                loadFoods(1);
+            }
+            
+            // Scroll to food section
+            const foodSection = document.querySelector('.food_section');
+            if (foodSection) {
+                foodSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+
+        // Clear search on input clear
+        searchInput.addEventListener('input', function() {
+            if (this.value === '') {
+                loadFoods(1);
+            }
+        });
+    }
+
+    // DISABLED: Auto API loading on page load - using server-side rendering instead
     // Only load if we're on the foods index page
     // if (document.querySelector('.food_section')) {
     //     loadFoods();

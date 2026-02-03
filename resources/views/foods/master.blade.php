@@ -13,7 +13,7 @@
         <meta name="user-name" content="{{ Auth::user()->HoTen }}">
         <meta name="user-role" content="{{ Auth::user()->VaiTro }}">
     @endif
-    <title>CabaFood</title>
+    <title>TAFOOD</title>
 
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}" />
@@ -102,13 +102,13 @@
                             <a href=""><i class="fa fa-phone" aria-hidden="true"></i><span>Điện thoại +84
                                     123456789</span></a>
                             <a href=""><i class="fa fa-envelope"
-                                    aria-hidden="true"></i><span>cabafoods@gmail.com</span></a>
+                                    aria-hidden="true"></i><span>tafoods@gmail.com</span></a>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 footer-col">
                     <div class="footer_detail">
-                        <a href="" class="footer-logo">CabaFood</a>
+                        <a href="" class="footer-logo">TAFOOD</a>
                         <p>Trung tâm hỗ trợ</p>
                         <p>Câu hỏi thường gặp</p>
                         <p>Điều khoản và điều kiện</p>
@@ -129,9 +129,9 @@
             </div>
             <div class="footer-info">
                 <p>&copy; <span id="displayYear"></span> All Rights Reserved By <a
-                        href="https://html.design/">CabaFoodTeam9</a><br><br>
+                        href="https://html.design/">TAFOOD</a><br><br>
                     &copy; <span id="displayYear"></span> Distributed By <a href="https://themewagon.com/"
-                        target="_blank">CabaFoodTeam9</a></p>
+                        target="_blank">Nguyễn Tuấn Anh</a></p>
             </div>
         </div>
     </footer>

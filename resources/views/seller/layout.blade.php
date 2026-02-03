@@ -346,7 +346,7 @@
                 </button>
                 <a class="brand" href="#">
                     <i class="fas fa-store"></i> <span>Seller Panel</span>
-                    <span class="badge text-bg-light text-dark ms-1" style="border-radius: 999px;">CabaFood</span>
+                    <span class="badge text-bg-light text-dark ms-1" style="border-radius: 999px;">TAFOOD</span>
                 </a>
             </div>
 

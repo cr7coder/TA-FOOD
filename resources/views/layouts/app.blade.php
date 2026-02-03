@@ -13,7 +13,7 @@
         <meta name="user-name" content="{{ Auth::user()->HoTen }}">
         <meta name="user-role" content="{{ Auth::user()->VaiTro }}">
     @endif
-    <title>@yield('title', 'CabaFood')</title>
+    <title>@yield('title', 'TAFOOD')</title>
 
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}" />
@@ -196,7 +196,7 @@
             <nav class="navbar navbar-expand-lg custom_nav-container">
                 <a class="navbar-brand" href="{{ route('foods.index') }}">
                     <span style="color: white; font-size: 24px; font-weight: bold;">
-                        CabaFood
+                        TAFOOD
                     </span>
                 </a>
 
@@ -300,7 +300,7 @@
                             <a href=""><i class="fa fa-phone" aria-hidden="true"></i><span>Điện thoại +84
                                     123456789</span></a>
                             <a href=""><i class="fa fa-envelope"
-                                    aria-hidden="true"></i><span>cabafoods@gmail.com</span></a>
+                                    aria-hidden="true"></i><span>tafoods@gmail.com</span></a>
                         </div>
                     </div>
                 </div>
@@ -310,7 +310,7 @@
                             <div class="info_detail">
                                 <h4>Giới thiệu</h4>
                                 <p>
-                                    CabaFood - Nền tảng đặt món ăn trực tuyến hàng đầu, mang đến cho bạn những trải
+                                    TAFOOD - Nền tảng đặt món ăn trực tuyến hàng đầu, mang đến cho bạn những trải
                                     nghiệm ẩm thực tuyệt vời.
                                 </p>
                             </div>
@@ -332,7 +332,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="footer_text text-center">
-                        <p>&copy; 2025 CabaFood. All rights reserved.</p>
+                        <p>&copy; 2025 TAFOOD. All rights reserved.</p>
                     </div>
                 </div>
             </div>

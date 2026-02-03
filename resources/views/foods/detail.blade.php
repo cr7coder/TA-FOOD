@@ -85,7 +85,7 @@
             <div class="container">
                 <nav class="navbar navbar-expand-lg custom_nav-container">
                     <a class="navbar-brand" href="/">
-                        <span>CabaFood</span>
+                        <span>TAFOOD</span>
                     </a>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <div class="user_option ml-auto">

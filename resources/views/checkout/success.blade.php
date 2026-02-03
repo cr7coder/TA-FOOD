@@ -12,7 +12,7 @@
             <div class="container">
                 <nav class="navbar navbar-expand-lg custom_nav-container">
                     <a class="navbar-brand" href="{{ route('foods.index') }}">
-                        <span>CabaFood</span>
+                        <span>TAFOOD</span>
                     </a>
                 </nav>
             </div>
@@ -207,7 +207,7 @@
                                     </div>
                                     <div class="timeline-content">
                                         <h6>Giao hàng thành công</h6>
-                                        <p>Cảm ơn bạn đã tin tưởng CabaFood</p>
+                                        <p>Cảm ơn bạn đã tin tưởng TAFOOD</p>
                                     </div>
                                 </div>
                             </div>

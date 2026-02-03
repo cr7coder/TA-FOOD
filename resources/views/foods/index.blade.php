@@ -174,7 +174,7 @@
                 <nav class="navbar navbar-expand-lg custom_nav-container">
                     <a class="navbar-brand" href="index.html">
                         <span>
-                            CabaFood
+                            TAFOOD
                         </span>
                     </a>
 
@@ -608,7 +608,7 @@
                     <div class="detail-box">
                         <div class="heading_container">
                             <h2>
-                                We Are CabaFood
+                                We Are TAFOOD
                             </h2>
                         </div>
                         <p>

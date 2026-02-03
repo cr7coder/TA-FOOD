@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,7 +92,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     // Orders - RESTful API
     Route::get('/orders', [OrderController::class, 'index']); // Danh sách đơn hàng
     Route::get('/orders/{id}', [OrderController::class, 'show']); // Chi tiết đơn hàng
-    Route::post('/orders/{id}/payment', [CheckoutController::class, 'processPayment']);
+    
+    // Payments - RESTful API
+    Route::get('/payments', [PaymentController::class, 'index']); // Danh sách thanh toán
+    Route::get('/payments/{id}', [PaymentController::class, 'show']); // Chi tiết thanh toán
+    Route::post('/payments', [PaymentController::class, 'store']); // Tạo thanh toán mới
+    Route::put('/payments/{id}', [PaymentController::class, 'update']); // Cập nhật trạng thái thanh toán
+    Route::get('/payments/check/{orderId}', [PaymentController::class, 'checkPaymentStatus']); // Kiểm tra trạng thái thanh toán
     
     // Reviews - RESTful API
     Route::get('/reviews', [ReviewController::class, 'index']); // Danh sách đánh giá của user

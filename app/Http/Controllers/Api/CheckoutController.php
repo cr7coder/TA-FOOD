@@ -219,8 +219,7 @@ class CheckoutController extends Controller
                 'MaDonHang' => $donHang->MaDonHang,
                 'PhuongThuc' => $paymentMethod,
                 'SoTien' => $tongTien,
-                'TrangThai' => $paymentMethod === 'COD' ? 'Đã thanh toán' : 'Chờ thanh toán',
-                'NgayThanhToan' => now()
+                'TrangThai' => $paymentMethod === 'COD' ? 'Đã thanh toán' : 'Chờ thanh toán'
             ]);
 
             // 4) Xóa giỏ hàng
@@ -338,7 +337,6 @@ class CheckoutController extends Controller
             $thanhToan = $donHang->thanhToan;
             if ($thanhToan) {
                 $thanhToan->TrangThai = $simulateSuccess ? 'Đã thanh toán' : 'Thất bại';
-                $thanhToan->NgayThanhToan = now();
                 $thanhToan->save();
             }
 

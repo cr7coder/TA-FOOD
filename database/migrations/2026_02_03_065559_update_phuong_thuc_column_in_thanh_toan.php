@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE thanh_toan MODIFY COLUMN PhuongThuc ENUM('COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay', 'ShopeePay') DEFAULT 'COD'");
+        DB::statement("ALTER TABLE thanh_toan MODIFY COLUMN PhuongThuc ENUM('COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay', 'ShopeePay', 'VISA', 'Mastercard', 'ATM') DEFAULT 'COD'");
     }
 
     /**

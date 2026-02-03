@@ -152,7 +152,7 @@ class CheckoutController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:1000',
-            'payment_method' => 'required|in:COD,Online,MoMo,ZaloPay,VNPay',
+            'payment_method' => 'required|in:COD,Online,MoMo,ZaloPay,VNPay,ShopeePay,VISA,Mastercard,ATM',
             'voucher_id' => 'nullable|exists:giam_gia,MaGiamGia',
             'note' => 'nullable|string|max:500'
         ]);
@@ -312,7 +312,7 @@ class CheckoutController extends Controller
     public function processPayment(Request $request, $orderId)
     {
         $request->validate([
-            'payment_method' => 'required|in:MoMo,ZaloPay,VNPay,ShopeePay,COD',
+            'payment_method' => 'required|in:MoMo,ZaloPay,VNPay,ShopeePay,COD,Online,VISA,Mastercard,ATM',
             'simulate_success' => 'nullable|boolean'
         ]);
 

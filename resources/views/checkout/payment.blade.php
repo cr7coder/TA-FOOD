@@ -119,6 +119,88 @@
                     </div>
                 </div>
 
+                <!-- Card Payment Content -->
+                <div class="payment-content" id="cardContent" style="display: none;">
+                    <!-- Card Type Selection -->
+                    <div class="section-wrapper">
+                        <label class="section-label">Loại thẻ<span class="required">*</span></label>
+                        <div class="card-type-grid">
+                            <button class="card-type-btn active" data-cardtype="VISA">VISA</button>
+                            <button class="card-type-btn" data-cardtype="Mastercard">Mastercard</button>
+                            <button class="card-type-btn" data-cardtype="ATM">ATM nội địa</button>
+                        </div>
+                    </div>
+
+                    <!-- Card Number -->
+                    <div class="section-wrapper">
+                        <label class="section-label">Số thẻ<span class="required">*</span></label>
+                        <input type="text" class="payment-input" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+
+                    <!-- Card Holder Name -->
+                    <div class="section-wrapper">
+                        <label class="section-label">Tên chủ thẻ<span class="required">*</span></label>
+                        <input type="text" class="payment-input" id="cardHolder" placeholder="NGUYEN VAN A" style="text-transform: uppercase;">
+                    </div>
+
+                    <!-- Expiry and CVV -->
+                    <div class="card-details-row">
+                        <div class="section-wrapper" style="flex: 1;">
+                            <label class="section-label">Ngày hết hạn<span class="required">*</span></label>
+                            <input type="text" class="payment-input" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="section-wrapper" style="flex: 1;">
+                            <label class="section-label">CVV<span class="required">*</span></label>
+                            <input type="text" class="payment-input" id="cardCVV" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallet Payment Content -->
+                <div class="payment-content" id="walletContent" style="display: none;">
+                    <!-- Wallet Selection -->
+                    <div class="section-wrapper">
+                        <label class="section-label">Chọn ví điện tử<span class="required">*</span></label>
+                        <div class="wallet-selection-grid">
+                            <!-- MoMo -->
+                            <div class="wallet-item active" data-wallet="MoMo">
+                                <div class="wallet-icon" style="background: #F6339A;">M</div>
+                                <div class="wallet-info">
+                                    <div class="wallet-name">MoMo</div>
+                                    <div class="wallet-desc">Ví điện tử MoMo</div>
+                                </div>
+                            </div>
+                            
+                            <!-- ZaloPay -->
+                            <div class="wallet-item" data-wallet="ZaloPay">
+                                <div class="wallet-icon" style="background: #2B7FFF;">Z</div>
+                                <div class="wallet-info">
+                                    <div class="wallet-name">ZaloPay</div>
+                                    <div class="wallet-desc">Ví điện tử ZaloPay</div>
+                                </div>
+                            </div>
+                            
+                            <!-- VNPay -->
+                            <div class="wallet-item" data-wallet="VNPay">
+                                <div class="wallet-icon" style="background: #FB2C36;">V</div>
+                                <div class="wallet-info">
+                                    <div class="wallet-name">VNPay</div>
+                                    <div class="wallet-desc">Ví điện tử VNPay</div>
+                                </div>
+                            </div>
+                            
+                            <!-- ShopeePay -->
+                            <div class="wallet-item" data-wallet="ShopeePay">
+                                <div class="wallet-icon" style="background: #FF6900;">S</div>
+                                <div class="wallet-info">
+                                    <div class="wallet-name">ShopeePay</div>
+                                    <div class="wallet-desc">Ví điện tử ShopeePay</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Security Notice -->
                 <div class="security-notice">
                     <span class="icon">🔒</span>
@@ -492,6 +574,143 @@
             line-height: 1.4;
         }
 
+        /* Card Payment Styles */
+        .card-type-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .card-type-btn {
+            background: white;
+            border: 1.6px solid #E5E7EB;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #101828;
+        }
+
+        .card-type-btn:hover {
+            border-color: #2B7FFF;
+        }
+
+        .card-type-btn.active {
+            background: #EFF6FF;
+            border-color: #2B7FFF;
+            color: #155DFC;
+        }
+
+        .card-type-btn[data-card-type="mastercard"].active {
+            color: #FB2C36;
+        }
+
+        .card-type-btn[data-card-type="atm"].active {
+            color: #00A63E;
+        }
+
+        .payment-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 0.8px solid #D1D5DC;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #0A0A0A;
+            transition: all 0.2s;
+        }
+
+        .payment-input:focus {
+            outline: none;
+            border-color: #2B7FFF;
+        }
+
+        .payment-input::placeholder {
+            color: rgba(10, 10, 10, 0.5);
+        }
+
+        .card-details-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .wallet-selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .wallet-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px;
+            border: 1.6px solid #E5E7EB;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .wallet-item:hover {
+            border-color: #2B7FFF;
+        }
+
+        .wallet-item.active {
+            background: #FDF2F8;
+            border-color: #F6339A;
+        }
+
+        .wallet-item[data-wallet="MoMo"].active {
+            background: #FDF2F8;
+            border-color: #F6339A;
+        }
+
+        .wallet-item[data-wallet="ZaloPay"].active {
+            background: #EFF6FF;
+            border-color: #2B7FFF;
+        }
+
+        .wallet-item[data-wallet="VNPay"].active {
+            background: #FEF2F2;
+            border-color: #FB2C36;
+        }
+
+        .wallet-item[data-wallet="ShopeePay"].active {
+            background: #FFF7ED;
+            border-color: #FF6900;
+        }
+
+        .wallet-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .wallet-info {
+            flex: 1;
+        }
+
+        .wallet-name {
+            font-size: 16px;
+            color: #101828;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .wallet-desc {
+            font-size: 14px;
+            color: #6A7282;
+        }
+
         .action-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -565,6 +784,8 @@
         let countdownTimer;
         let timeLeft = 300; // 5 minutes
         let selectedWallet = 'VNPay';
+        let selectedCardType = 'VISA';
+        let currentPaymentMethod = 'qr'; // qr, card, wallet
         const orderId = parseInt('{{ $donHang->MaDonHang ?? 0 }}');
         const totalAmount = parseFloat('{{ $donHang->TongTien ?? 0 }}');
 
@@ -627,18 +848,29 @@
             });
         });
 
-        // Payment method tabs
+        // Payment method tabs - Show/Hide content
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const method = this.dataset.method;
                 
-                if (method === 'card' || method === 'wallet') {
-                    alert('Tính năng này đang được phát triển. Vui lòng sử dụng QR Code.');
-                    return;
-                }
-                
+                // Update active tab
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
+                
+                // Show/hide content
+                document.getElementById('qrContent').style.display = method === 'qr' ? 'block' : 'none';
+                document.getElementById('cardContent').style.display = method === 'card' ? 'block' : 'none';
+                document.getElementById('walletContent').style.display = method === 'wallet' ? 'block' : 'none';
+                
+                currentPaymentMethod = method;
+                
+                // Start timer for QR if selected
+                if (method === 'qr') {
+                    generateQRCode();
+                    startCountdown();
+                } else {
+                    if (countdownTimer) clearInterval(countdownTimer);
+                }
             });
         });
 
@@ -646,9 +878,62 @@
         document.getElementById('confirmPaymentBtn').addEventListener('click', async function() {
             const btn = this;
             
-            // Confirm with user
-            if (!confirm(`Xác nhận bạn đã thanh toán ${totalAmount.toLocaleString('vi-VN')} đ qua ${selectedWallet}?`)) {
-                return;
+            let paymentData = {
+                simulate_success: true
+            };
+            
+            // Validate based on current payment method
+            if (currentPaymentMethod === 'qr') {
+                // QR payment
+                if (!confirm(`Xác nhận bạn đã thanh toán ${totalAmount.toLocaleString('vi-VN')} đ qua ${selectedWallet}?`)) {
+                    return;
+                }
+                paymentData.payment_method = selectedWallet;
+                
+            } else if (currentPaymentMethod === 'card') {
+                // Card payment
+                const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                const cardHolder = document.getElementById('cardHolder').value;
+                const cardExpiry = document.getElementById('cardExpiry').value;
+                const cardCVV = document.getElementById('cardCVV').value;
+                
+                // Validate card inputs
+                if (!cardNumber || cardNumber.length < 13) {
+                    alert('Vui lòng nhập số thẻ hợp lệ');
+                    return;
+                }
+                if (!cardHolder || cardHolder.trim().length < 3) {
+                    alert('Vui lòng nhập tên chủ thẻ');
+                    return;
+                }
+                if (!cardExpiry || !/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+                    alert('Vui lòng nhập ngày hết hạn (MM/YY)');
+                    return;
+                }
+                if (!cardCVV || cardCVV.length < 3) {
+                    alert('Vui lòng nhập mã CVV');
+                    return;
+                }
+                
+                if (!confirm(`Xác nhận thanh toán ${totalAmount.toLocaleString('vi-VN')} đ bằng thẻ ${selectedCardType}?`)) {
+                    return;
+                }
+                
+                paymentData.payment_method = selectedCardType; // VISA, Mastercard, or ATM
+                paymentData.card_data = {
+                    number: cardNumber,
+                    holder: cardHolder,
+                    expiry: cardExpiry,
+                    cvv: cardCVV,
+                    type: selectedCardType
+                };
+                
+            } else if (currentPaymentMethod === 'wallet') {
+                // Wallet payment
+                if (!confirm(`Xác nhận thanh toán ${totalAmount.toLocaleString('vi-VN')} đ qua ví ${selectedWallet}?`)) {
+                    return;
+                }
+                paymentData.payment_method = selectedWallet;
             }
             
             btn.disabled = true;
@@ -662,10 +947,7 @@
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({
-                        payment_method: selectedWallet,
-                        simulate_success: true
-                    })
+                    body: JSON.stringify(paymentData)
                 });
 
                 const data = await response.json();
@@ -676,20 +958,97 @@
                 } else {
                     alert(data.message || 'Thanh toán thất bại. Vui lòng thử lại.');
                     btn.disabled = false;
-                    btn.textContent = 'Đã thanh toán';
+                    btn.textContent = currentPaymentMethod === 'qr' ? 'Đã thanh toán' : 'Xác nhận thanh toán';
                 }
             } catch (error) {
                 console.error('Payment error:', error);
                 alert('Có lỗi xảy ra. Vui lòng thử lại.');
                 btn.disabled = false;
-                btn.textContent = 'Đã thanh toán';
+                btn.textContent = currentPaymentMethod === 'qr' ? 'Đã thanh toán' : 'Xác nhận thanh toán';
             }
         });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            // Hide card and wallet content initially
+            document.getElementById('cardContent').style.display = 'none';
+            document.getElementById('walletContent').style.display = 'none';
+            
+            // QR payment initialization
             generateQRCode();
             startCountdown();
+            
+            // Card type selection
+            document.querySelectorAll('.card-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.card-type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedCardType = this.dataset.cardtype;
+                });
+            });
+            
+            // Card number formatting (XXXX XXXX XXXX XXXX)
+            const cardNumberInput = document.getElementById('cardNumber');
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, '');
+                value = value.replace(/\D/g, ''); // Only digits
+                
+                // Limit to 16 digits
+                if (value.length > 16) {
+                    value = value.substring(0, 16);
+                }
+                
+                // Add space every 4 digits
+                let formatted = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formatted += ' ';
+                    }
+                    formatted += value[i];
+                }
+                
+                e.target.value = formatted;
+            });
+            
+            // Card holder - only letters and spaces
+            const cardHolderInput = document.getElementById('cardHolder');
+            cardHolderInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.toUpperCase();
+            });
+            
+            // Card expiry formatting (MM/YY)
+            const cardExpiryInput = document.getElementById('cardExpiry');
+            cardExpiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Only digits
+                
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                
+                e.target.value = value;
+            });
+            
+            // CVV - only 3-4 digits
+            const cardCVVInput = document.getElementById('cardCVV');
+            cardCVVInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Only digits
+                
+                // Limit to 4 digits (American Express can have 4)
+                if (value.length > 4) {
+                    value = value.substring(0, 4);
+                }
+                
+                e.target.value = value;
+            });
+            
+            // Wallet item selection
+            document.querySelectorAll('.wallet-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.wallet-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedWallet = this.dataset.wallet;
+                });
+            });
         });
 
         // Cleanup on page unload

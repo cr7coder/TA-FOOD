@@ -188,6 +188,9 @@ class PaymentController extends Controller
 
             DB::commit();
 
+            // Trả về status code phù hợp với kết quả
+            $statusCode = $paymentStatus === 'Đã thanh toán' ? 201 : 400;
+
             return response()->json([
                 'success' => $paymentStatus === 'Đã thanh toán',
                 'message' => $paymentStatus === 'Đã thanh toán' ? 'Thanh toán thành công' : 'Thanh toán thất bại',
@@ -201,7 +204,7 @@ class PaymentController extends Controller
                     'created_at' => $thanhToan->created_at->format('Y-m-d H:i:s'),
                     'updated_at' => $thanhToan->updated_at->format('Y-m-d H:i:s')
                 ]
-            ], 201);
+            ], $statusCode);
 
         } catch (\Throwable $e) {
             DB::rollBack();

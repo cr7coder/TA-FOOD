@@ -191,10 +191,14 @@
     closeCart.addEventListener('click', toggleCartModal);
     cartModal.addEventListener('click', (e) => { if (e.target === cartModal) toggleCartModal(); });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Gán click cho nút thêm giỏ
+    // Function to attach cart button listeners
+    function attachAddToCartListeners() {
         document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.addEventListener('click', async function (ev) {
+            // Remove old listener if exists
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.addEventListener('click', async function (ev) {
                 ev.preventDefault();
 
                 // 1) Chặn phía client nếu "Ngừng bán"
@@ -241,6 +245,14 @@
                 }
             });
         });
+    }
+
+    // Make function globally accessible for search results
+    window.attachAddToCartListeners = attachAddToCartListeners;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initial attachment
+        attachAddToCartListeners();
 
         // Cập nhật badge ban đầu
         api(`${CART_BASE}`).then(renderCart).catch(() => { });

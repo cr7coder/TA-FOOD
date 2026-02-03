@@ -201,9 +201,9 @@
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <div class="navbar-nav mx-auto">
-                            <form class="form-inline my-2 my-lg-0">
+                            <form class="form-inline my-2 my-lg-0" id="searchForm">
                                 <div class="input-group" style="gap: 5px; display: flex; align-items: center;">
-                                    <input type="text" class="form-control rounded-pill"
+                                    <input type="text" class="form-control rounded-pill" id="searchInput"
                                         placeholder="Tìm món hoặc quán ăn..." aria-label="Search"
                                         style="width: 160px; height: 38px; font-size: 13px;">
                                     <button class="btn btn-outline-light rounded-pill" type="submit"
@@ -455,6 +455,21 @@
                 <li data-filter=".tra">Trà</li>
             </ul>
 
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="sr-only">Đang tải...</span>
+                </div>
+                <p class="mt-3 text-muted">Đang tìm kiếm...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="alert alert-danger text-center" style="display: none;">
+                <i class="fa fa-exclamation-circle"></i> 
+                <span id="errorText"></span>
+                <button class="btn btn-warning mt-2" onclick="loadFoods(1, currentFilters)">Thử lại</button>
+            </div>
+
             <div class="filters-content">
                 <div class="row grid">
                     @foreach($foods as $food)
@@ -521,6 +536,9 @@
                         </div>
                     @endforeach
                 </div>
+                
+                <!-- Pagination Container for Search Results -->
+                <div class="pagination-container mt-4"></div>
             </div>
         </div>
     </section>

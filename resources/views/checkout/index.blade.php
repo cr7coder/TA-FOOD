@@ -12,7 +12,7 @@
             <div class="container">
                 <nav class="navbar navbar-expand-lg custom_nav-container">
                     <a class="navbar-brand" href="{{ route('foods.index') }}">
-                        <span>CabaFood</span>
+                        <span>TAFOOD</span>
                     </a>
 
                     <div class="user_option">

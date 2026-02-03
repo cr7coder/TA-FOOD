@@ -338,7 +338,7 @@
                 </button>
                 <a class="brand" href="{{ route('admin.vouchers.index') }}">
                     <i class="fas fa-crown"></i> <span>Admin Panel</span>
-                    <span class="badge text-bg-light text-dark ms-1" style="border-radius: 999px;">CabaFood</span>
+                    <span class="badge text-bg-light text-dark ms-1" style="border-radius: 999px;">TAFOOD</span>
                 </a>
             </div>
 

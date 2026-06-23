@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class MonAn extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'mon_an';
     protected $primaryKey = 'MaMonAn';
@@ -22,6 +24,7 @@ class MonAn extends Model
         'MoTa',
         'Gia',
         'HinhAnh',
+        'ThuVienAnh',
         'TrangThai',
     ];
 
@@ -29,6 +32,17 @@ class MonAn extends Model
         'Gia' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+    ];
+
+    protected $appends = [
+        'diem_trung_binh',
+        'tong_binh_luan',
+        'gia_format',
+        'loai_mon_class',
+        'is_category_active',
+        'is_favorite',
+        'hinh_anh_url',
+        'thu_vien_anh_urls'
     ];
 
     protected static function booted()
@@ -62,7 +76,7 @@ class MonAn extends Model
 
     public function binhLuans()
     {
-        return $this->hasMany(BinhLuan::class, 'ma_mon_an', 'MaMonAn')
+        return $this->hasMany(BinhLuan::class, 'MaMonAn', 'MaMonAn')
             ->where('trang_thai', 'Đã duyệt')
             ->orderBy('created_at', 'desc');
     }
@@ -103,6 +117,40 @@ class MonAn extends Model
         return $map[$value] ?? Str::slug($value, '-');
     }
 
+    public function getIsCategoryActiveAttribute()
+    {
+        if (empty($this->DanhMuc)) {
+            return false;
+        }
+        return \App\Models\DanhMuc::where('TenDanhMuc', $this->DanhMuc)
+            ->where('TrangThai', 'Hoạt động')
+            ->exists();
+    }
+
+    public function getHinhAnhUrlAttribute()
+    {
+        if ($this->HinhAnh) {
+            if (filter_var($this->HinhAnh, FILTER_VALIDATE_URL)) {
+                return $this->HinhAnh; // Cloudinary / external URL — giữ nguyên
+            }
+            return '/images/' . $this->HinhAnh; // local file — dùng path tương đối
+        }
+        return '/images/no-image.png';
+    }
+
+    public function getThuVienAnhUrlsAttribute()
+    {
+        if ($this->ThuVienAnh) {
+            $images = json_decode($this->ThuVienAnh, true);
+            if (is_array($images)) {
+                return array_map(function($img) {
+                    return filter_var($img, FILTER_VALIDATE_URL) ? $img : '/images/' . $img;
+                }, $images);
+            }
+        }
+        return [];
+    }
+
     // Scopes
     public function scopeConBan($query)
     {
@@ -125,5 +173,19 @@ class MonAn extends Model
     public function isBan()
     {
         return $this->TrangThai === 'Còn bán';
+    }
+
+    public function yeuThichNguoiDungs()
+    {
+        return $this->belongsToMany(User::class, 'mon_an_yeu_thich', 'MaMonAn', 'MaNguoiDung')
+            ->withTimestamps();
+    }
+
+    public function getIsFavoriteAttribute()
+    {
+        if (Auth::check()) {
+            return $this->yeuThichNguoiDungs()->where('mon_an_yeu_thich.MaNguoiDung', Auth::id())->exists();
+        }
+        return false;
     }
 }

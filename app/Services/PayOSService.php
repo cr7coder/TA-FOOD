@@ -107,9 +107,8 @@ class PayOSService
      * @param int $orderCode
      * @return array|null
      */
-    public function getPaymentLinkInformation(int|string $orderCode): ?array
+    public function getPaymentLinkInformation(int $orderCode): ?array
     {
-        $orderCode = (int)$orderCode;
         try {
             $response = Http::withoutVerifying()->withHeaders([
                 'x-client-id' => $this->clientId,
@@ -147,9 +146,8 @@ class PayOSService
      * @param string $cancellationReason
      * @return bool
      */
-    public function cancelPaymentLink(int|string $orderCode, string $cancellationReason = 'Đơn hàng đã bị hủy'): bool
+    public function cancelPaymentLink(int $orderCode, string $cancellationReason = 'Đơn hàng đã bị hủy'): bool
     {
-        $orderCode = (int)$orderCode;
         try {
             $response = Http::withoutVerifying()->withHeaders([
                 'x-client-id' => $this->clientId,

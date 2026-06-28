@@ -20,7 +20,6 @@ class AddFoodTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('migrate:fresh');
 
         $this->seller = User::factory()->create(['VaiTro' => 'NguoiBan']);
         $this->restaurant = NhaHang::factory()->create([
@@ -35,7 +34,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => '',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000,
@@ -53,7 +52,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => str_repeat('A', 101),
             'DanhMuc' => 'Cơm',
             'Gia' => 50000,
@@ -71,7 +70,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Cơm Gà @#$%',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000,
@@ -94,7 +93,7 @@ class AddFoodTest extends TestCase
             'MaNhaHang' => $this->restaurant->MaNhaHang
         ]);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Cơm Gà Existing',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000,
@@ -112,7 +111,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Test Food',
             'DanhMuc' => 'Cơm',
             'Gia' => '',
@@ -130,7 +129,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Test Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 0,
@@ -148,7 +147,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Test Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 'not-a-number',
@@ -166,7 +165,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Test Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000,
@@ -183,7 +182,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Test Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000,
@@ -201,7 +200,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Test Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000,
@@ -219,7 +218,7 @@ class AddFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->postJson(route('seller.foods.store'), [
+        $response = $this->postJson(route('api.seller.foods.store'), [
             'TenMonAn' => 'Cơm Gà Hải Nam',
             'DanhMuc' => 'Cơm',
             'Gia' => 45000,

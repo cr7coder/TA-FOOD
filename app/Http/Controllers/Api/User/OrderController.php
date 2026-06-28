@@ -113,6 +113,14 @@ class OrderController extends Controller
                     'customer_name' => $order->TenKhachHang,
                     'phone' => $order->SoDienThoai,
                     'payment_method' => $order->PhuongThucThanhToan,
+                    'payment_status' => (function() use ($order) {
+                        $pt = $order->PhuongThucThanhToan ?: 'COD';
+                        $tt = $order->thanhToan->TrangThai ?? 'Chưa thanh toán';
+                        if ($pt === 'COD' && $order->TrangThai !== 'Hoàn thành' && $order->TrangThai !== 'Hủy') {
+                            return 'Chưa thanh toán';
+                        }
+                        return $tt;
+                    })(),
                     'note' => $order->GhiChu,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'items' => $order->chiTiet->map(function($item) use ($order) {

@@ -26,6 +26,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -36,7 +37,7 @@
 
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -69,16 +70,17 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             width: 100%;
-            max-width: 900px;
+            max-width: 850px;
             margin: 20px;
             display: flex;
-            min-height: 600px;
+            min-height: auto;
+            align-items: stretch;
         }
 
         .auth-left {
             flex: 1;
             background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-            padding: 60px 40px;
+            padding: 40px 30px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -112,17 +114,17 @@
         }
 
         .auth-left h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .auth-left p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
-            line-height: 1.6;
-            margin-bottom: 30px;
+            line-height: 1.5;
+            margin-bottom: 25px;
         }
 
         .feature-list {
@@ -131,21 +133,21 @@
         }
 
         .feature-list li {
-            margin: 15px 0;
+            margin: 12px 0;
             display: flex;
             align-items: center;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .feature-list li i {
-            margin-right: 15px;
+            margin-right: 12px;
             width: 20px;
             text-align: center;
         }
 
         .auth-right {
-            flex: 1;
-            padding: 60px 40px;
+            flex: 1.1;
+            padding: 40px 35px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -153,12 +155,12 @@
 
         .auth-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
         }
 
         .auth-header h2 {
             color: #333;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 10px;
         }
@@ -169,16 +171,16 @@
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             position: relative;
         }
 
         .form-control {
             width: 100%;
-            padding: 15px 20px 15px 50px;
+            padding: 12px 15px 12px 45px;
             border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             background: #f8f9fa;
         }
@@ -193,7 +195,7 @@
         .form-icon {
             position: absolute;
             left: 18px;
-            top: 50%;
+            top: 25px;
             transform: translateY(-50%);
             color: #999;
             font-size: 1.1rem;
@@ -204,10 +206,19 @@
             color: #ff6b35;
         }
 
+        .form-control.is-invalid {
+            background-image: none !important;
+            padding-right: 15px !important;
+        }
+
+        #password, #password_confirmation {
+            padding-right: 45px !important;
+        }
+
         .password-toggle {
             position: absolute;
             right: 18px;
-            top: 50%;
+            top: 25px;
             transform: translateY(-50%);
             color: #999;
             cursor: pointer;
@@ -220,7 +231,7 @@
         }
 
         .form-check {
-            margin: 20px 0;
+            margin: 15px 0;
             display: flex;
             align-items: center;
         }
@@ -237,12 +248,12 @@
 
         .btn-login {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -258,6 +269,37 @@
 
         .btn-login:active {
             transform: translateY(0);
+        }
+
+        .btn-google-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: #fff;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            color: #555;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .btn-google-login:hover {
+            background-color: #f8f9fa !important;
+            border-color: #ff6b35 !important;
+            color: #ff6b35 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+        }
+
+        .btn-google-login img {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
         }
 
         .btn-login:disabled {
@@ -339,16 +381,25 @@
             }
 
             .auth-left {
-                padding: 40px 20px;
-                min-height: 300px;
+                padding: 30px 20px;
+                min-height: auto;
             }
 
             .auth-left h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
+                margin-bottom: 5px;
+            }
+
+            .auth-left p {
+                margin-bottom: 0;
+            }
+
+            .feature-list {
+                display: none; /* Ẩn bớt tính năng trên mobile để form hiển thị cao hơn */
             }
 
             .auth-right {
-                padding: 40px 20px;
+                padding: 30px 20px;
             }
 
             .auth-header h2 {
@@ -444,9 +495,22 @@
                 </button>
             </form>
 
+            <div class="mt-2 mb-4 d-flex align-items-center justify-content-center">
+                <hr class="flex-grow-1" style="border-color: #ccc; margin: 0;">
+                <span class="px-3 text-muted" style="font-size: 0.9rem; font-weight: 500;">Hoặc</span>
+                <hr class="flex-grow-1" style="border-color: #ccc; margin: 0;">
+            </div>
+
+            <a href="{{ route('auth.google') }}" class="btn-google-login mb-4">
+                <img src="https://developers.google.com/static/identity/images/g-logo.png" alt="Google Logo">
+                Đăng nhập với Google
+            </a>
+
             <div class="auth-links">
+                @if(App\Services\SettingService::check('app_allow_register', true))
                 <p>Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký ngay</a></p>
-                <p><a href="#">Quên mật khẩu?</a></p>
+                @endif
+                <p><a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Quên mật khẩu?</a></p>
                 <p><a href="{{ route('foods.index') }}">← Về trang chủ</a></p>
             </div>
         </div>
@@ -513,7 +577,7 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        showAlert('success', data.message);
+                        showToast(data.message);
 
                         // Lưu thông tin user và token vào localStorage
                         if (data.data) {
@@ -606,6 +670,246 @@
             setTimeout(() => { alertContainer.innerHTML = ''; }, 5000);
         }
     </script> --}}
+    @include('client.partials._global-alert')
+
+    <!-- Forgot Password Modal Flow -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <div class="modal-header" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; border-bottom: none;">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel" style="font-weight: 600;">Khôi phục mật khẩu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" style="background: #f8f9fa;">
+                    
+                    <!-- Step 1: Request OTP -->
+                    <div id="step-request-otp">
+                        <p class="text-muted mb-4 text-center">Vui lòng nhập Email đã đăng ký. Chúng tôi sẽ gửi mã OTP để bạn đặt lại mật khẩu.</p>
+                        <div id="fpAlert1" class="alert d-none" style="padding: 10px; font-size: 14px; border-radius: 8px;"></div>
+                        <div class="form-group mb-4">
+                            <input type="email" class="form-control" id="fpEmail" placeholder="Nhập địa chỉ Email của bạn">
+                        </div>
+                        <button type="button" class="btn-login" id="btnSendOtp" onclick="sendOtp()" style="margin-bottom: 0;">
+                            <span class="btn-text">Gửi mã OTP</span>
+                            <div class="loading-spinner"><div class="spinner"></div></div>
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Verify OTP -->
+                    <div id="step-verify-otp" class="d-none">
+                        <p class="text-muted mb-4 text-center">Mã OTP đã được gửi tới <strong id="displayEmail"></strong>. Mã có hiệu lực 5 phút.</p>
+                        <div id="fpAlert2" class="alert d-none" style="padding: 10px; font-size: 14px; border-radius: 8px;"></div>
+                        <div class="form-group mb-4">
+                            <input type="text" class="form-control text-center" id="fpOtp" placeholder="Nhập 6 số OTP" maxlength="6" style="font-size: 24px; letter-spacing: 5px; font-weight: bold;">
+                        </div>
+                        <button type="button" class="btn-login" id="btnVerifyOtp" onclick="verifyOtp()" style="margin-bottom: 0;">
+                            <span class="btn-text">Xác nhận mã</span>
+                            <div class="loading-spinner"><div class="spinner"></div></div>
+                        </button>
+                        <div class="text-center mt-3">
+                            <a href="#" id="btnResendOtp" onclick="resendOtp(event)" class="text-muted" style="text-decoration: none; font-size: 14px; pointer-events: none; opacity: 0.6;">
+                                Gửi lại mã (<span id="resendCountdown">60</span>s)
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Reset Password -->
+                    <div id="step-reset-password" class="d-none">
+                        <p class="text-muted mb-4 text-center">Xác thực thành công! Vui lòng nhập mật khẩu mới của bạn.</p>
+                        <div id="fpAlert3" class="alert d-none" style="padding: 10px; font-size: 14px; border-radius: 8px;"></div>
+                        <div class="form-group mb-3">
+                            <input type="password" class="form-control" id="fpNewPassword" placeholder="Mật khẩu mới (tối thiểu 6 ký tự)">
+                        </div>
+                        <div class="form-group mb-4">
+                            <input type="password" class="form-control" id="fpNewPasswordConfirm" placeholder="Nhập lại mật khẩu mới">
+                        </div>
+                        <button type="button" class="btn-login" id="btnResetPwd" onclick="resetPassword()" style="margin-bottom: 0;">
+                            <span class="btn-text">Đổi mật khẩu</span>
+                            <div class="loading-spinner"><div class="spinner"></div></div>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password JS -->
+    <script>
+        let currentEmail = '';
+        let resendTimer = null;
+        let countdown = 60;
+
+        function showFpAlert(step, type, message) {
+            const alertEl = document.getElementById('fpAlert' + step);
+            alertEl.className = `alert alert-${type}`;
+            alertEl.innerHTML = message;
+            alertEl.classList.remove('d-none');
+        }
+
+        function setBtnLoading(btnId, isLoading) {
+            const btn = document.getElementById(btnId);
+            const text = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.loading-spinner');
+            btn.disabled = isLoading;
+            if(isLoading) {
+                text.style.opacity = '0';
+                spinner.style.display = 'block';
+            } else {
+                text.style.opacity = '1';
+                spinner.style.display = 'none';
+            }
+        }
+
+        function startResendCountdown() {
+            countdown = 60;
+            const btnResend = document.getElementById('btnResendOtp');
+            const spanCount = document.getElementById('resendCountdown');
+            
+            btnResend.style.pointerEvents = 'none';
+            btnResend.style.opacity = '0.6';
+            btnResend.classList.remove('text-primary');
+            btnResend.classList.add('text-muted');
+            
+            btnResend.innerHTML = `Gửi lại mã (<span id="resendCountdown">${countdown}</span>s)`;
+
+            if(resendTimer) clearInterval(resendTimer);
+            
+            resendTimer = setInterval(() => {
+                countdown--;
+                const currentSpan = document.getElementById('resendCountdown');
+                if(currentSpan) currentSpan.innerText = countdown;
+                
+                if(countdown <= 0) {
+                    clearInterval(resendTimer);
+                    btnResend.style.pointerEvents = 'auto';
+                    btnResend.style.opacity = '1';
+                    btnResend.classList.remove('text-muted');
+                    btnResend.classList.add('text-primary');
+                    btnResend.innerHTML = 'Gửi lại mã';
+                }
+            }, 1000);
+        }
+
+        async function sendOtp() {
+            const email = document.getElementById('fpEmail').value.trim();
+            if(!email) return showFpAlert(1, 'danger', 'Vui lòng nhập Email');
+            
+            setBtnLoading('btnSendOtp', true);
+            try {
+                const res = await fetch('/api/v1/forgot-password/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    currentEmail = email;
+                    document.getElementById('displayEmail').innerText = email;
+                    document.getElementById('step-request-otp').classList.add('d-none');
+                    document.getElementById('step-verify-otp').classList.remove('d-none');
+                    showFpAlert(2, 'success', data.message);
+                    startResendCountdown();
+                } else {
+                    showFpAlert(1, 'danger', data.message || 'Có lỗi xảy ra');
+                }
+            } catch (e) {
+                showFpAlert(1, 'danger', 'Lỗi kết nối. Vui lòng thử lại!');
+            }
+            setBtnLoading('btnSendOtp', false);
+        }
+
+        async function resendOtp(e) {
+            e.preventDefault();
+            if(countdown > 0) return;
+            
+            showFpAlert(2, 'info', 'Đang gửi lại mã...');
+            try {
+                const res = await fetch('/api/v1/forgot-password/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    showFpAlert(2, 'success', 'Mã OTP mới đã được gửi lại vào Email của bạn.');
+                    startResendCountdown();
+                } else {
+                    showFpAlert(2, 'danger', data.message || 'Có lỗi xảy ra khi gửi lại mã');
+                }
+            } catch (e) {
+                showFpAlert(2, 'danger', 'Lỗi kết nối. Vui lòng thử lại!');
+            }
+        }
+
+        async function verifyOtp() {
+            const otp = document.getElementById('fpOtp').value.trim();
+            if(!otp || otp.length !== 6) return showFpAlert(2, 'danger', 'Vui lòng nhập đủ 6 số OTP');
+            
+            setBtnLoading('btnVerifyOtp', true);
+            try {
+                const res = await fetch('/api/v1/forgot-password/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, otp })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById('step-verify-otp').classList.add('d-none');
+                    document.getElementById('step-reset-password').classList.remove('d-none');
+                    showFpAlert(3, 'success', 'Vui lòng nhập mật khẩu mới');
+                } else {
+                    showFpAlert(2, 'danger', data.message || 'OTP không hợp lệ');
+                }
+            } catch (e) {
+                showFpAlert(2, 'danger', 'Lỗi kết nối. Vui lòng thử lại!');
+            }
+            setBtnLoading('btnVerifyOtp', false);
+        }
+
+        async function resetPassword() {
+            const otp = document.getElementById('fpOtp').value.trim();
+            const password = document.getElementById('fpNewPassword').value;
+            const password_confirmation = document.getElementById('fpNewPasswordConfirm').value;
+
+            if(!password || password.length < 6) return showFpAlert(3, 'danger', 'Mật khẩu phải từ 6 ký tự');
+            if(password !== password_confirmation) return showFpAlert(3, 'danger', 'Mật khẩu nhập lại không khớp');
+            
+            setBtnLoading('btnResetPwd', true);
+            try {
+                const res = await fetch('/api/v1/forgot-password/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, otp, password, password_confirmation })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    showFpAlert(3, 'success', data.message + ' Đang chuyển hướng...');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    showFpAlert(3, 'danger', data.message || 'Có lỗi xảy ra');
+                }
+            } catch (e) {
+                showFpAlert(3, 'danger', 'Lỗi kết nối. Vui lòng thử lại!');
+            }
+            setBtnLoading('btnResetPwd', false);
+        }
+
+        // Reset modal state when hidden
+        document.getElementById('forgotPasswordModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('step-request-otp').classList.remove('d-none');
+            document.getElementById('step-verify-otp').classList.add('d-none');
+            document.getElementById('step-reset-password').classList.add('d-none');
+            document.getElementById('fpEmail').value = '';
+            document.getElementById('fpOtp').value = '';
+            document.getElementById('fpNewPassword').value = '';
+            document.getElementById('fpNewPasswordConfirm').value = '';
+            currentEmail = '';
+            ['1','2','3'].forEach(step => document.getElementById('fpAlert'+step).classList.add('d-none'));
+        });
+    </script>
 </body>
 
 </html>

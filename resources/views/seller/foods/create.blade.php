@@ -1,4 +1,4 @@
-@extends('seller.layout')
+@extends('seller.layouts.app')
 @section('title', 'Thêm món ăn')
 @section('content')
     <div class="container-fluid">
@@ -10,8 +10,9 @@
                 </a>
             </div>
             <div class="card-body">
-                <form id="foodForm" action="{{ route('seller.foods.store') }}" method="POST" enctype="multipart/form-data"
-                    data-mode="create" data-ajax="1">
+                <form id="foodForm" action="{{ route('api.seller.foods.store') }}" method="POST" enctype="multipart/form-data"
+                    data-mode="create" data-ajax="1" data-index-url="{{ route('seller.foods.index') }}"
+                    data-check-name-url="{{ route('api.seller.foods.check-name') }}">
                     @csrf
                     @include('seller.foods._form')
                     <div class="mt-3">
@@ -24,5 +25,79 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/seller-foods-validator.js') }}"></script>
+<script>
+(function() {
+    "use strict";
+
+    function init() {
+        const form = document.getElementById("foodForm");
+        if (!form) return;
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const oldAlert = form.querySelector('.alert-floating');
+            if (oldAlert) oldAlert.remove();
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success alert-floating mt-3';
+                    alert.innerHTML = '<i class="fas fa-check-circle"></i> ' + (result.message || 'Thành công!');
+                    form.prepend(alert);
+                    alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    setTimeout(() => {
+                        window.location.href = form.dataset.indexUrl || '/seller/foods';
+                    }, 1000);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                    
+                    let errorMsg = result.message || 'Có lỗi xảy ra';
+                    if (result.errors) {
+                        errorMsg = Object.values(result.errors).flat().join('<br>');
+                    }
+                    
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-danger alert-floating mt-3';
+                    alert.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + errorMsg;
+                    form.prepend(alert);
+                    alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } catch (error) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+                alert('Lỗi kết nối hệ thống. Vui lòng thử lại.');
+            }
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+})();
+</script>
 @endpush

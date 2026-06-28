@@ -928,8 +928,9 @@ a:focus {
   -ms-flex-align: center;
   align-items: center;
   width: 115px;
+  height: 115px;
   position: relative;
-  margin-top: 30px;
+  margin: 30px auto 0 auto;
 }
 
 .client_section .box .img-box img {

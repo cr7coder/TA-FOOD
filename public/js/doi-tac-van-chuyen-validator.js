@@ -17,9 +17,16 @@ class DoiTacVanChuyenValidator {
         const field = document.getElementById(fieldId);
         if (!field) return;
 
-        const feedback =
-            field.parentNode.querySelector(".invalid-feedback") ||
-            field.parentNode.querySelector(".error-message");
+        let feedback;
+        const isInputGroup = field.parentNode.classList.contains('input-group');
+        
+        if (isInputGroup) {
+            feedback = field.parentNode.parentNode.querySelector(".invalid-feedback") || 
+                       field.parentNode.parentNode.querySelector(".error-message");
+        } else {
+            feedback = field.parentNode.querySelector(".invalid-feedback") || 
+                       field.parentNode.querySelector(".error-message");
+        }
 
         field.classList.add("is-invalid");
 
@@ -31,7 +38,12 @@ class DoiTacVanChuyenValidator {
             errorDiv.className = "invalid-feedback error-message";
             errorDiv.textContent = message;
             errorDiv.style.display = "block";
-            field.parentNode.appendChild(errorDiv);
+            
+            if (isInputGroup) {
+                field.parentNode.parentNode.appendChild(errorDiv);
+            } else {
+                field.parentNode.appendChild(errorDiv);
+            }
         }
     }
 
@@ -40,9 +52,16 @@ class DoiTacVanChuyenValidator {
         const field = document.getElementById(fieldId);
         if (!field) return;
 
-        const feedback =
-            field.parentNode.querySelector(".invalid-feedback") ||
-            field.parentNode.querySelector(".error-message");
+        let feedback;
+        const isInputGroup = field.parentNode.classList.contains('input-group');
+        
+        if (isInputGroup) {
+            feedback = field.parentNode.parentNode.querySelector(".invalid-feedback") || 
+                       field.parentNode.parentNode.querySelector(".error-message");
+        } else {
+            feedback = field.parentNode.querySelector(".invalid-feedback") || 
+                       field.parentNode.querySelector(".error-message");
+        }
 
         field.classList.remove("is-invalid");
 
@@ -190,14 +209,84 @@ class DoiTacVanChuyenValidator {
         return true;
     }
 
+    // Validate phí vận chuyển
+    validatePhiVanChuyen() {
+        const field = document.getElementById("phi_van_chuyen");
+        if (!field) return true;
+
+        const value = field.value.trim();
+        if (!value) {
+            this.showError("phi_van_chuyen", "Phí vận chuyển không được bỏ trống");
+            return false;
+        }
+
+        if (isNaN(value) || parseFloat(value) < 0) {
+            this.showError("phi_van_chuyen", "Phí vận chuyển phải là số không âm");
+            return false;
+        }
+
+        this.clearError("phi_van_chuyen");
+        return true;
+    }
+
+    // Validate phí/km
+    validatePhiKm() {
+        const field = document.getElementById("phi_km");
+        if (!field) return true;
+
+        const value = field.value.trim();
+        if (!value) {
+            this.showError("phi_km", "Phí/km không được bỏ trống");
+            return false;
+        }
+
+        if (isNaN(value) || parseFloat(value) < 0) {
+            this.showError("phi_km", "Phí/km phải là số không âm");
+            return false;
+        }
+
+        this.clearError("phi_km");
+        return true;
+    }
+
+    // Validate người liên hệ
+    validateNguoiLienHe() {
+        const field = document.getElementById("nguoi_lien_he");
+        if (!field) return true;
+
+        const value = field.value.trim();
+
+        if (!value) {
+            this.showError("nguoi_lien_he", "Tên người liên hệ không được bỏ trống");
+            return false;
+        }
+
+        if (value.length > 255) {
+            this.showError("nguoi_lien_he", "Tên người liên hệ không quá 255 ký tự");
+            return false;
+        }
+
+        const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+        if (!nameRegex.test(value)) {
+            this.showError("nguoi_lien_he", "Tên người liên hệ chỉ được chứa chữ cái và khoảng trắng");
+            return false;
+        }
+
+        this.clearError("nguoi_lien_he");
+        return true;
+    }
+
     // Validate toàn bộ form
     validateAll() {
         const isValidTen = this.validateTenDoiTac();
         const isValidPhone = this.validateSoDienThoai();
         const isValidAddress = this.validateDiaChiTruSo();
         const isValidEmail = this.validateEmailLienHe();
+        const isValidPhi = this.validatePhiVanChuyen();
+        const isValidPhiKm = this.validatePhiKm();
+        const isValidNguoiLienHe = this.validateNguoiLienHe();
 
-        return isValidTen && isValidPhone && isValidAddress && isValidEmail;
+        return isValidTen && isValidPhone && isValidAddress && isValidEmail && isValidPhi && isValidPhiKm && isValidNguoiLienHe;
     }
 
     // Bind events
@@ -207,39 +296,43 @@ class DoiTacVanChuyenValidator {
         const soDienThoaiField = document.getElementById("so_dien_thoai");
         const diaChiTruSoField = document.getElementById("dia_chi_tru_so");
         const emailLienHeField = document.getElementById("email_lien_he");
+        const phiVanChuyenField = document.getElementById("phi_van_chuyen");
+        const phiKmField = document.getElementById("phi_km");
+        const nguoiLienHeField = document.getElementById("nguoi_lien_he");
 
         if (tenDoiTacField) {
-            tenDoiTacField.addEventListener("blur", () =>
-                this.validateTenDoiTac()
-            );
+            tenDoiTacField.addEventListener("blur", () => this.validateTenDoiTac());
+            tenDoiTacField.addEventListener("input", () => this.clearError("ten_doi_tac"));
         }
 
         if (soDienThoaiField) {
-            soDienThoaiField.addEventListener("blur", () =>
-                this.validateSoDienThoai()
-            );
-
-            // Note: Removed auto-format to allow testing validation with invalid characters
-            // Format phone number (chỉ cho phép nhập số)
-            // soDienThoaiField.addEventListener("input", function (e) {
-            //     let value = e.target.value.replace(/\D/g, "");
-            //     if (value.length > 11) {
-            //         value = value.substring(0, 11);
-            //     }
-            //     e.target.value = value;
-            // });
+            soDienThoaiField.addEventListener("blur", () => this.validateSoDienThoai());
+            soDienThoaiField.addEventListener("input", () => this.clearError("so_dien_thoai"));
         }
 
         if (diaChiTruSoField) {
-            diaChiTruSoField.addEventListener("blur", () =>
-                this.validateDiaChiTruSo()
-            );
+            diaChiTruSoField.addEventListener("blur", () => this.validateDiaChiTruSo());
+            diaChiTruSoField.addEventListener("input", () => this.clearError("dia_chi_tru_so"));
         }
 
         if (emailLienHeField) {
-            emailLienHeField.addEventListener("blur", () =>
-                this.validateEmailLienHe()
-            );
+            emailLienHeField.addEventListener("blur", () => this.validateEmailLienHe());
+            emailLienHeField.addEventListener("input", () => this.clearError("email_lien_he"));
+        }
+
+        if (phiVanChuyenField) {
+            phiVanChuyenField.addEventListener("blur", () => this.validatePhiVanChuyen());
+            phiVanChuyenField.addEventListener("input", () => this.clearError("phi_van_chuyen"));
+        }
+
+        if (phiKmField) {
+            phiKmField.addEventListener("blur", () => this.validatePhiKm());
+            phiKmField.addEventListener("input", () => this.clearError("phi_km"));
+        }
+
+        if (nguoiLienHeField) {
+            nguoiLienHeField.addEventListener("blur", () => this.validateNguoiLienHe());
+            nguoiLienHeField.addEventListener("input", () => this.clearError("nguoi_lien_he"));
         }
     }
 
@@ -255,17 +348,60 @@ class DoiTacVanChuyenValidator {
                 return false;
             }
 
-            // If all validations pass, submit the form
+            // If all validations pass, submit the form via API
             const submitBtn = form.querySelector('button[type="submit"]');
+            let originalText = '';
             if (submitBtn) {
-                const originalText = submitBtn.innerHTML;
+                originalText = submitBtn.innerHTML;
                 submitBtn.disabled = true;
                 submitBtn.innerHTML =
                     '<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...';
             }
 
-            // Actually submit the form
-            form.submit();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            const isEdit = form.id === 'editForm';
+            const id = form.getAttribute('data-id');
+            const url = isEdit ? `/api/v1/admin/doi-tac-van-chuyen/${id}` : '/api/v1/admin/doi-tac-van-chuyen';
+
+            fetch(url, {
+                method: isEdit ? 'PUT' : 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
+                    localStorage.setItem('admin_success', isEdit ? 'Cập nhật đối tác vận chuyển thành công!' : 'Thêm đối tác vận chuyển thành công!');
+                    window.location.href = '/admin/doi-tac-van-chuyen';
+                } else {
+                    window.showAdminToast(`Lỗi: ${res.message || 'Không thể lưu.'}`, 'error');
+                    if (res.errors) {
+                        for (const [key, value] of Object.entries(res.errors)) {
+                            this.showError(key, value[0]);
+                        }
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                window.showAdminToast('Đã xảy ra lỗi khi lưu.', 'error');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
         });
     }
 }

@@ -18,12 +18,16 @@ class ThanhToan extends Model
         'PhuongThuc',
         'TrangThai',
         'MaGiaoDich',
+        'NgayThanhToan',
+        'payos_order_code',
+        'minh_chung_thanh_toan',
     ];
 
     protected $casts = [
-        'SoTien' => 'decimal:2',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'SoTien'        => 'decimal:2',
+        'NgayThanhToan' => 'datetime',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
     ];
 
     // Relationships
@@ -42,8 +46,10 @@ class ThanhToan extends Model
     {
         return match ($this->TrangThai) {
             'Chờ thanh toán' => 'warning',
+            'Chờ xác nhận'   => 'info',
             'Đã thanh toán'  => 'success',
             'Thất bại'       => 'danger',
+            'Đã hoàn tiền'   => 'info',
             default          => 'secondary',
         };
     }
@@ -57,6 +63,11 @@ class ThanhToan extends Model
     public function isPending()
     {
         return $this->TrangThai === 'Chờ thanh toán';
+    }
+
+    public function isPendingConfirmation()
+    {
+        return $this->TrangThai === 'Chờ xác nhận';
     }
 
     public function isFailed()

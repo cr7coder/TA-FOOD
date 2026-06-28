@@ -30,6 +30,7 @@ body {
   background: rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(2px);
 }
+
 .header_section.scrolled {
   background: rgba(34, 40, 49, .96);
   box-shadow: 0 10px 22px rgba(0, 0, 0, .12);
@@ -40,6 +41,7 @@ body {
   gap: 8px;
   margin-top: 28px;
 }
+
 .food_section .filters_menu li {
   padding: 8px 18px;
   border-radius: 999px;
@@ -48,10 +50,12 @@ body {
   color: var(--text);
   transition: all .2s ease;
 }
+
 .food_section .filters_menu li:hover {
   border-color: var(--brand);
   color: #111827;
 }
+
 .food_section .filters_menu li.active {
   background: var(--brand);
   color: #111827;
@@ -69,6 +73,7 @@ body {
   box-shadow: var(--shadow);
   transition: transform .2s ease, box-shadow .2s ease;
 }
+
 .food_section .box:hover {
   transform: translateY(-4px);
   box-shadow: 0 14px 32px rgba(0, 0, 0, .08);
@@ -80,22 +85,28 @@ body {
   background: #f9fafb;
   border-radius: 0;
 }
+
 @media (max-width: 991px) {
-  .food_section .box .img-box { height: 160px; }
+  .food_section .box .img-box {
+    height: 160px;
+  }
 }
 
 /* Nội dung thẻ món */
 .food_section .box .detail-box {
   padding: 16px 16px 14px;
 }
+
 .food_section .box .detail-box h5 {
   margin-bottom: 2px;
 }
+
 .food_section .box .detail-box p {
   color: var(--muted);
   font-size: 14px;
   margin-bottom: 8px;
 }
+
 .food_section .box .options {
   align-items: center;
   margin-top: 6px;
@@ -120,6 +131,7 @@ body {
   box-shadow: 0 6px 16px rgba(255, 190, 51, .35);
   transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease;
 }
+
 .add-to-cart-btn:hover {
   background: var(--brand-dark) !important;
   transform: translateY(-2px) scale(1.02);
@@ -147,13 +159,16 @@ body {
   border-radius: 14px;
   box-shadow: var(--shadow);
 }
+
 .offer_section .box .img-box {
   border: 4px solid var(--brand);
 }
+
 .offer_section .box .detail-box a {
   background: var(--brand);
   color: #111827;
 }
+
 .offer_section .box .detail-box a:hover {
   background: var(--brand-dark);
 }
@@ -168,6 +183,7 @@ body {
   font-weight: 700 !important;
   transition: background-color .2s ease, transform .2s ease;
 }
+
 .btn-warning:hover {
   background-color: var(--brand-dark) !important;
   transform: translateY(-2px);
@@ -188,5 +204,7 @@ body {
 
 /* Footer tinh gọn khoảng cách trên màn nhỏ */
 @media (max-width: 576px) {
-  .footer_section { padding: 50px 0 30px 0; }
+  .footer_section {
+    padding: 50px 0 30px 0;
+  }
 }

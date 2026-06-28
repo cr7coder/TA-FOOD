@@ -1,1124 +1,812 @@
-@extends('admin.admin')
+@extends('admin.layouts.app')
 
-@section('title', 'Thêm Voucher Mới')
+@section('title', 'Tạo Voucher Mới')
 
 @section('content')
-    <style>
-        /* Điều chỉnh font size và spacing cho trang create */
-        .breadcrumb {
-            font-size: 11px;
-            margin-bottom: 1rem;
-        }
-
-        .card-header h4 {
-            font-size: 1.1rem;
-        }
-
-        .card-header small {
-            font-size: 10px;
-        }
-
-        .form-label {
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-
-        .form-control {
-            font-size: 12px;
-            padding: 0.4rem 0.6rem;
-        }
-
-        .input-group-text {
-            font-size: 11px;
-            padding: 0.4rem 0.6rem;
-        }
-
-        .btn {
-            font-size: 11px;
-            padding: 0.3rem 0.6rem;
-        }
-
-        .btn-sm {
-            font-size: 10px;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .form-text {
-            font-size: 10px;
-            margin-top: 0.2rem;
-        }
-
-        .alert {
-            font-size: 11px;
-            padding: 0.5rem 0.7rem;
-            margin-bottom: 1rem;
-        }
-
-        .voucher-card {
-            font-size: 12px;
-        }
-
-        .discount-amount {
-            font-size: 2rem;
-        }
-
-        .voucher-header {
-            font-size: 0.9rem;
-        }
-
-        .voucher-code {
-            font-size: 11px;
-            padding: 0.3rem 0.6rem;
-        }
-
-        .table {
-            font-size: 11px;
-        }
-
-        .table th,
-        .table td {
-            padding: 0.3rem 0.4rem;
-        }
-
-        .badge {
-            font-size: 9px;
-        }
-
-        .progress {
-            height: 4px;
-        }
-
-        .step-text {
-            font-size: 10px;
-        }
-
-        /* Giảm khoảng cách giữa các form group */
-        .form-group {
-            margin-bottom: 0.8rem;
-        }
-
-        /* Giảm khoảng cách giữa các step */
-        .form-step {
-            min-height: auto;
-            padding: 0.5rem 0;
-        }
-
-        /* Giảm khoảng cách trong row */
-        .row {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Compact card body */
-        .card-body {
-            padding: 1rem;
-        }
-
-        /* Compact alert */
-        .alert ul {
-            margin-bottom: 0;
-            padding-left: 1rem;
-        }
-
-        .alert li {
-            margin-bottom: 0.2rem;
-        }
-
-        /* Compact preset buttons */
-        .btn-group .btn {
-            margin: 0.1rem;
-        }
-
-        /* Giảm khoảng cách voucher preview */
-        .voucher-preview {
-            margin-bottom: 1rem;
-        }
-
-        .voucher-card {
-            padding: 1rem;
-            margin: 0.5rem 0;
-        }
-
-        /* Compact table */
-        .table-responsive {
-            margin-bottom: 1rem;
-        }
-
-        /* Step header compact */
-        h5.text-primary {
-            margin-bottom: 0.8rem;
-            font-size: 0.95rem;
-        }
-
-        .step-section {
-            margin-bottom: 1rem;
-        }
-
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-        }
-
-        .voucher-preview {
-            perspective: 1000px;
-        }
-
-        .voucher-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            transform-style: preserve-3d;
-            transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .voucher-card:hover {
-            transform: rotateY(2deg) rotateX(2deg);
-        }
-
-        .voucher-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(45deg,
-                    transparent,
-                    transparent 6px,
-                    rgba(255, 255, 255, 0.1) 6px,
-                    rgba(255, 255, 255, 0.1) 12px);
-            animation: shimmer 20s linear infinite;
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%) translateY(-100%);
-            }
-
-            100% {
-                transform: translateX(100%) translateY(100%);
-            }
-        }
-
-        .voucher-header {
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
-        }
-
-        .discount-amount {
-            font-weight: bold;
-            margin: 0.5rem 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .voucher-code {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            margin: 0.5rem 0;
-            backdrop-filter: blur(10px);
-        }
-
-        .voucher-dates {
-            margin-top: 0.5rem;
-            opacity: 0.8;
-        }
-
-        .btn-group .btn {
-            transition: all 0.3s ease;
-            margin: 0.1rem;
-        }
-
-        .btn-group .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-    </style>
-
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <!-- Breadcrumb -->
-                <nav aria-label="breadcrumb" class="mb-2">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('admin.vouchers.index') }}">
-                                <i class="fas fa-ticket-alt"></i> Quản lý Voucher
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active">Thêm voucher mới</li>
-                    </ol>
-                </nav>
-
-                <!-- Main Form Card -->
-                <div class="card shadow-lg border-0">
-                    <div class="card-header bg-gradient-primary text-white py-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="mb-0">
-                                    <i class="fas fa-plus-circle"></i> Tạo Voucher Mới
-                                </h4>
-                                <small class="opacity-75">Điền thông tin để tạo voucher giảm giá</small>
-                            </div>
-                            <a href="{{ route('admin.vouchers.index') }}" class="btn btn-light btn-sm">
-                                <i class="fas fa-arrow-left"></i> Quay lại
-                            </a>
-                        </div>
-                    </div>
-
-                    <form action="{{ route('admin.vouchers.store') }}" method="POST" id="voucherForm">
-                        @csrf
-                        <div class="card-body">
-
-                            <!-- Progress Steps -->
-                            <div class="step-section">
-                                <div class="progress mb-2">
-                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 33%"
-                                        id="formProgress"></div>
-                                </div>
-                                <div class="d-flex justify-content-between step-text">
-                                    <small class="text-primary font-weight-bold">Thông tin cơ bản</small>
-                                    <small class="text-muted">Thời gian hiệu lực</small>
-                                    <small class="text-muted">Xác nhận</small>
-                                </div>
-                            </div>
-
-                            <!-- Step 1: Basic Information -->
-                            <div class="form-step" id="step1">
-                                <h5 class="text-primary">
-                                    <i class="fas fa-info-circle"></i> Thông tin cơ bản
-                                </h5>
-
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="form-group">
-                                            <label for="MaCode" class="form-label">
-                                                Mã Voucher <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-tag"></i>
-                                                </span>
-                                                <input type="text"
-                                                    class="form-control @error('MaCode') is-invalid @enderror" id="MaCode"
-                                                    name="MaCode" value="{{ old('MaCode') }}"
-                                                    placeholder="Nhập mã voucher...">
-                                                <button type="button" class="btn btn-outline-secondary btn-sm"
-                                                    onclick="generateCode()" id="generateBtn">
-                                                    <i class="fas fa-random"></i> Tạo
-                                                </button>
-                                            </div>
-
-                                            <small class="form-text text-muted">
-                                                Mã voucher phải là duy nhất và dễ nhớ cho khách hàng
-                                            </small>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="PhanTram" class="form-label">
-                                                Phần Trăm Giảm Giá <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-percentage"></i>
-                                                </span>
-                                                <input type="text" class="form-control @error('PhanTram') is-invalid @enderror" id="PhanTram" name="PhanTram"
-                                                    value="{{ old('PhanTram') }}" placeholder="0" inputmode="numeric" autocomplete="off"
-                                                    aria-describedby="pct-addon" onchange="updatePreview()">
-                                                <span class="input-group-text">%</span>
-
-                                                <button type="button" class="btn btn-outline-secondary" title="-1" onclick="stepField('PhanTram', -1)">
-                                                    <i class="fas fa-minus"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-outline-secondary" title="+1" onclick="stepField('PhanTram', +1)">
-                                                    <i class="fas fa-plus"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Điều kiện áp dụng -->
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="DonHangToiThieu" class="form-label">
-                                                Đơn Hàng Tối Thiểu
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-shopping-cart"></i>
-                                                </span>
-                                                <input type="text" 
-                                                    class="form-control @error('DonHangToiThieu') is-invalid @enderror" 
-                                                    id="DonHangToiThieu" 
-                                                    name="DonHangToiThieu"
-                                                    value="{{ old('DonHangToiThieu') }}" 
-                                                    placeholder="0"
-                                                    onchange="updatePreview()">
-                                                <span class="input-group-text">VNĐ</span>
-                                            </div>
-                                            <small class="form-text text-muted">
-                                                Để trống nếu không giới hạn giá trị đơn hàng
-                                            </small>
-                                            @error('DonHangToiThieu')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="SoLanToiDa" class="form-label">
-                                                Số Lần Tối Đa/1 User
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-user-clock"></i>
-                                                </span>
-                                                <input type="text" 
-                                                    class="form-control @error('SoLanToiDa') is-invalid @enderror" 
-                                                    id="SoLanToiDa" 
-                                                    name="SoLanToiDa"
-                                                    value="{{ old('SoLanToiDa') }}" 
-                                                    placeholder="0"
-                                                    onchange="updatePreview()">
-                                                <span class="input-group-text">lần</span>
-                                            </div>
-                                            <small class="form-text text-muted">
-                                                Để trống nếu không giới hạn số lần sử dụng
-                                            </small>
-                                            @error('SoLanToiDa')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Quick Preset Buttons -->
-                                <div class="form-group">
-                                    <label class="form-label">Giá trị preset nhanh:</label>
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                            onclick="setDiscount(5)">5%</button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                            onclick="setDiscount(10)">10%</button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                            onclick="setDiscount(15)">15%</button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                            onclick="setDiscount(20)">20%</button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                            onclick="setDiscount(25)">25%</button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                            onclick="setDiscount(50)">50%</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Step 2: Date Range -->
-                            <div class="form-step d-none" id="step2">
-                                <h5 class="text-primary">
-                                    <i class="fas fa-calendar-alt"></i> Thời gian hiệu lực
-                                </h5>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="NgayBatDau" class="form-label">
-                                                Ngày Bắt Đầu <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-calendar-plus"></i>
-                                                </span>
-                                                <input type="text"
-                                                    class="form-control @error('NgayBatDau') is-invalid @enderror"
-                                                    id="NgayBatDau" name="NgayBatDau" value="{{ old('NgayBatDau') }}"
-                                                    placeholder="dd/mm/yyyy" autocomplete="off" onchange="updateDuration()">
-                                                <button class="btn btn-outline-secondary" type="button"
-                                                    id="btnStartCalendar" title="Chọn ngày">
-                                                    <i class="fas fa-calendar"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="NgayKetThuc" class="form-label">
-                                                Ngày Kết Thúc <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-calendar-times"></i>
-                                                </span>
-                                                <input type="text"
-                                                    class="form-control @error('NgayKetThuc') is-invalid @enderror"
-                                                    id="NgayKetThuc" name="NgayKetThuc" value="{{ old('NgayKetThuc') }}"
-                                                    placeholder="dd/mm/yyyy" autocomplete="off" onchange="updateDuration()">
-                                                <button class="btn btn-outline-secondary" type="button" id="btnEndCalendar"
-                                                    title="Chọn ngày">
-                                                    <i class="fas fa-calendar"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Duration Preview -->
-                                    <div class="alert alert-info py-2" id="durationInfo" style="display: none;">
-                                        <i class="fas fa-info-circle"></i>
-                                        <span id="durationText"></span>
-                                    </div>
-
-                                    <!-- Quick Duration Buttons -->
-                                    <div class="form-group">
-                                        <label class="form-label">Thời gian preset nhanh:</label>
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-outline-info btn-sm"
-                                                onclick="setDuration(7)">7
-                                                ngày</button>
-                                            <button type="button" class="btn btn-outline-info btn-sm"
-                                                onclick="setDuration(14)">2 tuần</button>
-                                            <button type="button" class="btn btn-outline-info btn-sm"
-                                                onclick="setDuration(30)">1 tháng</button>
-                                            <button type="button" class="btn btn-outline-info btn-sm"
-                                                onclick="setDuration(60)">2 tháng</button>
-                                            <button type="button" class="btn btn-outline-info btn-sm"
-                                                onclick="setDuration(90)">3 tháng</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                                <!-- Navigation & Important Notes -->
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="alert alert-warning py-2">
-                                            <h6 style="font-size: 11px; margin-bottom: 0.3rem;">
-                                                <i class="fas fa-exclamation-triangle"></i> Lưu ý quan trọng:
-                                            </h6>
-                                            <ul class="mb-0" style="font-size: 10px; padding-left: 1rem;">
-                                                <li>Mã voucher phải là duy nhất trong hệ thống</li>
-                                                <li>Phần trăm giảm giá phải từ 1% đến 100%</li>
-                                                <li>Ngày kết thúc phải sau hoặc bằng ngày bắt đầu</li>
-                                                <li>Voucher sẽ tự động kích hoạt vào ngày bắt đầu</li>
-                                                <li>Không thể chỉnh sửa voucher sau khi đã được sử dụng</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="card bg-light">
-                                            <div class="card-body text-center p-2">
-                                                <i class="fas fa-lightbulb fa-lg text-warning mb-1"></i>
-                                                <h6 style="font-size: 11px; margin-bottom: 0.3rem;">Gợi ý</h6>
-                                                <small class="text-muted" style="font-size: 10px;">
-                                                    Sử dụng mã voucher ngắn gọn và dễ nhớ để khách hàng dễ sử dụng
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Step 3: Preview & Confirm -->
-                            <div class="form-step d-none" id="step3">
-                                <h5 class="text-primary">
-                                    <i class="fas fa-eye"></i> Xem trước voucher
-                                </h5>
-
-                                <!-- Voucher Preview -->
-                                <div class="row justify-content-center voucher-preview">
-                                    <div class="col-md-8">
-                                        <div class="voucher-card">
-                                            <div class="voucher-header">
-                                                <i class="fas fa-gift"></i>
-                                                <span>VOUCHER GIẢM GIÁ</span>
-                                            </div>
-                                            <div class="voucher-body">
-                                                <div class="discount-amount" id="previewDiscount">0%</div>
-                                                <div class="voucher-code" id="previewCode">VOUCHER-CODE</div>
-                                                <div class="voucher-dates">
-                                                    <small>
-                                                        <i class="fas fa-calendar"></i>
-                                                        <span id="previewDates">Chọn ngày bắt đầu và kết thúc</span>
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Summary Table -->
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-sm">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th>Thông tin</th>
-                                                <th>Giá trị</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><i class="fas fa-tag"></i> Mã Voucher</td>
-                                                <td><code id="summaryCode">-</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-percentage"></i> Phần trăm giảm giá</td>
-                                                <td><span class="badge bg-success" id="summaryDiscount">0%</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-shopping-cart"></i> Đơn hàng tối thiểu</td>
-                                                <td><span id="summaryMinOrder">Không giới hạn</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-user-clock"></i> Số lần tối đa/1 user</td>
-                                                <td><span id="summaryMaxUsage">Không giới hạn</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-calendar-alt"></i> Thời gian hiệu lực</td>
-                                                <td id="summaryDuration">-</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-clock"></i> Số ngày có hiệu lực</td>
-                                                <td><span class="badge bg-info" id="summaryDays">0 ngày</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Form Footer -->
-                            <div class="card-footer bg-light py-2">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <button type="button" class="btn btn-secondary btn-sm" id="prevBtn"
-                                            onclick="changeStep(-1)" style="display: none;">
-                                            <i class="fas fa-arrow-left"></i> Quay lại
-                                        </button>
-                                    </div>
-
-                                    <div>
-                                        <button type="button" class="btn btn-primary btn-sm" id="nextBtn"
-                                            onclick="changeStep(1)">
-                                            Tiếp theo <i class="fas fa-arrow-right"></i>
-                                        </button>
-                                        <button type="submit" class="btn btn-success btn-sm" id="submitBtn"
-                                            style="display: none;">
-                                            <i class="fas fa-save"></i> Lưu Voucher
-                                        </button>
-                                        <a href="{{ route('admin.vouchers.index') }}"
-                                            class="btn btn-outline-secondary btn-sm ms-1">
-                                            <i class="fas fa-times"></i> Hủy
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                    </form>
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-plus-circle text-primary fs-4"></i>
+            <div>
+                <h4 class="mb-0 fw-bold">Tạo Voucher Mới</h4>
+                <small class="text-muted">Điền thông tin để tạo voucher giảm giá</small>
+            </div>
+        </div>
+        <button class="btn btn-light btn-sm border" onclick="handleTopBack()">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </button>
+    </div>
+
+    <!-- Steps Indicator -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between position-relative">
+                <div class="step-item active text-center flex-grow-1" id="step-ind-1" style="cursor: pointer;" onclick="clickStep(1)">
+                    <div class="step-icon mb-1 mx-auto" style="width: 30px; height: 30px; border-radius: 50%; background: #0d6efd; color: #fff; line-height: 30px; font-weight: bold;">1</div>
+                    <small class="fw-bold">Thông tin cơ bản</small>
+                </div>
+                <div class="step-item text-center flex-grow-1" id="step-ind-2" style="cursor: pointer;" onclick="clickStep(2)">
+                    <div class="step-icon mb-1 mx-auto" style="width: 30px; height: 30px; border-radius: 50%; background: #e9ecef; color: #6c757d; line-height: 30px; font-weight: bold;">2</div>
+                    <small class="text-muted">Thời gian hiệu lực</small>
+                </div>
+                <div class="step-item text-center flex-grow-1" id="step-ind-3" style="cursor: pointer;" onclick="clickStep(3)">
+                    <div class="step-icon mb-1 mx-auto" style="width: 30px; height: 30px; border-radius: 50%; background: #e9ecef; color: #6c757d; line-height: 30px; font-weight: bold;">3</div>
+                    <small class="text-muted">Xác nhận</small>
+                </div>
+                <!-- Progress Line -->
+                <div class="position-absolute top-50 start-0 end-0 translate-y-middle" style="height: 2px; background: #e9ecef; z-index: -1;">
+                    <div class="progress-line" style="height: 100%; width: 0%; background: #0d6efd; transition: width 0.3s;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        let currentStep = 1;
-        const totalSteps = 3;
+    <!-- Form Container -->
+    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+        <div class="card-body p-4">
+            <form id="createVoucherForm">
+                @csrf
+                
+                <!-- Step 1: Thông tin cơ bản -->
+                <div class="form-step" id="step-1">
+                    <div class="alert alert-info d-flex align-items-center gap-2 mb-4" style="border-radius: 10px; background-color: #f0f7ff; border-color: #cce3ff;">
+                        <i class="fas fa-info-circle text-primary"></i>
+                        <div>
+                            <div class="fw-bold text-primary">Thông tin cơ bản</div>
+                            <small class="text-muted">Mã voucher phải là duy nhất và sẽ được cho khách hàng</small>
+                        </div>
+                    </div>
 
-        // Lấy CSRF token
-        function csrfToken() {
-            const meta = document.querySelector('meta[name="csrf-token"]');
-            if (meta) return meta.content;
-            const hidden = document.querySelector('#voucherForm input[name="_token"]');
-            return hidden ? hidden.value : '';
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Mã Voucher <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-tag text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0" id="MaCode" name="MaCode" placeholder="Nhập mã voucher...">
+                            <button class="btn btn-outline-primary" type="button" onclick="generateRandomCode()">Tạo</button>
+                        </div>
+                        <div class="text-danger small mt-1 d-none" id="error-MaCode">Mã voucher là bắt buộc</div>
+                        <small class="text-muted">Mã voucher phải là duy nhất và sẽ được cho khách hàng</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Loại Giảm Giá <span class="text-danger">*</span></label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="LoaiGiamGia" id="typePhanTram" value="PhanTram" checked onchange="toggleDiscountType()">
+                                <label class="form-check-label fw-bold text-dark" for="typePhanTram">Phần trăm (%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="LoaiGiamGia" id="typeTienMat" value="TienMat" onchange="toggleDiscountType()">
+                                <label class="form-check-label fw-bold text-dark" for="typeTienMat">Tiền mặt (VND)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                                          <!-- Percent Input (Only for PhanTram) -->
+                                          <div class="col-md-6" id="inputPhanTramContainer">
+                                              <label class="form-label fw-bold text-dark">Phần Trăm Giảm Giá <span class="text-danger">*</span></label>
+                                              <div class="input-group">
+                                                  <span class="input-group-text bg-light border-end-0"><i class="fas fa-percent text-muted"></i></span>
+                                                  <input type="number" class="form-control border-start-0 border-end-0 text-center" id="PhanTram" name="PhanTram" value="0" min="0" max="100">
+                                                  <button class="btn btn-outline-secondary border-start-0" type="button" onclick="adjustValue('PhanTram', -1)"><i class="fas fa-minus"></i></button>
+                                                  <button class="btn btn-outline-secondary" type="button" onclick="adjustValue('PhanTram', 1)"><i class="fas fa-plus"></i></button>
+                                              </div>
+                                              <div class="text-danger small mt-1 d-none" id="error-PhanTram">Phần trăm giảm giá phải lớn hơn 0</div>
+                                          </div>
+                    
+                                          <!-- Cash Discount Input (Only for TienMat) -->
+                                          <div class="col-md-6 d-none" id="inputTienMatContainer">
+                                              <label class="form-label fw-bold text-dark">Số Tiền Giảm (VND) <span class="text-danger">*</span></label>
+                                              <div class="input-group">
+                                                  <span class="input-group-text bg-light border-end-0"><i class="fas fa-money-bill-wave text-muted"></i></span>
+                                                  <input type="number" class="form-control border-start-0" id="GiamToiDa_TienMat" name="GiamToiDa_TienMat" placeholder="0">
+                                              </div>
+                                              <div class="text-danger small mt-1 d-none" id="error-GiamToiDa_TienMat">Số tiền giảm phải lớn hơn 0</div>
+                                          </div>
+                    
+                                          <!-- Minimum Order (For both types) -->
+                                          <div class="col-md-6" id="inputDonHangToiThieuContainer">
+                                              <label class="form-label fw-bold text-dark">Đơn Hàng Tối Thiểu</label>
+                                              <div class="input-group">
+                                                  <span class="input-group-text bg-light border-end-0"><i class="fas fa-shopping-cart text-muted"></i></span>
+                                                  <input type="number" class="form-control border-start-0" id="DonHangToiThieu" name="DonHangToiThieu" placeholder="0">
+                                                  <span class="input-group-text bg-light">VND</span>
+                                              </div>
+                                              <small class="text-muted">Để trống nếu không giới hạn</small>
+                                          </div>
+                                      </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Tổng Số Lượng Phát Hành</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-ticket-alt text-muted"></i></span>
+                                <input type="number" class="form-control border-start-0" id="SoLuongToiDa" name="SoLuongToiDa" placeholder="0">
+                                <span class="input-group-text bg-light">lượt</span>
+                            </div>
+                            <small class="text-muted">Để trống nếu không giới hạn số lượng phát hành</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Số Lần Tối Đa/1 User</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-users text-muted"></i></span>
+                                <input type="number" class="form-control border-start-0" id="GioiHanNguoiDung" name="GioiHanNguoiDung" placeholder="1" value="1">
+                                <span class="input-group-text bg-light">lần</span>
+                            </div>
+                            <small class="text-muted">Giới hạn số lần một tài khoản có thể sử dụng (mặc định là 1)</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Mô Tả Voucher</label>
+                        <textarea class="form-control" id="MoTa" name="MoTa" rows="3" placeholder="Nhập mô tả chi tiết voucher (ví dụ: Giảm giá ngày cuối tuần, áp dụng cho mọi đơn hàng...)"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Giá trị preset nhanh:</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetPercent(10)">10%</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetPercent(20)">20%</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetPercent(30)">30%</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetPercent(50)">50%</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Thời gian hiệu lực -->
+                <div class="form-step d-none" id="step-2">
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <div class="alert alert-info d-flex align-items-center gap-2 mb-4" style="border-radius: 10px; background-color: #f0f7ff; border-color: #cce3ff;">
+                                <i class="fas fa-calendar-alt text-primary"></i>
+                                <div>
+                                    <div class="fw-bold text-primary">Thiết lập thời gian</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark">Ngày Bắt Đầu <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary bg-light border-end-0" type="button" id="btnStartCalendar">
+                                        <i class="far fa-calendar-alt text-muted"></i>
+                                    </button>
+                                    <input type="text" class="form-control border-start-0" id="NgayBatDau" name="NgayBatDau" placeholder="Chọn ngày...">
+                                </div>
+                                <div class="text-danger small mt-1 d-none" id="error-NgayBatDau">Ngày bắt đầu là bắt buộc</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark">Ngày Kết Thúc <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary bg-light border-end-0" type="button" id="btnEndCalendar">
+                                        <i class="far fa-calendar-alt text-muted"></i>
+                                    </button>
+                                    <input type="text" class="form-control border-start-0" id="NgayKetThuc" name="NgayKetThuc" placeholder="Chọn ngày...">
+                                </div>
+                                <div class="text-danger small mt-1 d-none" id="error-NgayKetThuc">Ngày kết thúc là bắt buộc</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark">Chọn nhanh thời gian:</label>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetDuration(7)">7 ngày</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetDuration(14)">2 tuần</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetDuration(30)">1 tháng</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetDuration(60)">2 tháng</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPresetDuration(90)">3 tháng</button>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning py-2" style="border-radius: 10px; background-color: #fffbeb; border-color: #fef08a;">
+                                <div class="d-flex gap-2">
+                                    <i class="fas fa-exclamation-triangle text-warning mt-1"></i>
+                                    <div>
+                                        <div class="fw-bold text-warning">Lưu ý quan trọng</div>
+                                        <small class="text-muted d-block">Voucher sẽ tự động hết hạn sau ngày kết thúc</small>
+                                        <small class="text-muted d-block">Không thể thay đổi thời gian sau khi voucher đã được kích hoạt</small>
+                                        <small class="text-muted d-block">Khách hàng chỉ có thể sử dụng voucher trong khoảng thời gian này</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light" style="border-radius: 12px;">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="far fa-lightbulb text-warning fs-5"></i>
+                                        <h6 class="mb-0 fw-bold">Gợi ý</h6>
+                                    </div>
+                                    <ul class="small text-muted ps-3 mb-0">
+                                        <li>Nên đặt thời gian voucher phù hợp với chiến dịch marketing</li>
+                                        <li>Voucher ngắn hạn (7-14 ngày) tạo cảm giác khẩn hiếm</li>
+                                        <li>Voucher dài hạn (1-3 tháng) phù hợp cho khách hàng thân thiết</li>
+                                        <li>Kiểm tra kỹ ngày bắt đầu và kết thúc trước khi lưu</li>
+                                        <li>Có thể kết hợp với ngày lễ, sự kiện đặc biệt</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Xác nhận -->
+                <div class="form-step d-none" id="step-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="far fa-eye text-primary"></i>
+                        <h6 class="mb-0 fw-bold text-primary">Xem trước voucher</h6>
+                    </div>
+
+                    <!-- Preview Card (Same as detail view) -->
+                    <div class="voucher-big-card mb-4" style="background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%); color: #fff; border-radius: 16px; padding: 2rem; text-align: center; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.05);"></div>
+                        <div style="position: absolute; bottom: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,0.05);"></div>
+                        
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span style="text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; opacity: 0.9;">VOUCHER GIẢM GIÁ</span>
+                        </div>
+                        <div class="display-3 fw-bold mb-2" id="previewPhanTram">0%</div>
+                        <div class="mb-3">
+                            <span class="badge" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); color: #fff; font-size: 1.2rem; padding: 0.5rem 1.5rem; border-radius: 99px;" id="previewMaCode">------</span>
+                        </div>
+                        <div class="small opacity-75 d-flex justify-content-center align-items-center gap-2">
+                            <i class="far fa-calendar-alt"></i>
+                            <span id="previewDateRange">--/--/---- - --/--/----</span>
+                        </div>
+                    </div>
+
+                    <!-- Preview Table -->
+                    <div class="detail-table-container" style="background: #111827; color: #f9fafb; border-radius: 12px; overflow: hidden;">
+                        <table class="table table-dark mb-0" style="--bs-table-bg: #111827; --bs-table-border-color: #374151;">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 fw-normal" style="font-size: 0.85rem; color: #9ca3af;">Thông tin</th>
+                                    <th class="px-4 py-3 fw-normal" style="font-size: 0.85rem; color: #9ca3af;">Giá trị</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-ticket-alt" style="color: #9ca3af;"></i>
+                                            <span>Mã Voucher</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary fw-bold" style="color: #ec4899;" id="tableMaCode">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-percent" style="color: #9ca3af;"></i>
+                                            <span id="labelPhanTramOrTienMat">Phần trăm giảm giá</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <span class="badge" style="background: #10b981; color: #fff;" id="tablePhanTram">0%</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-shopping-cart" style="color: #9ca3af;"></i>
+                                            <span>Đơn hàng tối thiểu</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary" id="tableDonHangToiThieu">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-ticket-alt" style="color: #9ca3af;"></i>
+                                            <span>Tổng số lượng phát hành</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary" id="tableSoLuongToiDa">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-users" style="color: #9ca3af;"></i>
+                                            <span>Số lần tối đa/1 User</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary" id="tableGioiHanNguoiDung">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-calendar-alt" style="color: #9ca3af;"></i>
+                                            <span>Thời gian hiệu lực</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary" id="tableDateRange">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-check" style="color: #9ca3af;"></i>
+                                            <span>Số ngày có hiệu lực</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <span class="badge" style="background: #0dcaf0; color: #fff;" id="tableSoNgayHieuLuc">0 ngày</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border-secondary">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-info-circle" style="color: #9ca3af;"></i>
+                                            <span>Mô tả</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 border-secondary" id="tableMoTa">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-light border d-none" id="btn-prev" onclick="goToStep(currentStep - 1)">Quay lại</button>
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-light border me-2" onclick="window.location.href='{{ route('admin.vouchers.index') }}'">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="btn-next" onclick="goToStep(currentStep + 1)">Tiếp theo</button>
+                        <button type="button" class="btn btn-success d-none" id="btn-submit" onclick="submitForm()">Lưu Voucher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 3;
+    let maxStepReached = 1;
+
+    function handleTopBack() {
+        if (currentStep > 1) {
+            goToStep(currentStep - 1);
+        } else {
+            window.location.href = '{{ route('admin.vouchers.index') }}';
+        }
+    }
+
+    function clickStep(step) {
+        if (step <= maxStepReached) {
+            goToStep(step);
+        } else if (step === currentStep + 1) {
+            goToStep(step);
+        }
+    }
+
+    function goToStep(step) {
+        if (step < 1 || step > totalSteps) return;
+        
+        // Validation for Step 1
+              if (currentStep === 1 && step > 1) {
+                  const maCodeEl = document.getElementById('MaCode');
+                  const maCode = maCodeEl.value;
+                  const isPhanTram = document.getElementById('typePhanTram').checked;
+                  
+                  let hasError = false;
+                  
+                  if (!maCode) {
+                      document.getElementById('error-MaCode').classList.remove('d-none');
+                      maCodeEl.classList.add('is-invalid');
+                      hasError = true;
+                  } else {
+                      document.getElementById('error-MaCode').classList.add('d-none');
+                      maCodeEl.classList.remove('is-invalid');
+                  }
+                  
+                  if (isPhanTram) {
+                      const phanTramEl = document.getElementById('PhanTram');
+                      const phanTram = phanTramEl.value;
+                      if (phanTram <= 0) {
+                          document.getElementById('error-PhanTram').classList.remove('d-none');
+                          phanTramEl.classList.add('is-invalid');
+                          hasError = true;
+                      } else {
+                          document.getElementById('error-PhanTram').classList.add('d-none');
+                          phanTramEl.classList.remove('is-invalid');
+                      }
+                  } else {
+                      const giamToiDaEl = document.getElementById('GiamToiDa_TienMat');
+                      const giamToiDa = giamToiDaEl.value;
+                      if (giamToiDa <= 0) {
+                          document.getElementById('error-GiamToiDa_TienMat').classList.remove('d-none');
+                          giamToiDaEl.classList.add('is-invalid');
+                          hasError = true;
+                      } else {
+                          document.getElementById('error-GiamToiDa_TienMat').classList.add('d-none');
+                          giamToiDaEl.classList.remove('is-invalid');
+                      }
+                  }
+                  
+                  if (hasError) return;
+              }
+        
+        // Validation for Step 2
+        if (currentStep === 2 && step > 2) {
+            const batDauEl = document.getElementById('NgayBatDau');
+            const ketThucEl = document.getElementById('NgayKetThuc');
+            const batDau = batDauEl.value;
+            const ketThuc = ketThucEl.value;
+            
+            let hasError = false;
+            
+            if (!batDau) {
+                document.getElementById('error-NgayBatDau').classList.remove('d-none');
+                batDauEl.classList.add('is-invalid');
+                hasError = true;
+            } else {
+                document.getElementById('error-NgayBatDau').classList.add('d-none');
+                batDauEl.classList.remove('is-invalid');
+            }
+            
+            if (!ketThuc) {
+                document.getElementById('error-NgayKetThuc').classList.remove('d-none');
+                ketThucEl.classList.add('is-invalid');
+                hasError = true;
+            } else {
+                document.getElementById('error-NgayKetThuc').classList.add('d-none');
+                ketThucEl.classList.remove('is-invalid');
+            }
+            
+            if (!hasError && new Date(batDau) > new Date(ketThuc)) {
+                document.getElementById('error-NgayKetThuc').textContent = 'Ngày kết thúc phải sau ngày bắt đầu!';
+                document.getElementById('error-NgayKetThuc').classList.remove('d-none');
+                ketThucEl.classList.add('is-invalid');
+                return;
+            }
+            
+            if (hasError) return;
         }
 
-        // Map field theo step để clear lỗi đúng vùng
+        currentStep = step;
+        if (currentStep > maxStepReached) {
+            maxStepReached = currentStep;
+        }
+
+        // Update UI
+        document.querySelectorAll('.form-step').forEach(el => el.classList.add('d-none'));
+        document.getElementById(`step-${currentStep}`).classList.remove('d-none');
+
+        // Update Indicators
+        for (let i = 1; i <= totalSteps; i++) {
+            const ind = document.getElementById(`step-ind-${i}`);
+            const icon = ind.querySelector('.step-icon');
+            const text = ind.querySelector('small');
+            
+            if (i === currentStep) {
+                icon.style.background = '#0d6efd';
+                icon.style.color = '#fff';
+                text.classList.add('fw-bold');
+                text.classList.remove('text-muted');
+            } else if (i < currentStep) {
+                icon.style.background = '#198754'; // Success green for completed
+                icon.style.color = '#fff';
+                text.classList.remove('fw-bold');
+                text.classList.remove('text-muted');
+            } else {
+                icon.style.background = '#e9ecef';
+                icon.style.color = '#6c757d';
+                text.classList.remove('fw-bold');
+                text.classList.add('text-muted');
+            }
+        }
+
+        // Update progress line
+        const progressLine = document.querySelector('.progress-line');
+        if (currentStep === 1) progressLine.style.width = '0%';
+        if (currentStep === 2) progressLine.style.width = '50%';
+        if (currentStep === 3) progressLine.style.width = '100%';
+
+        // Update Buttons
+        document.getElementById('btn-prev').classList.toggle('d-none', currentStep === 1);
+        document.getElementById('btn-next').classList.toggle('d-none', currentStep === totalSteps);
+        document.getElementById('btn-submit').classList.toggle('d-none', currentStep !== totalSteps);
+
+        // Fill Preview in Step 3
+              if (currentStep === 3) {
+                  const maCode = document.getElementById('MaCode').value;
+                  const isPhanTram = document.getElementById('typePhanTram').checked;
+                  const phanTram = document.getElementById('PhanTram').value;
+                  const giamToiDaTienMat = document.getElementById('GiamToiDa_TienMat').value;
+                  const batDau = document.getElementById('NgayBatDau').value;
+                  const ketThuc = document.getElementById('NgayKetThuc').value;
+                  const minOrder = document.getElementById('DonHangToiThieu').value;
+                  const maxUsage = document.getElementById('SoLuongToiDa').value;
+                  const userLimit = document.getElementById('GioiHanNguoiDung').value;
+                  const moTa = document.getElementById('MoTa').value;
+        
+                  // Cập nhật Big Card
+                  const previewPhanTramEl = document.getElementById('previewPhanTram');
+                  if (isPhanTram) {
+                      previewPhanTramEl.textContent = phanTram + '%';
+                      previewPhanTramEl.style.fontSize = '3rem'; // Reset font size
+                  } else {
+                      previewPhanTramEl.textContent = Number(giamToiDaTienMat).toLocaleString('vi-VN') + 'đ';
+                      previewPhanTramEl.style.fontSize = '2rem'; // Thu nhỏ nếu chữ dài
+                  }
+                  document.getElementById('previewMaCode').textContent = maCode;
+                  document.getElementById('previewDateRange').textContent = `${formatDate(batDau)} - ${formatDate(ketThuc)}`;
+        
+                  // Cập nhật Table
+                  document.getElementById('tableMaCode').textContent = maCode;
+                  
+                  // Tính số ngày có hiệu lực
+                  let daysDiff = 0;
+                  if (batDau && ketThuc) {
+                      const start = new Date(batDau);
+                      const end = new Date(ketThuc);
+                      const diffTime = Math.abs(end - start);
+                      daysDiff = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                  }
+                  document.getElementById('tableSoNgayHieuLuc').textContent = daysDiff + ' ngày';
+                  
+                  const labelEl = document.getElementById('labelPhanTramOrTienMat');
+                  const iconEl = labelEl.previousElementSibling;
+                  
+                  if (isPhanTram) {
+                      iconEl.className = 'fas fa-percent';
+                      document.getElementById('tablePhanTram').textContent = phanTram + '%';
+                      labelEl.textContent = 'Phần trăm giảm giá';
+                  } else {
+                      iconEl.className = 'fas fa-money-bill-wave';
+                      document.getElementById('tablePhanTram').textContent = Number(giamToiDaTienMat).toLocaleString('vi-VN') + ' VND';
+                      labelEl.textContent = 'Số tiền giảm';
+                  }
+            
+            document.getElementById('tableDonHangToiThieu').textContent = minOrder ? Number(minOrder).toLocaleString('vi-VN') + ' VND' : 'Không giới hạn';
+            document.getElementById('tableSoLuongToiDa').textContent = maxUsage ? maxUsage + ' lượt' : 'Không giới hạn';
+            document.getElementById('tableGioiHanNguoiDung').textContent = userLimit ? userLimit + ' lần' : 'Không giới hạn';
+            document.getElementById('tableDateRange').textContent = `${formatDate(batDau)} - ${formatDate(ketThuc)}`;
+            document.getElementById('tableMoTa').textContent = moTa ? moTa : 'Không có';
+        }
+    }
+
+    function toggleDiscountType() {
+          const isPhanTram = document.getElementById('typePhanTram').checked;
+          const phanTramContainer = document.getElementById('inputPhanTramContainer');
+          const tienMatContainer = document.getElementById('inputTienMatContainer');
+          
+          if (isPhanTram) {
+              phanTramContainer.classList.remove('d-none');
+              tienMatContainer.classList.add('d-none');
+          } else {
+              phanTramContainer.classList.add('d-none');
+              tienMatContainer.classList.remove('d-none');
+          }
+      }
+
+    function generateRandomCode() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let code = '';
+        for (let i = 0; i < 8; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        const input = document.getElementById('MaCode');
+        input.value = code;
+        
+        // Xóa báo lỗi khi đã có giá trị mới
+        document.getElementById('error-MaCode').classList.add('d-none');
+        input.classList.remove('is-invalid');
+    }
+
+    function adjustValue(id, amount) {
+        const el = document.getElementById(id);
+        let val = parseInt(el.value) || 0;
+        val += amount;
+        if (id === 'PhanTram') {
+            if (val < 0) val = 0;
+            if (val > 100) val = 100;
+        }
+        el.value = val;
+        
+        // Xóa báo lỗi cho PhanTram nếu giá trị hợp lệ
+        if (id === 'PhanTram' && val > 0) {
+            document.getElementById('error-PhanTram').classList.add('d-none');
+            el.classList.remove('is-invalid');
+        }
+    }
+
+    function setPresetPercent(percent) {
+        const el = document.getElementById('PhanTram');
+        el.value = percent;
+        
+        // Xóa báo lỗi
+        if (percent > 0) {
+            document.getElementById('error-PhanTram').classList.add('d-none');
+            el.classList.remove('is-invalid');
+        }
+    }
+
+    function setPresetDuration(days) {
+        // Lấy ngày hôm nay theo giờ địa phương (Việt Nam)
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const startStr = `${year}-${month}-${day}`;
+        
+        const endDate = new Date(today.getTime() + (days * 24 * 60 * 60 * 1000));
+        const endYear = endDate.getFullYear();
+        const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
+        const endDay = String(endDate.getDate()).padStart(2, '0');
+        const endStr = `${endYear}-${endMonth}-${endDay}`;
+        
+        const batDauEl = document.getElementById('NgayBatDau');
+        const ketThucEl = document.getElementById('NgayKetThuc');
+        
+        batDauEl.value = startStr;
+        ketThucEl.value = endStr;
+        
+        // Cập nhật lại lịch hiển thị của Flatpickr
+        if (window.fpStart) window.fpStart.setDate(startStr);
+        if (window.fpEnd) window.fpEnd.setDate(endStr);
+        
+        // Xóa báo lỗi
+        document.getElementById('error-NgayBatDau').classList.add('d-none');
+        document.getElementById('error-NgayKetThuc').classList.add('d-none');
+        batDauEl.classList.remove('is-invalid');
+        ketThucEl.classList.remove('is-invalid');
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('vi-VN');
+    }
+
+    function clearAjaxErrors() {
+        document.querySelectorAll('.is-invalid').forEach(el => {
+            el.classList.remove('is-invalid');
+        });
+        document.querySelectorAll('.ajax-error').forEach(el => {
+            el.remove();
+        });
+        document.querySelectorAll('[id^="error-"]').forEach(el => {
+            el.classList.add('d-none');
+        });
+    }
+
+    function showAjaxErrors(errors) {
+        clearAjaxErrors();
+        
+        let firstErrorStep = null;
         const fieldsByStep = {
-            1: ['MaCode', 'PhanTram', 'DonHangToiThieu', 'SoLanToiDa'],
-            2: ['NgayBatDau', 'NgayKetThuc'],
-            3: []
+            1: ['MaCode', 'PhanTram', 'GiamToiDa', 'GiamToiDa_TienMat', 'DonHangToiThieu', 'SoLuongToiDa', 'GioiHanNguoiDung', 'MoTa'],
+            2: ['NgayBatDau', 'NgayKetThuc']
         };
 
-        function clearAjaxErrors(step) {
-            const names = fieldsByStep[step] || [];
-            names.forEach(name => {
-                const input = document.querySelector(`[name="${name}"]`);
-                if (!input) return;
-                input.classList.remove('is-invalid');
-                const container = input.closest('.form-group') || input.parentNode;
-                const old = container.querySelector('.ajax-error');
-                if (old) old.remove();
-            });
-        }
-
-        function showAjaxErrors(errors) {
-            Object.entries(errors).forEach(([field, messages]) => {
-                const input = document.querySelector(`[name="${field}"]`);
-                if (!input) return;
-                const container = input.closest('.form-group') || input.parentNode;
-
-                // đánh dấu lỗi
-                input.classList.add('is-invalid');
-
-                // xóa lỗi cũ (ajax)
-                const old = container.querySelector('.ajax-error');
-                if (old) old.remove();
-
-                // thêm lỗi mới (ajax)
+        Object.entries(errors).forEach(([field, messages]) => {
+            let inputName = field;
+            if (field === 'GiamToiDa') {
+                const isPhanTram = document.getElementById('typePhanTram').checked;
+                if (!isPhanTram) {
+                    inputName = 'GiamToiDa_TienMat';
+                }
+            }
+            
+            const input = document.querySelector(`[name="${inputName}"]`) || document.getElementById(inputName);
+            if (!input) return;
+            
+            input.classList.add('is-invalid');
+            
+            for (const [stepNum, fields] of Object.entries(fieldsByStep)) {
+                if (fields.includes(inputName) || fields.includes(field)) {
+                    const stepInt = parseInt(stepNum);
+                    if (firstErrorStep === null || stepInt < firstErrorStep) {
+                        firstErrorStep = stepInt;
+                    }
+                }
+            }
+            
+            const errorDivId = `error-${inputName}`;
+            const predefinedError = document.getElementById(errorDivId);
+            if (predefinedError) {
+                predefinedError.textContent = messages[0];
+                predefinedError.classList.remove('d-none');
+            } else {
+                const container = input.closest('.input-group') || input;
                 const div = document.createElement('div');
-                div.className = 'invalid-feedback d-block ajax-error';
+                div.className = 'text-danger small mt-1 ajax-error';
                 div.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${messages[0]}`;
-                container.appendChild(div);
+                container.parentNode.insertBefore(div, container.nextSibling);
+            }
+        });
+        
+        if (firstErrorStep !== null) {
+            goToStep(firstErrorStep);
+        }
+    }
+
+    async function submitForm() {
+        clearAjaxErrors();
+        const form = document.getElementById('createVoucherForm');
+        const formData = new FormData(form);
+        
+        const isPhanTram = document.getElementById('typePhanTram').checked;
+        const loaiGiamGia = isPhanTram ? 'PhanTram' : 'TienMat';
+        
+        formData.append('LoaiGiamGia', loaiGiamGia);
+        
+        if (isPhanTram) {
+            formData.set('GiamToiDa', 0);
+        } else {
+            const giamToiDa = document.getElementById('GiamToiDa_TienMat').value;
+            formData.set('GiamToiDa', giamToiDa);
+            formData.set('PhanTram', 0);
+        }
+        formData.delete('GiamToiDa_TienMat');
+
+        try {
+            const response = await fetch('/api/v1/admin/vouchers', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
             });
-        }
 
-        async function validateServerStep(step) {
-            clearAjaxErrors(step);
+            const result = await response.json();
 
-            const form = document.getElementById('voucherForm');
-            const formData = new FormData(form);
-            formData.append('step', step);
-
-            try {
-                const res = await fetch('{{ route('admin.vouchers.validateStep') }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken(),
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                });
-
-                if (res.ok) {
-                    return true;
-                }
-
-                if (res.status === 422) {
-                    const data = await res.json();
-                    showAjaxErrors(data.errors);
-
-                    // focus vào field lỗi đầu tiên
-                    const first = Object.keys(data.errors)[0];
-                    const el = document.querySelector(`[name="${first}"]`);
-                    if (el) el.focus();
-                    return false;
-                }
-
-                showToast('Không thể kiểm tra hợp lệ. Vui lòng thử lại!', 'danger');
-                return false;
-            } catch (e) {
-                showToast('Lỗi kết nối máy chủ. Vui lòng thử lại!', 'danger');
-                return false;
-            }
-        }
-
-        // Điều hướng step: khi tiến (direction=1) sẽ gọi validate server của step hiện tại
-        async function changeStep(direction) {
-            if (direction === 1) {
-                const ok = await validateServerStep(currentStep);
-                if (!ok) return; // có lỗi thì không cho sang bước sau
-            }
-
-            currentStep += direction;
-            if (currentStep < 1) currentStep = 1;
-            if (currentStep > totalSteps) currentStep = totalSteps;
-
-            updateStepDisplay();
-        }
-
-        function updateStepDisplay() {
-            document.querySelectorAll('.form-step').forEach(step => step.classList.add('d-none'));
-            document.getElementById(`step${currentStep}`).classList.remove('d-none');
-
-            const progress = (currentStep / totalSteps) * 100;
-            document.getElementById('formProgress').style.width = progress + '%';
-
-            document.getElementById('prevBtn').style.display = currentStep > 1 ? 'inline-block' : 'none';
-            document.getElementById('nextBtn').style.display = currentStep < totalSteps ? 'inline-block' : 'none';
-            document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
-
-            if (currentStep === 3) {
-                updatePreview();
-            }
-        }
-        // Generate voucher code
-        function generateCode() {
-            const btn = document.getElementById('generateBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            fetch("{{ route('admin.vouchers.generateCode') }}")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('MaCode').value = data.code;
-                    updatePreview();
-                    showToast('Đã tạo mã: ' + data.code, 'success');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Có lỗi xảy ra', 'danger');
-                })
-                .finally(() => {
-                    btn.innerHTML = '<i class="fas fa-random"></i> Tạo';
-                    btn.disabled = false;
-                });
-        }
-
-        // Set discount preset
-        function setDiscount(percent) {
-            document.getElementById('PhanTram').value = percent;
-            updatePreview();
-        }
-
-        // Set duration preset
-        function setDuration(days) {
-            const today = new Date();
-            const endDate = new Date(today.getTime() + (days * 24 * 60 * 60 * 1000));
-
-            document.getElementById('NgayBatDau').value = today.toISOString().split('T')[0];
-            document.getElementById('NgayKetThuc').value = endDate.toISOString().split('T')[0];
-
-            updateDuration();
-        }
-
-        // Update duration info
-        function updateDuration() {
-            const startDate = document.getElementById('NgayBatDau').value;
-            const endDate = document.getElementById('NgayKetThuc').value;
-
-            if (startDate && endDate) {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (diffDays >= 0) {
-                    document.getElementById('durationInfo').style.display = 'block';
-                    document.getElementById('durationText').textContent =
-                        `Voucher sẽ có hiệu lực trong ${diffDays} ngày`;
-                }
-            }
-
-            updatePreview();
-        }
-
-        // Update preview
-        function updatePreview() {
-            const code = document.getElementById('MaCode').value || 'VOUCHER-CODE';
-            const discount = document.getElementById('PhanTram').value || '0';
-            const startDate = document.getElementById('NgayBatDau').value;
-            const endDate = document.getElementById('NgayKetThuc').value;
-            const minOrder = document.getElementById('DonHangToiThieu').value;
-            const maxUsage = document.getElementById('SoLanToiDa').value;
-
-            // Update preview card
-            document.getElementById('previewCode').textContent = code;
-            document.getElementById('previewDiscount').textContent = discount + '%';
-
-            if (startDate && endDate) {
-                const start = new Date(startDate).toLocaleDateString('vi-VN');
-                const end = new Date(endDate).toLocaleDateString('vi-VN');
-                document.getElementById('previewDates').innerHTML =
-                    `<i class="fas fa-calendar"></i> ${start} - ${end}`;
-
-                const diffTime = Math.abs(new Date(endDate) - new Date(startDate));
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                // Update summary
-                document.getElementById('summaryDuration').textContent = `${start} - ${end}`;
-                document.getElementById('summaryDays').textContent = `${diffDays} ngày`;
-            }
-
-            // Update summary table
-            document.getElementById('summaryCode').textContent = code;
-            document.getElementById('summaryDiscount').textContent = discount + '%';
-            
-            // Update điều kiện đơn hàng tối thiểu
-            if (minOrder && parseFloat(minOrder) > 0) {
-                document.getElementById('summaryMinOrder').textContent = 
-                    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(minOrder);
+            if (result.success) {
+                localStorage.setItem('admin_success', 'Tạo voucher thành công!');
+                window.location.href = '{{ route('admin.vouchers.index') }}';
             } else {
-                document.getElementById('summaryMinOrder').textContent = 'Không giới hạn';
-            }
-            
-            // Update số lần tối đa
-            if (maxUsage && parseInt(maxUsage) > 0) {
-                document.getElementById('summaryMaxUsage').textContent = maxUsage + ' lần';
-            } else {
-                document.getElementById('summaryMaxUsage').textContent = 'Không giới hạn';
-            }
-        }
-
-        // Show toast notification
-        function showToast(message, type = 'info') {
-            const toastHtml = `
-                                                        <div class="toast align-items-center text-white bg-${type} border-0" role="alert" style="font-size: 11px;">
-                                                            <div class="d-flex">
-                                                                <div class="toast-body">${message}</div>
-                                                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                                                            </div>
-                                                        </div>
-                                                    `;
-
-            let container = document.getElementById('toastContainer');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'toastContainer';
-                container.className = 'toast-container position-fixed top-0 end-0 p-3';
-                container.style.zIndex = '1060';
-                document.body.appendChild(container);
-            }
-
-            container.insertAdjacentHTML('beforeend', toastHtml);
-            const toast = container.lastElementChild;
-            new bootstrap.Toast(toast).show();
-
-            toast.addEventListener('hidden.bs.toast', () => toast.remove());
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function () {
-            // Nếu có lỗi server sau khi submit, chuyển tới step chứa lỗi đầu
-            const serverErrorFields = @json($errors->keys());
-            if (serverErrorFields.length) {
-                const map = fieldsByStep;
-                currentStep = 1;
-                for (const [step, fields] of Object.entries(map)) {
-                    if (fields.some(f => serverErrorFields.includes(f))) {
-                        currentStep = parseInt(step); break;
-                    }
-                }
-                document.querySelector('.card-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-
-            // Khởi tạo hiển thị
-            updateDuration?.();
-            updateStepDisplay();
-
-            document.getElementById('MaCode')?.addEventListener('input', updatePreview);
-            document.getElementById('PhanTram')?.addEventListener('input', updatePreview);
-        });
-
-        // Submit: hiệu ứng loading
-        document.getElementById('voucherForm').addEventListener('submit', function () {
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
-            submitBtn.disabled = true;
-        });
-
-        function syncDateInputs() {
-                try {
-                    if (window.fpStart) {
-                        const altV = window.fpStart.altInput?.value?.trim();
-                        // nếu input thật đang rỗng mà alt có dữ liệu, parse theo dd/mm/yyyy
-                        if (!window.fpStart.input.value && altV) {
-                            window.fpStart.setDate(altV, true, 'd/m/Y');
-                        }
-                    }
-                    if (window.fpEnd) {
-                        const altV = window.fpEnd.altInput?.value?.trim();
-                        if (!window.fpEnd.input.value && altV) {
-                            window.fpEnd.setDate(altV, true, 'd/m/Y');
-                        }
-                    }
-                } catch (e) {
-                    // ignore
-                }
-            }
-
-            async function validateServerStep(step) {
-                clearAjaxErrors(step);
-
-                // QUAN TRỌNG: sync trước khi lấy FormData
-                syncDateInputs();
-
-                const form = document.getElementById('voucherForm');
-                const formData = new FormData(form);
-                formData.append('step', step);
-
-                try {
-                    const res = await fetch('{{ route('admin.vouchers.validateStep') }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken(),
-                            'Accept': 'application/json',
-                        },
-                        body: formData
-                    });
-
-                    if (res.ok) return true;
-
-                    if (res.status === 422) {
-                        const data = await res.json();
-                        showAjaxErrors(data.errors);
-                        const first = Object.keys(data.errors)[0];
-                        document.querySelector(`[name="${first}"]`)?.focus();
-                        return false;
-                    }
-
-                    showToast('Không thể kiểm tra hợp lệ. Vui lòng thử lại!', 'danger');
-                    return false;
-                } catch (e) {
-                    showToast('Lỗi kết nối máy chủ. Vui lòng thử lại!', 'danger');
-                    return false;
-                }
-            }
-
-            // Sửa preset nhanh: dùng flatpickr API thay vì gán .value
-            function setDuration(days) {
-                const start = new Date();
-                const end = new Date(start.getTime() + days * 24 * 60 * 60 * 1000);
-
-                if (window.fpStart) {
-                    window.fpStart.setDate(start, true, 'Y-m-d');
+                if (result.errors) {
+                    showAjaxErrors(result.errors);
                 } else {
-                    document.getElementById('NgayBatDau').value = start.toISOString().split('T')[0];
-                }
-
-                if (window.fpEnd) {
-                    window.fpEnd.setDate(end, true, 'Y-m-d');
-                } else {
-                    document.getElementById('NgayKetThuc').value = end.toISOString().split('T')[0];
-                }
-
-                updateDuration();
-            }
-
-            // Đọc từ selectedDates (nếu có) để tính chính xác
-            function updateDuration() {
-                let start, end;
-
-                if (window.fpStart?.selectedDates?.length) {
-                    start = window.fpStart.selectedDates[0];
-                }
-                if (window.fpEnd?.selectedDates?.length) {
-                    end = window.fpEnd.selectedDates[0];
-                }
-
-                // Fallback: đọc từ input thật (Y-m-d)
-                if (!start) {
-                    const s = document.getElementById('NgayBatDau')?.value;
-                    if (s) start = new Date(s);
-                }
-                if (!end) {
-                    const e = document.getElementById('NgayKetThuc')?.value;
-                    if (e) end = new Date(e);
-                }
-
-                if (start && end && !Number.isNaN(start) && !Number.isNaN(end)) {
-                    const diffTime = Math.abs(end - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    if (diffDays >= 0) {
-                        document.getElementById('durationInfo').style.display = 'block';
-                        document.getElementById('durationText').textContent = `Voucher sẽ có hiệu lực trong ${diffDays} ngày`;
-                    }
-
-                    const startStr = start.toLocaleDateString('vi-VN');
-                    const endStr = end.toLocaleDateString('vi-VN');
-                    document.getElementById('summaryDuration').textContent = `${startStr} - ${endStr}`;
-                    document.getElementById('summaryDays').textContent = `${diffDays} ngày`;
-                    document.getElementById('previewDates').innerHTML = `<i class="fas fa-calendar"></i> ${startStr} - ${endStr}`;
-                }
-
-                if (typeof updatePreview === 'function') {
-                    // updatePreview cũng đã render code/discount; phần ngày đã set ở trên
-                    const code = document.getElementById('MaCode').value || 'VOUCHER-CODE';
-                    const discount = document.getElementById('PhanTram').value || '0';
-                    document.getElementById('previewCode').textContent = code;
-                    document.getElementById('previewDiscount').textContent = discount + '%';
-                    document.getElementById('summaryCode').textContent = code;
-                    document.getElementById('summaryDiscount').textContent = discount + '%';
+                    window.showAdminToast(result.message || 'Lỗi khi tạo voucher', 'error');
                 }
             }
-
-            // Trước khi submit: sync để tránh required
-            document.getElementById('voucherForm').addEventListener('submit', function () {
-                syncDateInputs();
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
-                submitBtn.disabled = true;
-            });
-
-            // (Tùy chọn) Nếu old('NgayBatDau/KetThuc') đang ở dạng dd/mm/yyyy thì normalize lại khi load
-            document.addEventListener('DOMContentLoaded', function () {
-                const s = document.getElementById('NgayBatDau')?.value;
-                if (window.fpStart && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s || '')) {
-                    window.fpStart.setDate(s, true, 'd/m/Y');
-                }
-                const e = document.getElementById('NgayKetThuc')?.value;
-                if (window.fpEnd && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(e || '')) {
-                    window.fpEnd.setDate(e, true, 'd/m/Y');
-                }
-            });
-    </script>
-    <script>
-        // Đọc min/max từ data-attributes, fallback min=1, max=100
-        function getBounds(el) {
-            const min = parseInt(el.dataset.min, 10);
-            const max = parseInt(el.dataset.max, 10);
-            return {
-                min: Number.isFinite(min) ? min : 1,
-                max: Number.isFinite(max) ? max : 100
-            };
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            window.showAdminToast('Không thể kết nối đến server', 'error');
         }
+    }
 
-        function stepField(id, delta) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            const { min, max } = getBounds(el);
-
-            let v = parseInt(el.value, 10);
-            if (Number.isNaN(v)) {
-                // Nếu đang là text không phải số, khi bấm step sẽ nhảy về min/max tùy hướng
-                v = delta > 0 ? min : max;
-            } else {
-                v += delta;
+    // Tự động ẩn lỗi khi người dùng điền/chọn dữ liệu
+    document.querySelectorAll('#createVoucherForm input, #createVoucherForm textarea').forEach(input => {
+        const handleClear = function() {
+            this.classList.remove('is-invalid');
+            const predefinedError = document.getElementById(`error-${this.id}`);
+            if (predefinedError) {
+                predefinedError.classList.add('d-none');
             }
-            // Áp min/max
-            v = Math.min(max, Math.max(min, v));
-
-            el.value = String(v);
-            // Kích hoạt các hook hiện có (preview/validate AJAX)
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-            // Focus để người dùng thấy ngay
-            el.focus();
-            // Nếu có updatePreview() thì gọi
-            if (typeof updatePreview === 'function') updatePreview();
-        }
-
-        // Hỗ trợ phím mũi tên lên/xuống để step
-        document.addEventListener('DOMContentLoaded', function () {
-            const el = document.getElementById('PhanTram');
-            if (!el) return;
-
-            el.addEventListener('keydown', function (e) {
-                if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    stepField('PhanTram', +1);
-                } else if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    stepField('PhanTram', -1);
+            const container = this.closest('.input-group') || this;
+            let sibling = container.nextSibling;
+            while (sibling) {
+                if (sibling.classList && sibling.classList.contains('ajax-error')) {
+                    sibling.remove();
+                    break;
                 }
-            });
+                sibling = sibling.nextSibling;
+            }
+        };
+        input.addEventListener('input', handleClear);
+        input.addEventListener('change', handleClear);
+    });
+</script>
 
-            // (Tùy chọn) Lăn chuột để step khi đang focus
-            el.addEventListener('wheel', function (e) {
-                if (document.activeElement !== el) return;
-                e.preventDefault();
-                const delta = e.deltaY < 0 ? +1 : -1;
-                stepField('PhanTram', delta);
-            }, { passive: false });
-        });
-    </script>
+<style>
+    .table-dark {
+        color: #f9fafb;
+    }
+    .table-dark td {
+        border-color: #1f2937 !important;
+    }
+    .badge {
+        font-weight: 600;
+        padding: 0.35em 0.65em;
+        border-radius: 6px;
+    }
+</style>
 @endsection

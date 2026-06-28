@@ -21,7 +21,6 @@ class EditFoodTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('migrate:fresh');
 
         $this->seller = User::factory()->create(['VaiTro' => 'NguoiBan']);
         $this->restaurant = NhaHang::factory()->create([
@@ -32,6 +31,18 @@ class EditFoodTest extends TestCase
         ]);
 
         Storage::fake('public');
+
+        $mockApiResponse = \Mockery::mock(\Cloudinary\Api\ApiResponse::class);
+        $mockApiResponse->shouldReceive('offsetGet')
+            ->with('secure_url')
+            ->andReturn('https://res.cloudinary.com/drevbj1wg/image/upload/v12345/ta-food/foods/food.jpg');
+
+        $mockUploadApi = \Mockery::mock(\Cloudinary\Api\Upload\UploadApi::class);
+        $mockUploadApi->shouldReceive('upload')
+            ->andReturn($mockApiResponse);
+
+        \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::shouldReceive('uploadApi')
+            ->andReturn($mockUploadApi);
     }
 
     /** @test 6E.1 - Món ăn không tồn tại */
@@ -39,7 +50,7 @@ class EditFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.foods.update', 99999), [
+        $response = $this->putJson(route('api.seller.foods.update', 99999), [
             'TenMonAn' => 'Updated Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000
@@ -58,7 +69,7 @@ class EditFoodTest extends TestCase
 
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.foods.update', $otherFood->MaMonAn), [
+        $response = $this->putJson(route('api.seller.foods.update', $otherFood->MaMonAn), [
             'TenMonAn' => 'Updated Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000
@@ -73,7 +84,7 @@ class EditFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.foods.update', $this->food->MaMonAn), [
+        $response = $this->putJson(route('api.seller.foods.update', $this->food->MaMonAn), [
             'TenMonAn' => '',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000
@@ -93,7 +104,7 @@ class EditFoodTest extends TestCase
             'MaNhaHang' => $this->restaurant->MaNhaHang
         ]);
 
-        $response = $this->putJson(route('seller.foods.update', $this->food->MaMonAn), [
+        $response = $this->putJson(route('api.seller.foods.update', $this->food->MaMonAn), [
             'TenMonAn' => 'Existing Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 50000
@@ -108,7 +119,7 @@ class EditFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.foods.update', $this->food->MaMonAn), [
+        $response = $this->putJson(route('api.seller.foods.update', $this->food->MaMonAn), [
             'TenMonAn' => 'Updated Food',
             'DanhMuc' => 'Cơm',
             'Gia' => 0
@@ -123,7 +134,7 @@ class EditFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.foods.update', $this->food->MaMonAn), [
+        $response = $this->putJson(route('api.seller.foods.update', $this->food->MaMonAn), [
             'TenMonAn' => $this->food->TenMonAn,
             'DanhMuc' => $this->food->DanhMuc,
             'Gia' => $this->food->Gia,
@@ -140,7 +151,7 @@ class EditFoodTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.foods.update', $this->food->MaMonAn), [
+        $response = $this->putJson(route('api.seller.foods.update', $this->food->MaMonAn), [
             'TenMonAn' => 'Updated Food Name',
             'DanhMuc' => 'Nước uống',
             'Gia' => 75000,
@@ -160,5 +171,36 @@ class EditFoodTest extends TestCase
             'DanhMuc' => 'Nước uống',
             'Gia' => 75000
         ]);
+    }
+
+    /** @test 6S.2 - Sửa món ăn kèm tải lên hình ảnh thành công */
+    public function test_6s2_edit_food_with_images_success()
+    {
+        $this->actingAs($this->seller);
+
+        $response = $this->putJson(route('api.seller.foods.update', $this->food->MaMonAn), [
+            'TenMonAn' => 'Food With New Images',
+            'DanhMuc' => 'Nước uống',
+            'Gia' => 85000,
+            'MoTa' => 'Description with images',
+            'TrangThai' => 'Còn bán',
+            'images' => [
+                UploadedFile::fake()->image('food1.jpg'),
+                UploadedFile::fake()->image('food2.jpg'),
+            ]
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Sửa món ăn thành công!'
+            ]);
+
+        $this->food->refresh();
+        $this->assertEquals('https://res.cloudinary.com/drevbj1wg/image/upload/v12345/ta-food/foods/food.jpg', $this->food->HinhAnh);
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(['https://res.cloudinary.com/drevbj1wg/image/upload/v12345/ta-food/foods/food.jpg']),
+            $this->food->ThuVienAnh
+        );
     }
 }

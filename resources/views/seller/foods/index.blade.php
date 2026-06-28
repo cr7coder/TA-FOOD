@@ -1,4 +1,4 @@
-@extends('seller.layout')
+@extends('seller.layouts.app')
 @section('title', 'Quản lý món ăn')
 @section('content')
     <div class="container-fluid">
@@ -201,7 +201,7 @@
         </style>
     @endpush
 
-    <script src="{{ asset('js/api-seller-foods.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('js/api-seller-foods.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Target both .auto-dismiss and common bootstrap alerts

@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let html = '';
         foods.forEach(food => {
             const statusBadgeClass = food.TrangThai === 'Còn bán' ? 'bg-success' : 'bg-secondary';
-            const imageUrl = food.hinh_anh_url || (food.HinhAnh ? (food.HinhAnh.startsWith('http') ? food.HinhAnh : `/images/${food.HinhAnh}`) : '');
+            const imageUrl = food.hinh_anh_url || food.hinhAnhUrl || (food.HinhAnh ? (food.HinhAnh.startsWith('http') ? food.HinhAnh : `/images/${food.HinhAnh}`) : '');
             const priceFormatted = new Intl.NumberFormat('vi-VN').format(food.Gia);
 
             // Flag inactive categories in merchant dashboard
@@ -116,9 +116,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${statusAddon}
                     </td>
                     <td>
-                        ${imageUrl ? `
+                        ${food.HinhAnh ? `
                             <img src="${imageUrl}" alt="${food.TenMonAn}"
-                                style="width:50px;height:40px;object-fit:cover;border-radius:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onerror="this.src='/images/no-image.png'">
+                                style="width:50px;height:40px;object-fit:cover;border-radius:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         ` : '<span class="text-muted small">No image</span>'}
                     </td>
                     <td>
@@ -310,8 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Populate elements
                 const imgElement = document.getElementById('detail-food-img');
-                imgElement.src = food.hinh_anh_url || (food.HinhAnh ? (food.HinhAnh.startsWith('http') ? food.HinhAnh : `/images/${food.HinhAnh}`) : '');
-                imgElement.onerror = () => { imgElement.src = '/images/no-image.png'; };
+                imgElement.src = food.hinh_anh_url || food.hinhAnhUrl || (food.HinhAnh ? (food.HinhAnh.startsWith('http') ? food.HinhAnh : `/images/${food.HinhAnh}`) : '');
                 imgElement.alt = food.TenMonAn;
                 
                 // Status premium badge

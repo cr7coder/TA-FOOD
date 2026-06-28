@@ -30,6 +30,7 @@ class UserFactory extends Factory
             'MatKhau' => static::$password ??= bcrypt('password'),
             'SoDienThoai' => fake()->optional()->phoneNumber(),
             'VaiTro' => 'KhachHang',
+            'TrangThai' => 'Hoạt động',
         ];
     }
 

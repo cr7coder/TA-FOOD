@@ -18,7 +18,6 @@ class RestaurantValidationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('migrate:fresh');
 
         $this->seller = User::factory()->create(['VaiTro' => 'NguoiBan']);
         $this->restaurant = NhaHang::factory()->create([
@@ -31,7 +30,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => '',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -50,7 +49,7 @@ class RestaurantValidationTest extends TestCase
 
         $longName = str_repeat('A', 101);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => $longName,
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -67,7 +66,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Nhà hàng @#$%^&*()',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -84,7 +83,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '',
             'SoDienThoai' => '0912345678',
@@ -103,7 +102,7 @@ class RestaurantValidationTest extends TestCase
 
         $longAddress = str_repeat('A', 201);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => $longAddress,
             'SoDienThoai' => '0912345678',
@@ -120,7 +119,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '',
@@ -137,7 +136,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '091-234-5678',
@@ -155,7 +154,7 @@ class RestaurantValidationTest extends TestCase
         $this->actingAs($this->seller);
 
         // Test với số quá ngắn
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '091234',
@@ -167,7 +166,7 @@ class RestaurantValidationTest extends TestCase
             ->assertJsonFragment(['Số điện thoại phải có 10–11 chữ số']);
 
         // Test với số quá dài
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '091234567890',
@@ -184,7 +183,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '1912345678',
@@ -201,7 +200,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -218,7 +217,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -235,7 +234,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -244,7 +243,7 @@ class RestaurantValidationTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonFragment(['Giờ đóngcửa không được bỏ trống']);
+            ->assertJsonFragment(['Giờ đóng cửa không được bỏ trống']);
     }
 
     /** @test A13 - Giờ đóng cửa không hợp lệ */
@@ -252,7 +251,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Test Restaurant',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -261,7 +260,7 @@ class RestaurantValidationTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonFragment(['Giờ đóngcửa không hợp lệ']);
+            ->assertJsonFragment(['Giờ đóng cửa không hợp lệ']);
     }
 
     /** @test A14 - Cập nhật thông tin nhà hàng thành công */
@@ -269,7 +268,7 @@ class RestaurantValidationTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Updated Restaurant Name',
             'DiaChi' => '456 New Address',
             'SoDienThoai' => '0987654321',
@@ -280,7 +279,7 @@ class RestaurantValidationTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Cập nhật thông tin nhà hàng thành công'
+                'message' => 'Cập nhật thông tin nhà hàng thành công!'
             ]);
 
         $this->assertDatabaseHas('nha_hang', [

@@ -12,14 +12,16 @@ class BinhLuan extends Model
     protected $table = 'binh_luans';
 
     protected $fillable = [
-        'ma_mon_an',
-        'ma_nguoi_dung',
-        'ma_don_hang',
+        'MaMonAn',
+        'MaNguoiDung',
+        'MaDonHang',
         'diem_danh_gia',
         'noi_dung',
         'hinh_anh',
         'da_mua',
         'trang_thai',
+        'phan_hoi',
+        'phan_hoi_at',
     ];
 
     protected $casts = [
@@ -27,17 +29,18 @@ class BinhLuan extends Model
         'da_mua' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'phan_hoi_at' => 'datetime',
     ];
 
     // Relationships
     public function monAn()
     {
-        return $this->belongsTo(MonAn::class, 'ma_mon_an', 'MaMonAn');
+        return $this->belongsTo(MonAn::class, 'MaMonAn', 'MaMonAn');
     }
 
     public function nguoiDung()
     {
-        return $this->belongsTo(User::class, 'ma_nguoi_dung', 'MaNguoiDung');
+        return $this->belongsTo(User::class, 'MaNguoiDung', 'MaNguoiDung');
     }
 
     // Accessors
@@ -73,9 +76,9 @@ class BinhLuan extends Model
     // Helper methods
     public static function hasReviewed($maNguoiDung, $maMonAn, $maDonHang)
     {
-        return self::where('ma_nguoi_dung', $maNguoiDung)
-            ->where('ma_mon_an', $maMonAn)
-            ->where('ma_don_hang', $maDonHang)
+        return self::where('MaNguoiDung', $maNguoiDung)
+            ->where('MaMonAn', $maMonAn)
+            ->where('MaDonHang', $maDonHang)
             ->exists();
     }
 }

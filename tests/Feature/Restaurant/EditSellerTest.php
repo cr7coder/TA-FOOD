@@ -17,7 +17,6 @@ class EditSellerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('migrate:fresh');
 
         $this->seller = User::factory()->create(['VaiTro' => 'NguoiBan']);
         $this->restaurant = NhaHang::factory()->create([
@@ -30,7 +29,7 @@ class EditSellerTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => '',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -47,7 +46,7 @@ class EditSellerTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => str_repeat('A', 101),
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -64,7 +63,7 @@ class EditSellerTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Nhà hàng @#$%',
             'DiaChi' => '123 Test Street',
             'SoDienThoai' => '0912345678',
@@ -81,7 +80,7 @@ class EditSellerTest extends TestCase
     {
         $this->actingAs($this->seller);
 
-        $response = $this->putJson(route('seller.restaurant.update'), [
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
             'TenNhaHang' => 'Updated Restaurant',
             'DiaChi' => 'Updated Address',
             'SoDienThoai' => '0987654321',
@@ -92,7 +91,35 @@ class EditSellerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Cập nhật thông tin nhà hàng thành công'
+                'message' => 'Cập nhật thông tin nhà hàng thành công!'
             ]);
+    }
+
+    /** @test A15 - Cập nhật thông tin nhà hàng có tải lên hình ảnh thành công */
+    public function test_a15_update_restaurant_with_image_success()
+    {
+        $this->actingAs($this->seller);
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('restaurant.jpg');
+
+        $response = $this->putJson(route('api.seller.restaurant.update'), [
+            'TenNhaHang' => 'Updated Restaurant Image',
+            'DiaChi' => 'Updated Address',
+            'SoDienThoai' => '0987654321',
+            'GioMoCua' => '09:00',
+            'GioDongCua' => '23:00',
+            'HinhAnh' => $file
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Cập nhật thông tin nhà hàng thành công!'
+            ]);
+
+        $restaurant = $this->restaurant->fresh();
+        $this->assertNotNull($restaurant->HinhAnh);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($restaurant->HinhAnh);
     }
 }

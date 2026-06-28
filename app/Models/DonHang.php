@@ -15,6 +15,7 @@ class DonHang extends Model
     protected $fillable = [
         'MaNguoiDung',
         'MaGiamGia',
+        'PhiVanChuyen',
         'MaDoiTacVanChuyen',
         'TongTien',
         'PhuongThucThanhToan',
@@ -23,12 +24,21 @@ class DonHang extends Model
         'SoDienThoai',
         'DiaChiGiaoHang',
         'GhiChu',
+        'ly_do_huy',
+        'nguoi_huy',
+        'XacNhanAt',
+        'GiaoHangAt',
+        'HoanThanhAt',
     ];
 
     protected $casts = [
         'TongTien' => 'decimal:2',
+        'PhiVanChuyen' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'XacNhanAt' => 'datetime',
+        'GiaoHangAt' => 'datetime',
+        'HoanThanhAt' => 'datetime',
     ];
 
     // Relationships
@@ -60,7 +70,7 @@ class DonHang extends Model
 
     public function binhLuans()
     {
-        return $this->hasMany(BinhLuan::class, 'ma_don_hang', 'MaDonHang');
+        return $this->hasMany(BinhLuan::class, 'MaDonHang', 'MaDonHang');
     }
 
     // Accessors
@@ -73,7 +83,7 @@ class DonHang extends Model
     {
         return match ($this->TrangThai) {
             'Chờ xử lý'     => 'warning',
-            'Đã thanh toán' => 'success',
+            'Đã xác nhận'   => 'success',
             'Đang chuẩn bị' => 'info',
             'Đang giao'     => 'primary',
             'Hoàn thành'    => 'success',
@@ -86,7 +96,7 @@ class DonHang extends Model
     {
         return match ($this->TrangThai) {
             'Chờ xử lý'     => 'fa-clock',
-            'Đã thanh toán' => 'fa-check-circle',
+            'Đã xác nhận'   => 'fa-check-circle',
             'Đang chuẩn bị' => 'fa-utensils',
             'Đang giao'     => 'fa-shipping-fast',
             'Hoàn thành'    => 'fa-check-double',
@@ -103,7 +113,7 @@ class DonHang extends Model
 
     public function canCancel()
     {
-        return in_array($this->TrangThai, ['Chờ xử lý', 'Đã thanh toán']);
+        return in_array($this->TrangThai, ['Chờ xử lý', 'Đã xác nhận']);
     }
 
     public function canConfirm()

@@ -26,6 +26,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -37,7 +38,7 @@
         /* Copy tất cả CSS từ login page */
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -70,16 +71,17 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             width: 100%;
-            max-width: 1000px;
+            max-width: 900px;
             margin: 20px;
             display: flex;
-            min-height: 650px;
+            min-height: auto;
+            align-items: stretch;
         }
 
         .auth-left {
             flex: 1;
             background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-            padding: 60px 40px;
+            padding: 40px 30px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -113,17 +115,17 @@
         }
 
         .auth-left h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .auth-left p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
-            line-height: 1.6;
-            margin-bottom: 30px;
+            line-height: 1.5;
+            margin-bottom: 25px;
         }
 
         .feature-list {
@@ -132,26 +134,26 @@
         }
 
         .feature-list li {
-            margin: 15px 0;
+            margin: 12px 0;
             display: flex;
             align-items: center;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .feature-list li i {
-            margin-right: 15px;
+            margin-right: 12px;
             width: 20px;
             text-align: center;
         }
 
         .auth-right {
             flex: 1.2;
-            padding: 40px;
+            padding: 40px 35px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            max-height: 650px;
-            overflow-y: auto;
+            max-height: none;
+            overflow-y: visible;
         }
 
         .auth-header {
@@ -161,7 +163,7 @@
 
         .auth-header h2 {
             color: #333;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 10px;
         }
@@ -174,7 +176,7 @@
         .form-row {
             display: flex;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .form-row .form-group {
@@ -183,7 +185,7 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
         }
 
@@ -191,7 +193,7 @@
             width: 100%;
             padding: 12px 15px 12px 45px;
             border: 2px solid #e1e5e9;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 0.95rem;
             transition: all 0.3s ease;
             background: #f8f9fa;
@@ -207,7 +209,7 @@
         .form-icon {
             position: absolute;
             left: 15px;
-            top: 50%;
+            top: 25px;
             transform: translateY(-50%);
             color: #999;
             font-size: 1rem;
@@ -218,10 +220,19 @@
             color: #ff6b35;
         }
 
+        .form-control.is-invalid {
+            background-image: none !important;
+            padding-right: 15px !important;
+        }
+
+        #password, #password_confirmation {
+            padding-right: 45px !important;
+        }
+
         .password-toggle {
             position: absolute;
             right: 15px;
-            top: 50%;
+            top: 25px;
             transform: translateY(-50%);
             color: #999;
             cursor: pointer;
@@ -235,12 +246,12 @@
 
         .btn-register {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -256,6 +267,37 @@
 
         .btn-register:active {
             transform: translateY(0);
+        }
+
+        .btn-google-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: #fff;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            color: #555;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .btn-google-login:hover {
+            background-color: #f8f9fa !important;
+            border-color: #ff6b35 !important;
+            color: #ff6b35 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+        }
+
+        .btn-google-login img {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
         }
 
         .btn-register:disabled {
@@ -338,16 +380,25 @@
             }
 
             .auth-left {
-                padding: 40px 20px;
-                min-height: 250px;
+                padding: 30px 20px;
+                min-height: auto;
             }
 
             .auth-left h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
+                margin-bottom: 5px;
+            }
+
+            .auth-left p {
+                margin-bottom: 0;
+            }
+
+            .feature-list {
+                display: none; /* Ẩn bớt tính năng trên mobile để form hiển thị cao hơn */
             }
 
             .auth-right {
-                padding: 40px 20px;
+                padding: 30px 20px;
             }
 
             .auth-header h2 {
@@ -360,7 +411,7 @@
             }
 
             .form-row .form-group {
-                margin-bottom: 20px;
+                margin-bottom: 15px;
             }
         }
 
@@ -382,6 +433,67 @@
                 padding: 10px 12px 10px 40px;
             }
         }
+        /* Toggle Switch Role Style */
+        .role-selector {
+            display: flex;
+            background: #f3f4f6; /* Nền xám nhạt */
+            border-radius: 30px;
+            padding: 5px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .role-selector input[type="radio"] {
+            display: none;
+        }
+
+        .role-selector label {
+            flex: 1;
+            text-align: center;
+            padding: 12px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #6b7280; /* Chữ xám cho mục chưa chọn */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 0;
+            user-select: none;
+        }
+
+        /* Màu icon mặc định */
+        .role-selector label i {
+            font-size: 1.1rem;
+        }
+
+        /* Màu riêng cho icon khách hàng */
+        .role-selector input[type="radio"]#role_khachhang + label i {
+            color: #6b7280; 
+        }
+
+        /* Màu riêng cho icon nhà cung cấp */
+        .role-selector input[type="radio"]#role_nhacungcap + label i {
+            color: #6b7280;
+        }
+
+        /* Trạng thái được chọn */
+        .role-selector input[type="radio"]:checked + label {
+            background: white;
+            color: #ff6b35; /* Chữ màu cam TA-FOOD khi chọn */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            font-weight: 600;
+            transform: scale(1.02);
+        }
+
+        /* Màu icon cam khi được chọn */
+        .role-selector input[type="radio"]:checked + label i {
+            color: #ff6b35;
+        }
+
     </style>
 </head>
 
@@ -422,7 +534,7 @@
             <!-- Alert Messages -->
             <div id="alertContainer"></div>
 
-            <form id="registerForm">
+            <form id="registerForm" novalidate>
                 @csrf
                 <div class="form-row">
                     <div class="form-group">
@@ -450,7 +562,7 @@
 
                 <div class="form-group">
                     <input type="password" class="form-control" id="password" name="password"
-                        placeholder="Mật khẩu (tối thiểu 6 ký tự)" minlength="6">
+                        placeholder="Mật khẩu (tối thiểu 6 ký tự)">
                     <i class="fas fa-lock form-icon"></i>
                     <i class="fas fa-eye password-toggle" id="togglePassword"></i>
                 </div>
@@ -462,6 +574,18 @@
                     <i class="fas fa-eye password-toggle" id="togglePasswordConfirm"></i>
                 </div>
 
+                <div class="role-selector">
+                    <input type="radio" id="role_khachhang" name="role" value="KhachHang" checked>
+                    <label for="role_khachhang">
+                        <i class="fas fa-user"></i> Khách hàng
+                    </label>
+
+                    <input type="radio" id="role_nhacungcap" name="role" value="NguoiBan">
+                    <label for="role_nhacungcap">
+                        <i class="fas fa-building"></i> Người bán
+                    </label>
+                </div>
+
                 <button type="submit" class="btn-register">
                     <span class="btn-text">Đăng ký tài khoản</span>
                     <div class="loading-spinner">
@@ -469,6 +593,17 @@
                     </div>
                 </button>
             </form>
+
+            <div class="my-3 d-flex align-items-center justify-content-center">
+                <hr class="flex-grow-1" style="border-color: #ccc; margin: 0;">
+                <span class="px-3 text-muted" style="font-size: 0.9rem; font-weight: 500;">Hoặc</span>
+                <hr class="flex-grow-1" style="border-color: #ccc; margin: 0;">
+            </div>
+
+            <a href="{{ route('auth.google') }}" class="btn-google-login mb-3">
+                <img src="https://developers.google.com/static/identity/images/g-logo.png" alt="Google Logo">
+                Đăng ký với Google
+            </a>
 
             <div class="auth-links">
                 <p>Đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập ngay</a></p>
@@ -537,6 +672,7 @@
                         name: document.getElementById('fullname').value,
                         email: document.getElementById('email').value,
                         phone: document.getElementById('phone').value,
+                        role: document.querySelector('input[name="role"]:checked').value,
                         device_name: 'web-browser'
                     };
 
@@ -563,19 +699,49 @@
                             localStorage.setItem('token_type', data.data.token_type);
                         }
 
-                        // Redirect về trang chủ sau 1.5 giây
-                        setTimeout(() => {
-                            window.location.href = '{{ route("foods.index") }}';
-                        }, 1500);
+                        // Tự động kiểm tra giỏ hàng để chuyển hướng thông minh
+                        fetch('/cart', {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(cartData => {
+                            const count = cartData.count || 0;
+                            setTimeout(() => {
+                                if (count > 0) {
+                                    window.location.href = '/checkout';
+                                } else {
+                                    window.location.href = '{{ route("foods.index") }}';
+                                }
+                            }, 1200);
+                        })
+                        .catch(() => {
+                            setTimeout(() => {
+                                window.location.href = '{{ route("foods.index") }}';
+                            }, 1200);
+                        });
                     } else {
                         if (data.errors) {
-                            let errorMessage = '';
-                            Object.values(data.errors).forEach(errors => {
-                                errors.forEach(error => {
-                                    errorMessage += error + '<br>';
-                                });
-                            });
-                            showAlert('danger', errorMessage);
+                            let hasAlert = false;
+                            for (const [field, messages] of Object.entries(data.errors)) {
+                                const input = document.getElementById(field);
+                                if (input) {
+                                    if (typeof setInvalid === 'function') {
+                                        setInvalid(input, messages[0]);
+                                    } else {
+                                        input.classList.add('is-invalid');
+                                    }
+                                } else {
+                                    hasAlert = true;
+                                    showAlert('danger', messages[0]);
+                                }
+                            }
+                            if (!hasAlert) {
+                                // No general alert if all errors were mapped to fields
+                                // But if there are unmapped errors, they will show.
+                            }
                         } else {
                             showAlert('danger', data.message || 'Có lỗi xảy ra');
                         }
@@ -593,16 +759,20 @@
             });
 
             function showAlert(type, message) {
-                const alertContainer = document.getElementById('alertContainer');
-                alertContainer.innerHTML = `
-        <div class="alert alert-${type}" role="alert">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-            ${message}
-        </div>
-    `;
-                setTimeout(() => {
-                    alertContainer.innerHTML = '';
-                }, 4000);
+                if (window.showAlert) {
+                    window.showAlert(type, message);
+                } else {
+                    const alertContainer = document.getElementById('alertContainer');
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-${type}" role="alert">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                            ${message}
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        alertContainer.innerHTML = '';
+                    }, 4000);
+                }
             }
 
             // Input focus effects
@@ -616,90 +786,10 @@
                 });
             });
         });
-        async function validateRegisterForm() {
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('password_confirmation');
-            const emailInput = document.getElementById('email');
-            const phoneInput = document.getElementById('phone');
-            const alertContainer = document.getElementById('alertContainer');
 
-            alertContainer.innerHTML = '';
-
-            // Tên đăng nhập
-            const username = usernameInput.value.trim();
-            if (!username) {
-                showAlert('danger', 'Tên đăng nhập không được bỏ trống');
-                usernameInput.focus();
-                return false;
-            }
-            if (username.length > 50) {
-                showAlert('danger', 'Tên đăng nhập không quá 50 ký tự');
-                usernameInput.focus();
-                return false;
-            }
-            if (!/^[A-Za-z0-9_]+$/.test(username)) {
-                showAlert('danger', 'Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới');
-                usernameInput.focus();
-                return false;
-            }
-            if (await checkExists('username', username)) {
-                showAlert('danger', 'Tên đăng nhập đã tồn tại');
-                usernameInput.focus();
-                return false;
-            }
-
-            // Mật khẩu
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
-            if (!password) {
-                showAlert('danger', 'Mật khẩu không được bỏ trống');
-                passwordInput.focus();
-                return false;
-            }
-            if (password.length < 6) {
-                showAlert('danger', 'Mật khẩu phải từ 6 ký tự trở lên');
-                passwordInput.focus();
-                return false;
-            }
-            if (confirmPassword !== password) {
-                showAlert('danger', 'Xác nhận mật khẩu không khớp');
-                confirmPasswordInput.focus();
-                return false;
-            }
-
-            // Email
-            const email = emailInput.value.trim();
-            if (!email) {
-                showAlert('danger', 'Email không được bỏ trống');
-                emailInput.focus();
-                return false;
-            }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                showAlert('danger', 'Email không hợp lệ');
-                emailInput.focus();
-                return false;
-            }
-            if (await checkExists('email', email)) {
-                showAlert('danger', 'Email đã được sử dụng');
-                emailInput.focus();
-                return false;
-            }
-
-            // Số điện thoại (nếu có nhập)
-            const phone = phoneInput.value.trim();
-            if (phone) {
-                if (!/^0\d{8,10}$/.test(phone)) {
-                    showAlert('danger', 'Số điện thoại không hợp lệ');
-                    phoneInput.focus();
-                    return false;
-                }
-            }
-
-            return true;
-        }
     </script>
     <script src="{{ asset('js/register-validator.js') }}"></script>
+    @include('client.partials._global-alert')
 </body>
 
 </html>

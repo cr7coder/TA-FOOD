@@ -1,7 +1,7 @@
 (function () {
-    ("use strict");
+    "use strict";
 
-    const ALLOWED_CATEGORIES = ["Cơm", "Bún", "Phở", "Mì", "Trà"];
+    let ALLOWED_CATEGORIES = ["Cơm", "Bún", "Phở", "Mì", "Trà", "Khác"];
     const ALLOWED_IMAGE_EXTS = ["jpg", "jpeg", "png"];
     const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -10,10 +10,15 @@
         return (s || "")
             .toString()
             .trim()
-            .normalize("NFD")
-            .replace(/\p{Diacritic}/gu, "")
-            .replace(/\s+/g, " ")
-            .toLowerCase();
+            .toLowerCase()
+            .replace(/[àáảãạăằắẳẵặâầấẩẫậ]/g, "a")
+            .replace(/[èéẻẽẹêềếểễệ]/g, "e")
+            .replace(/[ìíỉĩị]/g, "i")
+            .replace(/[òóỏõọôồốổỗộơờớởỡợ]/g, "o")
+            .replace(/[ùúủũụưừứửữự]/g, "u")
+            .replace(/[ỳýỷỹỵ]/g, "y")
+            .replace(/đ/g, "d")
+            .replace(/\s+/g, " ");
     }
 
     // cache kết quả lần check gần nhất
@@ -58,6 +63,7 @@
             box.className = `form-top-alert alert alert-${type} mb-3`;
         }
         box.textContent = message || "";
+        box.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     function firstInvalid(form) {
         const el = form.querySelector(".is-invalid");
@@ -75,8 +81,12 @@
         v = (v || "").trim();
         if (!v) return "Tên món ăn không được bỏ trống (2E.1)";
         if (v.length > 100) return "Tên món ăn không quá 100 ký tự (2E.2)";
-        if (!/^[\p{L}\p{N}\s\-_]+$/u.test(v))
-            return "Tên món ăn không được chứa ký tự đặcc biệt (2E.3)";
+        if (
+            !/^[a-zA-Z0-9\sàáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\-_]+$/i.test(
+                v
+            )
+        )
+            return "Tên món ăn không được chứa ký tự đặc biệt (2E.3)";
         const nv = normalizeName(v);
         if (
             nv &&
@@ -148,8 +158,10 @@
     }
 
     function snapshotForm(form) {
-        const get = (sel) =>
-            (form.querySelector(sel)?.value || "").toString().trim();
+        const get = (sel) => {
+            const el = form.querySelector(sel);
+            return (el ? el.value : "").toString().trim();
+        };
         return {
             TenMonAn: get('[name="TenMonAn"]'),
             DanhMuc: get('[name="DanhMuc"]'),
@@ -197,19 +209,28 @@
         return msg;
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    function init() {
         const form = document.getElementById("foodForm");
         if (!form) return;
 
         const mode = (form.dataset.mode || "create").toLowerCase();
         const ajaxSubmit = (form.dataset.ajax || "1") === "1";
-        const csrf =
-            document.querySelector('meta[name="csrf-token"]')?.content || "";
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrf = csrfMeta ? csrfMeta.content : "";
 
         const elTen = form.querySelector('[name="TenMonAn"]');
         const elGia = form.querySelector('[name="Gia"]');
         const elDanhMuc = form.querySelector('[name="DanhMuc"]');
         const elHinh = form.querySelector('[name="HinhAnh"]');
+
+        if (elDanhMuc) {
+            const options = Array.from(elDanhMuc.querySelectorAll('option'))
+                .map(opt => opt.value.trim())
+                .filter(val => val !== "");
+            if (options.length > 0) {
+                ALLOWED_CATEGORIES = options;
+            }
+        }
 
         form.dataset.initial = JSON.stringify(snapshotForm(form));
 
@@ -267,6 +288,16 @@
         }
 
         form.addEventListener("submit", async (e) => {
+            e.preventDefault(); 
+            e.stopPropagation();
+
+            const isAjax = (form.dataset.ajax || "1") === "1";
+            if (!isAjax) {
+                // If the user actually wanted normal submit, we'd have to handle it, 
+                // but for this project we ALWAYS want AJAX here.
+                // form.submit(); return; 
+            }
+
             clrAll(form);
             let hasErr = false;
 
@@ -277,8 +308,7 @@
                     hasErr = true;
                 } else {
                     const mUniq = await vTenUniqueAsync(form, elTen.value);
-                    // cập nhật giao diện dựa trên cache mới
-                    const mAfter = vTen(elTen.value); // vTen sẽ đọc cache vừa cập nhật
+                    const mAfter = vTen(elTen.value); 
                     if (mUniq || mAfter) {
                         setErr(form, "TenMonAn", mUniq || mAfter);
                         hasErr = true;
@@ -309,34 +339,29 @@
             }
 
             if (hasErr) {
-                e.preventDefault();
                 firstInvalid(form);
                 return;
             }
 
             if (mode === "edit") {
-                const init = JSON.parse(form.dataset.initial || "{}");
-                const current = snapshotForm(form);
+                const initData = JSON.parse(form.dataset.initial || "{}");
+                const currentData = snapshotForm(form);
                 const fileSelected = !!(
                     elHinh &&
                     elHinh.files &&
                     elHinh.files.length > 0
                 );
-                if (sameSnapshot(init, current) && !fileSelected) {
-                    e.preventDefault();
+                if (sameSnapshot(initData, currentData) && !fileSelected) {
                     topAlert(form, "Cập nhật món ăn thành công", "success");
                     setTimeout(() => {
                         const indexUrl =
                             form.dataset.indexUrl || "/seller/foods";
                         window.location.href = indexUrl;
-                    }, 2000);
+                    }, 1500);
                     return;
                 }
             }
 
-            if (!ajaxSubmit) return;
-
-            e.preventDefault();
             const submitBtn = form.querySelector('button[type="submit"]');
             const html0 = submitBtn ? submitBtn.innerHTML : "";
             if (submitBtn) {
@@ -474,5 +499,11 @@
                 }
             }
         });
-    });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
 })();

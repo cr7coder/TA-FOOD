@@ -9,14 +9,15 @@
 
   .custom_nav-container .navbar-nav {
     padding-top: 15px;
-padding-left: 0;
+    padding-left: 0;
     align-items: center;
   }
 
-  .user_option{
+  .user_option {
     justify-content: center;
     margin-top: 15px;
   }
+
   .custom_nav-container .navbar-nav .nav-item .nav-link {
     padding: 5px 25px;
     margin: 5px 0;
@@ -93,5 +94,1292 @@ padding-left: 0;
   .rent_solution_container .col-md-4.col-sm-6 {
     float: left;
     width: 50%;
+  }
+}
+
+/* ==========================================================================
+   TAFOOD PREMIUM MOBILE RESPONSIVE UPGRADES
+   (Ensures absolute zero impact on Desktop viewports >= 992px)
+   ========================================================================== */
+
+@media (max-width: 991px) {
+
+  /* Keep mobile container beautifully aligned as a single row */
+  .custom_nav-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  /* Logo stays on left */
+  .custom_nav-container .navbar-brand {
+    order: 1 !important;
+    margin-right: 0 !important;
+    font-size: 22px !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* User Options (Notification & profile dropdown) stay visible on the right */
+  .custom_nav-container .user_option {
+    order: 3 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    margin-top: 0 !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    gap: 6px !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  .notification-dropdown {
+    margin-right: 0 !important;
+  }
+
+  /* Center search form gracefully using flexbox */
+  #searchForm {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 0 auto !important;
+    z-index: 10 !important;
+    order: 2 !important;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+  }
+
+  /* Premium Search Box styling on mobile - flexible width */
+  .search-box-wrapper {
+    width: 100% !important;
+    max-width: 165px !important;
+    margin: 0 auto !important;
+    height: 38px !important;
+    padding: 2px 4px 2px 14px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  @media (max-width: 375px) {
+    .search-box-wrapper {
+      max-width: 140px !important;
+    }
+  }
+
+  @media (min-width: 576px) and (max-width: 991px) {
+    .search-box-wrapper {
+      max-width: 240px !important;
+    }
+  }
+
+  .search-input {
+    width: 100% !important;
+    font-size: 13.5px !important;
+  }
+
+  /* Hide username text on mobile header, keeping only the beautiful circular avatar */
+  .custom_nav-container .user_option .user-dropdown span {
+    display: none !important;
+  }
+
+  .custom_nav-container .user_option .user-dropdown {
+    gap: 0 !important;
+  }
+
+  /* Location/GPS Panel expansion to prevent severe squeeze */
+  #mainLocation {
+    width: 90% !important;
+    padding: 24px 20px !important;
+    margin: 15px auto !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  #miniMap {
+    height: 160px !important;
+    margin: 10px 0 !important;
+  }
+
+  /* Horizontal swipe promotions list on mobile/tablet - Grab/Shopee Food Premium UI */
+  .offer_section .offer_container .row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 10px 4px 20px 4px !important;
+    margin: 0 !important;
+    scrollbar-width: none !important;
+    /* Firefox */
+  }
+
+  .offer_section .offer_container .row::-webkit-scrollbar {
+    display: none !important;
+    /* Safari, Chrome, Opera */
+  }
+
+  .offer_section .offer_container .row>div[class*="col-"] {
+    flex: 0 0 85% !important;
+    max-width: 85% !important;
+    margin-right: 15px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Override promotion box inline styles to be compact and elegant on tablet/mobile */
+  .offer_section .box {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    text-align: left !important;
+    height: 100% !important;
+    padding: 22px 16px !important;
+    margin-top: 20px !important;
+    width: 100% !important;
+  }
+
+  .offer_section .box .img-box {
+    margin-right: 15px !important;
+    margin-bottom: 0 !important;
+    width: 105px !important;
+    min-width: 105px !important;
+    height: 105px !important;
+    border-width: 3px !important;
+  }
+
+  .offer_section .box .detail-box {
+    display: block !important;
+    flex: 1 !important;
+    text-align: left !important;
+  }
+
+  .offer_section .box .detail-box h5 {
+    font-family: 'Outfit', 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+    /* Scaled up slightly for tablet/wide mobile */
+    color: rgba(255, 255, 255, 0.85) !important;
+    line-height: 1.35 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .offer_section .box .detail-box h6 {
+    margin: 4px 0 !important;
+    font-size: 14px !important;
+  }
+
+  .offer_section .box .detail-box h6 span {
+    font-size: 2rem !important;
+    /* Scaled up slightly for perfect visual weight */
+  }
+
+  .offer_section .box .detail-box .mb-3 {
+    margin-bottom: 6px !important;
+  }
+
+  .offer_section .box .detail-box .badge {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+  }
+
+  .offer_section .box .detail-box a {
+    padding: 6px 18px !important;
+    font-size: 11px !important;
+    margin-top: 4px !important;
+    display: inline-flex !important;
+    align-items: center;
+    border-radius: 20px !important;
+  }
+
+  /* Horizontal swipe scrollable category menu - Grab/Shopee Food Premium UI */
+  .food_section .filters_menu {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    padding: 10px 4px !important;
+    margin: 15px 0 !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    /* Firefox */
+  }
+
+  .food_section .filters_menu::-webkit-scrollbar {
+    display: none !important;
+    /* Safari, Chrome, Opera */
+  }
+
+  .food_section .filters_menu li {
+    flex: 0 0 auto !important;
+    margin-right: 10px !important;
+    white-space: nowrap !important;
+    font-size: 13.5px !important;
+    padding: 7px 18px !important;
+    background-color: rgba(34, 40, 49, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 25px !important;
+  }
+
+  .food_section .filters_menu li.active {
+    background-color: #ffbe33 !important;
+    color: #222831 !important;
+    border-color: #ffbe33 !important;
+    font-weight: 600;
+  }
+
+  .see-all-categories-btn.active {
+    background-color: #ffbe33 !important;
+    color: #222831 !important;
+    border-style: solid !important;
+    border-color: #ffbe33 !important;
+  }
+}
+
+@media (max-width: 767px) {
+
+  /* Position notification dropdown beautifully on mobile screens so it doesn't clip on the left */
+  .notification-dropdown .dropdown-menu {
+    right: -35px !important;
+    left: auto !important;
+    width: 320px !important;
+    max-width: calc(100vw - 20px) !important;
+    transform: none !important;
+  }
+
+
+
+  /* Tweak floating cart positioning & proportions */
+  .floating-cart {
+    bottom: 20px !important;
+    right: 20px !important;
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .floating-cart .cart-icon {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    animation: none !important;
+  }
+
+  .floating-cart .cart-icon i {
+    font-size: 20px !important;
+  }
+
+  .cart-icon .cart-count {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    top: -3px !important;
+    right: -3px !important;
+  }
+}
+
+@media (max-width: 576px) {
+
+  /* Compact Login and Cart buttons in Header */
+  .header_section .order_online,
+  .user_option .order_online {
+    padding: 5px 10px !important;
+    font-size: 10.5px !important;
+    border-radius: 20px !important;
+    margin-right: 4px !important;
+  }
+
+  /* Address search box compact formatting on extra small views */
+  #mainLocation {
+    width: 95% !important;
+    padding: 16px 12px !important;
+    margin: 10px auto !important;
+  }
+
+  #mainLocation h4 {
+    font-size: 15.5px !important;
+    margin-bottom: 12px !important;
+    text-align: center;
+  }
+
+  #addressInput {
+    font-size: 13px !important;
+    padding-left: 36px !important;
+    padding-right: 36px !important;
+  }
+
+  /* Tighten spacing between cards to prevent wide empty white space in center */
+  .food_section .row.grid {
+    margin-left: -6px !important;
+    margin-right: -6px !important;
+  }
+
+  .food_section .row.grid>[class*="col-"] {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  /* Food item card responsive spacing adjustments - 2 columns grid Shopee Food Style */
+  .food_section .box {
+    margin-top: 12px !important;
+    max-width: 100% !important;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #222831 !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  }
+
+  .food_section .box .img-box {
+    height: 110px !important;
+    border-radius: 12px 12px 0 0 !important;
+    overflow: hidden !important;
+    /* Elegant compact height for 2-column view */
+  }
+
+  .food_section .box .img-box img {
+    object-fit: cover !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .food_section .box .detail-box {
+    padding: 8px 8px 10px 8px !important;
+    /* Compact padding to save space */
+  }
+
+  .food_section .box .detail-box h5 {
+    font-size: 13px !important;
+    margin-bottom: 2px !important;
+    /* Extremely tight margin for perfect spacing */
+    line-height: 1.35 !important;
+    height: auto !important;
+    max-height: 36px !important;
+    /* Max 2 lines height, but collapses naturally for 1 line */
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    display: block !important;
+  }
+
+  .food_section .box .detail-box h5 a {
+    color: #ffffff !important;
+  }
+
+  .food_section .box .detail-box p {
+    font-size: 11.5px !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    margin-bottom: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+  }
+
+  .food_section .box .detail-box .rating {
+    font-size: 10px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .food_section .box .detail-box .rating i {
+    font-size: 9px !important;
+  }
+
+  .food_section .box .options {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 6px !important;
+  }
+
+  .food_section .box .options h6 {
+    font-size: 14px !important;
+    margin: 0 !important;
+    color: #ffbe33 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Make the gap between option buttons tight on mobile to prevent wrapping */
+  .food_section .box .options .d-flex,
+  .food_section .box .options .gap-3 {
+    gap: 3px !important;
+  }
+
+  /* Style BOTH detail (Eye) and add-to-cart buttons as beautiful compact 25px round circles */
+  .food_section .box .options a,
+  .food_section .box .options a.btn,
+  .food_section .box .options button.btn,
+  .food_section .box .options .add-to-cart-btn {
+    display: flex !important;
+    width: 25px !important;
+    height: 25px !important;
+    border-radius: 50% !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #ffbe33 !important;
+    border: none !important;
+    color: #222831 !important;
+    box-shadow: 0 2px 6px rgba(255, 190, 51, 0.3) !important;
+    transition: all 0.2s ease !important;
+    line-height: 1 !important;
+  }
+
+  .food_section .box .options a i,
+  .food_section .box .options a.btn i,
+  .food_section .box .options button.btn i,
+  .food_section .box .options .add-to-cart-btn i {
+    font-size: 11px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+  }
+
+  .food_section .box .options a i.fa-eye,
+  .food_section .box .options a.btn i.fa-eye,
+  .food_section .box .options button.btn i.fa-eye {
+    font-size: 12px !important;
+  }
+
+  /* Popular Star Badge adjustments */
+  .food_section .box .img-box .badge {
+    top: 6px !important;
+    left: 6px !important;
+    padding: 3px 6px !important;
+    font-size: 8.5px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Restaurant Cards visual stack optimization */
+  .restaurant-card {
+    padding: 12px !important;
+  }
+
+  .restaurant-card .rest-name {
+    font-size: 16px !important;
+  }
+
+  .restaurant-card .rest-address {
+    font-size: 12px !important;
+  }
+
+  /* Compact promotions on extra small screens */
+  .offer_section .box {
+    padding: 18px 12px !important;
+    margin-top: 15px !important;
+    max-width: 420px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .offer_section .box .img-box {
+    width: 85px !important;
+    min-width: 85px !important;
+    height: 85px !important;
+    margin-right: 12px !important;
+    border-width: 2.5px !important;
+  }
+
+  /* Clean modern typography for section headers on mobile viewports */
+  .heading_container h2 {
+    font-family: 'Open Sans', 'Outfit', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 21px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    color: #222831 !important;
+    display: inline-block !important;
+    position: relative !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .heading_container h2::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 45px !important;
+    height: 3px !important;
+    background: #ffbe33 !important;
+    border-radius: 2px !important;
+  }
+
+  .offer_section .box .detail-box h5 {
+    font-family: 'Outfit', 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 11.5px !important;
+    line-height: 1.55 !important;
+    margin-top: 4px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .offer_section .box .detail-box h6 {
+    margin: 2px 0 !important;
+    font-size: 11.5px !important;
+  }
+
+  .offer_section .box .detail-box h6 span {
+    font-size: 1.4rem !important;
+  }
+
+  .offer_section .box .detail-box .mb-3 {
+    margin-bottom: 4px !important;
+  }
+
+  .offer_section .box .detail-box .badge {
+    font-size: 9.5px !important;
+    padding: 3px 6px !important;
+  }
+
+  .offer_section .box .detail-box a {
+    padding: 5px 14px !important;
+    font-size: 10.5px !important;
+    margin-top: 3px !important;
+    border-radius: 20px !important;
+  }
+}
+
+/* Mobile & Tablet Viewports (screens smaller than 991px) */
+@media (max-width: 991px) {
+
+  .food_section .box .options .d-flex,
+  .food_section .box .options .gap-3 {
+    gap: 3px !important;
+  }
+
+  /* Compact premium style for both eye and cart buttons on mobile */
+  .food_section .box .options a:not(.add-to-cart-btn),
+  .food_section .box .options .add-to-cart-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    flex-shrink: 0 !important;
+    line-height: 1 !important;
+    background-color: #ffbe33 !important;
+    color: #222831 !important;
+    box-shadow: 0 2px 6px rgba(255, 190, 51, 0.4) !important;
+    text-decoration: none !important;
+  }
+
+  .food_section .box .options a:not(.add-to-cart-btn) i,
+  .food_section .box .options .add-to-cart-btn i {
+    font-size: 13px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+  }
+}
+
+/* ==========================================================================
+   PREMIUM DYNAMIC AESTHETICS & MICRO-ANIMATIONS (UNIVERSAL & MOBILE OPTIMIZED)
+   ========================================================================== */
+
+/* 1. Frosted Glassmorphism for Address Panel & Hero Location Container */
+#mainLocation {
+  background: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 24px !important;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+#mainLocation:hover {
+  border-color: rgba(255, 190, 51, 0.4) !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 190, 51, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+#mainLocation form input {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #212529 !important;
+  font-size: 13.5px !important;
+  height: 44px !important;
+  border-radius: 30px !important;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+#mainLocation form input:focus {
+  background: #ffffff !important;
+  color: #212529 !important;
+  border-color: #ffbe33 !important;
+  box-shadow: 0 0 15px rgba(255, 190, 51, 0.35) !important;
+}
+
+#mainLocation form i {
+  transition: all 0.3s ease !important;
+}
+
+#mainLocation form i:hover {
+  color: #ffbe33 !important;
+  transform: translateY(-50%) scale(1.2) !important;
+}
+
+/* 2. Premium Metallic Reflection & Pulse Glow for Vouchers (Offer Cards) */
+.offer_section .box {
+  background: linear-gradient(135deg, rgba(34, 40, 49, 0.98), rgba(20, 24, 30, 0.99)) !important;
+  border: 1px solid rgba(255, 190, 51, 0.15) !important;
+  border-radius: 20px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 0 10px rgba(255, 190, 51, 0.03) !important;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  animation: cardPulseGlow 4s infinite alternate;
+}
+
+@keyframes cardPulseGlow {
+  0% {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 0 0 rgba(255, 190, 51, 0);
+    border-color: rgba(255, 190, 51, 0.15);
+  }
+
+  100% {
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35), 0 0 18px rgba(255, 190, 51, 0.12);
+    border-color: rgba(255, 190, 51, 0.35);
+  }
+}
+
+/* Metallic shimmery sheen reflection sweeping across card */
+.offer_section .box::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -150% !important;
+  width: 50% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0) 100%) !important;
+  transform: skewX(-25deg) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  animation: shine 5.5s infinite ease-in-out !important;
+}
+
+@keyframes shine {
+  0% {
+    left: -150%;
+  }
+
+  35% {
+    left: 150%;
+  }
+
+  100% {
+    left: 150%;
+  }
+}
+
+.offer_section .box:hover,
+.offer_section .box:active {
+  transform: translateY(-6px) scale(1.015) !important;
+  border-color: #ffbe33 !important;
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(255, 190, 51, 0.3) !important;
+}
+
+/* Rotating glowing ring effect for Promo Image circle */
+.offer_section .box .img-box {
+  border-color: #ffbe33 !important;
+  box-shadow: 0 0 18px rgba(255, 190, 51, 0.35) !important;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.offer_section .box:hover .img-box {
+  transform: rotate(6deg) scale(1.05) !important;
+  box-shadow: 0 0 30px rgba(255, 190, 51, 0.6) !important;
+}
+
+/* Dynamic pulse on Voucher "Mua ngay" Buttons */
+.offer_section .box .pre-apply-btn {
+  background: linear-gradient(135deg, #ffbe33, #ff9800) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.35) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  z-index: 2 !important;
+  transition: all 0.3s ease !important;
+  animation: btnPulse 2s infinite alternate !important;
+}
+
+@keyframes btnPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.35);
+  }
+
+  100% {
+    transform: scale(1.03);
+    box-shadow: 0 6px 18px rgba(255, 152, 0, 0.55);
+  }
+}
+
+.offer_section .box .pre-apply-btn:hover {
+  transform: scale(1.06) translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6) !important;
+  filter: brightness(1.08);
+}
+
+/* 3. Category Pills capsule design with elegant scales */
+.filters_menu {
+  display: flex !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  padding: 0 !important;
+  margin: 25px 0 15px 0 !important;
+  list-style: none !important;
+}
+
+.filters_menu li {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #4b5563 !important;
+  padding: 8px 18px !important;
+  border-radius: 30px !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  margin: 4px 5px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03) !important;
+}
+
+.filters_menu li.active {
+  background: linear-gradient(135deg, #ffbe33, #ff9800) !important;
+  color: #222831 !important;
+  border-color: #ffbe33 !important;
+  box-shadow: 0 6px 16px rgba(255, 190, 51, 0.45) !important;
+  transform: scale(1.06) translateY(-1px) !important;
+}
+
+.filters_menu li:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffbe33 !important;
+  border-color: rgba(255, 190, 51, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* 4. Elegant Glowing Floating Cart Button with Pulse Ripple Aura */
+.floating-cart {
+  background: linear-gradient(135deg, #ff5722, #e64a19) !important;
+  box-shadow: 0 4px 20px rgba(230, 74, 25, 0.45) !important;
+  position: fixed !important;
+  bottom: 30px !important;
+  right: 30px !important;
+  z-index: 9999 !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  animation: floatBounce 3.5s infinite ease-in-out !important;
+}
+
+.floating-cart::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  background: rgba(230, 74, 25, 0.35) !important;
+  z-index: -1 !important;
+  animation: ripple 2.2s infinite !important;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
+
+@keyframes floatBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.floating-cart:hover {
+  transform: scale(1.1) translateY(-3px) !important;
+  box-shadow: 0 6px 25px rgba(230, 74, 25, 0.6) !important;
+  background: linear-gradient(135deg, #ff7043, #f4511e) !important;
+}
+
+/* Ensure the inner cart-icon remains clean, borderless and fully transparent to avoid overlapping oval background artifacts */
+.floating-cart .cart-icon {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  position: relative !important;
+  animation: none !important;
+}
+
+.floating-cart .cart-icon i {
+  font-size: 24px !important;
+  color: #ffffff !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+}
+
+/* 5. Food Card Hover and Action Button Highlights */
+.food_section .box {
+  transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.food_section .box:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12) !important;
+  border-color: rgba(255, 190, 51, 0.25) !important;
+}
+
+.food_section .box:hover .img-box img {
+  transform: scale(1.06) !important;
+}
+
+.food_section .box .options a:hover,
+.food_section .box .options button:hover {
+  transform: scale(1.18) !important;
+  background-color: #ffbe33 !important;
+  box-shadow: 0 4px 12px rgba(255, 190, 51, 0.65) !important;
+}
+
+/* ==========================================================================
+   RESTAURANT MENU MODAL STYLES (TABS & BUTTONS REFINEMENTS)
+   ========================================================================== */
+
+/* Prevent Restaurant Modal Tabs from wrapping on mobile */
+#modalMenuTabs .nav-pills-wrapper {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+#tabMainBtn,
+#tabBestBtn {
+  white-space: nowrap !important;
+  display: inline-block !important;
+}
+
+@media (max-width: 576px) {
+
+  #tabMainBtn,
+  #tabBestBtn {
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+    border-radius: 20px !important;
+  }
+}
+
+/* Hide eye button in restaurant modal on mobile */
+/* Mobile-only overrides for restaurant modal to maintain high density, while keeping desktop original layout pristine */
+@media (max-width: 576px) {
+
+  /* Compact 30px buttons (eye and cart) for high-density mobile grid */
+  #restaurantFoodsModal .modal-body .box .options button.btn,
+  #restaurantFoodsModal .modal-body .box .options a.btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background-color: #ffbe33 !important;
+    border: none !important;
+    color: #222831 !important;
+    box-shadow: 0 2px 6px rgba(255, 190, 51, 0.3) !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+  }
+
+  #restaurantFoodsModal .modal-body .box .options button.btn i,
+  #restaurantFoodsModal .modal-body .box .options a.btn i {
+    font-size: 13px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+  }
+
+  #restaurantFoodsModal .modal-body .box .options .d-flex {
+    gap: 3px !important;
+  }
+
+  /* Align modal food grid spacing and padding to be 100% identical to homepage main grid */
+  #restaurantFoodsModal .modal-body {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+/* Make the hero area background image naturally fit the contents with a neat padding */
+@media (max-width: 576px) {
+  .hero_area {
+    min-height: auto !important;
+    padding-bottom: 20px !important;
+  }
+
+  /* Extra scroll spacing at the bottom of the food grid so the FAB floating cart never covers the last cards */
+  .food_section.layout_padding-bottom {
+    padding-bottom: 90px !important;
+  }
+}
+
+/* Can chinh Chatbot va Cart tren Mobile tranh de nhau */
+@media (max-width: 768px) {
+  .floating-cart {
+    bottom: 25px !important;
+    right: 20px !important;
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .ai-chat-bubble {
+    bottom: 100px !important;
+    right: 23px !important;
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+  }
+
+  .ai-chat-panel {
+    bottom: 160px !important;
+    right: 15px !important;
+    max-height: 65vh !important;
+  }
+}
+
+/* Shrink the search location button on mobile to a circular icon */
+@media (max-width: 576px) {
+  #syncAddressBtn .btn-text {
+    display: none !important;
+  }
+
+  .custom-sync-btn {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    min-width: 45px !important;
+  }
+
+  #syncAddressBtn .fa-search-location {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 577px) {
+  .custom-sync-btn {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
+/* Dong bo chieu cao cac the mon an tren mobile bang cach cat chu dai */
+@media (max-width: 768px) {
+  .food_section .box .restaurant-name {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .food_section .box .detail-box h5 a {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    width: 100% !important;
+  }
+}
+
+/* Custom Filter Dropdown Styles (Desktop & General) */
+.custom-filter-dropdown .dropdown-toggle::after {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.custom-filter-dropdown .filter-btn:hover {
+  background: #ffbe33 !important;
+  border-color: #ffbe33 !important;
+  color: #222831 !important;
+  box-shadow: 0 4px 15px rgba(255, 190, 51, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.custom-filter-dropdown .filter-btn:hover i {
+  color: #222831 !important;
+}
+
+.custom-filter-dropdown .dropdown-item {
+  padding: 10px 20px;
+  font-weight: 500;
+  color: #f8f9fa;
+  transition: all 0.2s;
+}
+
+.custom-filter-dropdown .dropdown-item:hover,
+.custom-filter-dropdown .dropdown-item:focus {
+  background-color: rgba(255, 190, 51, 0.15);
+  color: #ffbe33;
+  font-weight: 600;
+}
+
+.custom-filter-dropdown .dropdown-item.active,
+.custom-filter-dropdown .dropdown-item:active {
+  background-color: #ffbe33;
+  color: #222831;
+  font-weight: 700;
+}
+
+.custom-filter-dropdown .dropdown-item.active i,
+.custom-filter-dropdown .dropdown-item:active i {
+  color: #222831 !important;
+}
+
+/* Custom Filter Dropdown Styles (Mobile) */
+@media (max-width: 768px) {
+  .filter-toolbar {
+    padding: 12px !important;
+    border-radius: 12px !important;
+    gap: 0 !important;
+    /* Managed by collapse now */
+  }
+
+  .filter-toolbar .filter-group-left,
+  .filter-toolbar .filter-group-right {
+    width: 100%;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  .filter-toolbar .mobile-filter-toggle[aria-expanded="true"] .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .custom-filter-dropdown {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .custom-filter-dropdown .filter-btn {
+    width: 100%;
+    padding: 8px 6px !important;
+    font-size: 12px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .custom-filter-dropdown .filter-btn i {
+    margin-right: 4px !important;
+  }
+
+  .filter-text-label {
+    display: none !important;
+  }
+
+  #resetFiltersBtn {
+    flex: 0 0 38px;
+  }
+
+  .filter-toolbar .dropdown-menu {
+    min-width: 100% !important;
+    max-width: 90vw !important;
+  }
+}
+
+/* ==========================================================================
+   TAFOOD DETAIL PAGE PREMIUM RESPONSIVE UPGRADES
+   ========================================================================== */
+
+/* Large desktop zoom support & alignment */
+@media (min-width: 992px) {
+  .food_detail_section .row {
+    align-items: stretch;
+  }
+  .food-image-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Tablet and Mobile (max-width: 991px) */
+@media (max-width: 991px) {
+  .food_detail_section {
+    padding: 40px 0 !important;
+  }
+  .food-image-container {
+    padding: 15px !important;
+    background-color: #f8fafc !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+  }
+  .gallery-slide img {
+    height: 300px !important;
+  }
+}
+
+/* Mobile Devices (max-width: 576px) { */
+@media (max-width: 576px) {
+  /* Title & button stack on mobile */
+  .col-12.mt-5 > div.d-flex.justify-content-between.align-items-center {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .reviews-title {
+    font-size: 17px !important;
+    text-align: center !important;
+    width: 100% !important;
+    border-bottom: 2px solid #ffbe33 !important;
+    padding-bottom: 8px !important;
+    display: block !important;
+  }
+  
+  .col-12.mt-5 > div.d-flex.justify-content-between.align-items-center button.btn {
+    align-self: center !important;
+    width: 100% !important;
+    max-width: 220px !important;
+    text-align: center !important;
+  }
+
+  /* Carousel container padding adjustments on mobile */
+  .reviews-list > div[style*="padding"] {
+    padding: 0 28px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .reviews-horizontal-container {
+    gap: 15px !important;
+  }
+
+  /* Review card sizing and padding */
+  .review-card-item {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Thumbnail sizes to fit exactly without wrapping */
+  .review-card-item .review-media-item {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  .review-item-vertical .review-media-item {
+    width: 75px !important;
+    height: 75px !important;
+  }
+
+  .review-media-gallery {
+    gap: 6px !important;
+  }
+
+  .more-media-overlay {
+    font-size: 16px !important;
+  }
+
+  /* Carousel Navigation Buttons on mobile */
+  #reviewPrev {
+    left: -8px !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  #reviewNext {
+    right: -8px !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  /* Food Image Gallery Height adjustment on small screens */
+  .gallery-slide img {
+    height: 240px !important;
+  }
+}
+
+/* Extra small mobile screens (max-width: 375px) */
+@media (max-width: 375px) {
+  .review-card-item .review-media-item {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .review-media-gallery {
+    gap: 5px !important;
+  }
+  
+  .gallery-slide img {
+    height: 200px !important;
   }
 }

@@ -48,7 +48,7 @@ function renderFoodDetail(food) {
     // Update food image
     const imageElement = document.querySelector('.food-detail-image img');
     if (imageElement) {
-        imageElement.src = food.HinhAnh ? `/images/${food.HinhAnh}` : '/images/no-image.png';
+        imageElement.src = food.hinh_anh_url || food.hinhAnhUrl || (food.HinhAnh ? (food.HinhAnh.startsWith('http') ? food.HinhAnh : `/images/${food.HinhAnh}`) : '/images/no-image.png');
         imageElement.alt = food.TenMonAn;
     }
 
@@ -111,7 +111,7 @@ function renderFoodDetail(food) {
         addToCartBtn.dataset.id = food.MaMonAn;
         addToCartBtn.dataset.name = food.TenMonAn;
         addToCartBtn.dataset.price = food.Gia;
-        addToCartBtn.dataset.image = food.HinhAnh ? `/images/${food.HinhAnh}` : '/images/no-image.png';
+        addToCartBtn.dataset.image = food.hinh_anh_url || food.hinhAnhUrl || (food.HinhAnh ? (food.HinhAnh.startsWith('http') ? food.HinhAnh : `/images/${food.HinhAnh}`) : '/images/no-image.png');
         
         if (food.TrangThai !== 'Còn bán') {
             addToCartBtn.disabled = true;
@@ -135,7 +135,7 @@ function renderRelatedFoods(relatedFoods) {
             <div class="box">
                 <div>
                     <div class="img-box">
-                        <img src="${food.HinhAnh ? '/images/' + food.HinhAnh : '/images/no-image.png'}" 
+                        <img src="${food.hinh_anh_url || food.hinhAnhUrl || (food.HinhAnh ? (food.HinhAnh.startsWith('http') ? food.HinhAnh : '/images/' + food.HinhAnh) : '/images/no-image.png')}" 
                              alt="${food.TenMonAn}">
                     </div>
                     <div class="detail-box">

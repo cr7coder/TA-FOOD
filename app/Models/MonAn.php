@@ -131,11 +131,11 @@ class MonAn extends Model
     {
         if ($this->HinhAnh) {
             if (filter_var($this->HinhAnh, FILTER_VALIDATE_URL)) {
-                return $this->HinhAnh; // Cloudinary / external URL — giữ nguyên
+                return $this->HinhAnh;
             }
-            return '/images/' . $this->HinhAnh; // local file — dùng path tương đối
+            return asset('images/' . $this->HinhAnh);
         }
-        return '/images/no-image.png';
+        return asset('images/no-image.png');
     }
 
     public function getThuVienAnhUrlsAttribute()
@@ -144,7 +144,7 @@ class MonAn extends Model
             $images = json_decode($this->ThuVienAnh, true);
             if (is_array($images)) {
                 return array_map(function($img) {
-                    return filter_var($img, FILTER_VALIDATE_URL) ? $img : '/images/' . $img;
+                    return filter_var($img, FILTER_VALIDATE_URL) ? $img : asset('images/' . $img);
                 }, $images);
             }
         }

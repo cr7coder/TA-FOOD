@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
 
     protected $table = 'nguoi_dung';
     protected $primaryKey = 'MaNguoiDung';
@@ -20,7 +21,12 @@ class User extends Authenticatable
         'HoTen',
         'Email',
         'SoDienThoai',
+        'DiaChi',
+        'DiaChiNhaRieng',
+        'DiaChiVanPhong',
+        'DiaChiTruongHoc',
         'VaiTro',
+        'AnhDaiDien',
     ];
 
     protected $hidden = [
@@ -69,9 +75,32 @@ class User extends Authenticatable
         return $this->HoTen;
     }
 
+    // Alias TenNguoiDung → HoTen for compatibility
+    public function getTenNguoiDungAttribute()
+    {
+        return $this->HoTen;
+    }
+
+    // Alias SDT → SoDienThoai for compatibility
+    public function getSDTAttribute()
+    {
+        return $this->SoDienThoai;
+    }
+
     public function getEmailAttribute($value)
     {
         return $this->attributes['Email'];
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->AnhDaiDien) {
+            if (filter_var($this->AnhDaiDien, FILTER_VALIDATE_URL)) {
+                return $this->AnhDaiDien;
+            }
+            return asset('storage/' . $this->AnhDaiDien);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->HoTen ?? $this->TenDangNhap) . '&background=ffbe33&color=222831&size=128&font-size=0.45&bold=true';
     }
 
     // Relationships
@@ -93,7 +122,13 @@ class User extends Authenticatable
 
     public function binhLuans()
     {
-        return $this->hasMany(BinhLuan::class, 'ma_nguoi_dung', 'MaNguoiDung');
+        return $this->hasMany(BinhLuan::class, 'MaNguoiDung', 'MaNguoiDung');
+    }
+
+    public function yeuThichMonAns()
+    {
+        return $this->belongsToMany(MonAn::class, 'mon_an_yeu_thich', 'MaNguoiDung', 'MaMonAn')
+            ->withTimestamps();
     }
 
     // Scopes

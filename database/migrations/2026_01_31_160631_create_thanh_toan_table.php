@@ -15,8 +15,8 @@ return new class extends Migration
             $table->increments('MaThanhToan');
             $table->unsignedInteger('MaDonHang');
             $table->decimal('SoTien', 18, 2)->unsigned();
-            $table->enum('PhuongThuc', ['COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay', 'ShopeePay'])->default('COD');
-            $table->enum('TrangThai', ['Chờ thanh toán', 'Đã thanh toán', 'Thất bại'])->default('Chờ thanh toán');
+            $table->enum('PhuongThuc', ['COD', 'Online', 'MoMo', 'ZaloPay', 'VNPay', 'ShopeePay', 'VietQR', 'VISA', 'Mastercard', 'ATM'])->default('COD');
+            $table->enum('TrangThai', ['Chờ thanh toán', 'Chờ xác nhận', 'Đã thanh toán', 'Thất bại', 'Đã hoàn tiền'])->default('Chờ thanh toán');
             $table->string('MaGiaoDich', 100)->nullable();
             $table->timestamps();
 

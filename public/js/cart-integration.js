@@ -38,7 +38,7 @@ class CartManager {
                         name: item.mon_an?.TenMonAn || item.monAn?.TenMonAn,
                         price: item.mon_an?.Gia || item.monAn?.Gia,
                         quantity: item.so_luong || item.SoLuong,
-                        image: item.mon_an?.HinhAnh ? `/images/${item.mon_an.HinhAnh}` : '/images/no-image.png'
+                        image: item.mon_an?.hinh_anh_url || item.mon_an?.hinhAnhUrl || (item.mon_an?.HinhAnh ? (item.mon_an.HinhAnh.startsWith('http') ? item.mon_an.HinhAnh : `/images/${item.mon_an.HinhAnh}`) : '/images/no-image.png')
                     }));
                     this.saveCart();
                 } else if (this.cart.length > 0) {

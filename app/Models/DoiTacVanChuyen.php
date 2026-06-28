@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DoiTacVanChuyen extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'doi_tac_van_chuyens';
 
@@ -17,6 +19,8 @@ class DoiTacVanChuyen extends Model
         'dia_chi_tru_so',
         'email_lien_he',
         'phi_van_chuyen',
+        'phi_km',
+        'nguoi_lien_he',
         'trang_thai',
     ];
 

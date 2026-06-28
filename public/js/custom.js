@@ -8,25 +8,32 @@ function getYear() {
 getYear();
 
 
-// isotope js
+// Dynamic Category Filter with standard CSS flexbox collapse (prevents blank spaces)
 $(window).on('load', function () {
     $('.filters_menu li').click(function () {
+        if ($(this).hasClass('see-all-categories-btn')) {
+            return;
+        }
+
         $('.filters_menu li').removeClass('active');
         $(this).addClass('active');
 
-        var data = $(this).attr('data-filter');
-        $grid.isotope({
-            filter: data
-        })
-    });
-
-    var $grid = $(".grid").isotope({
-        itemSelector: ".all",
-        percentPosition: false,
-        masonry: {
-            columnWidth: ".all"
+        // Center the clicked category tab in the horizontal scroll container
+        const container = document.querySelector('.filters_menu');
+        if (container) {
+            const activeEl = this;
+            const offsetLeft = activeEl.offsetLeft - (container.clientWidth / 2) + (activeEl.clientWidth / 2);
+            container.scrollTo({ left: offsetLeft, behavior: 'smooth' });
         }
-    })
+
+        var data = $(this).attr('data-filter');
+        if (data === '*') {
+            $('.grid > div').show();
+        } else {
+            $('.grid > div').hide();
+            $('.grid > div' + data).show();
+        }
+    });
 });
 
 // nice select
@@ -84,55 +91,86 @@ $(".client_owl-carousel").owlCarousel({
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Custom dropdown functionality
-    const dropdownToggle = document.getElementById('userDropdown');
-    const dropdownMenu = dropdownToggle?.nextElementSibling;
+    // Universal robust dropdown system for both notifications and profile menu
+    const dropdowns = document.querySelectorAll('.dropdown');
     
-    if (dropdownToggle && dropdownMenu) {
-        // Toggle dropdown on click
-        dropdownToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Close other dropdowns first
-            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                if (menu !== dropdownMenu) {
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('.dropdown-toggle');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        
+        if (toggle && menu) {
+            // Toggle dropdown on click
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const isShown = menu.classList.contains('show');
+                
+                // Close all other dropdowns
+                document.querySelectorAll('.dropdown-menu.show').forEach(openMenu => {
+                    if (openMenu !== menu) {
+                        openMenu.classList.remove('show');
+                        openMenu.parentElement.classList.remove('show');
+                    }
+                });
+                
+                // Toggle current dropdown state
+                if (isShown) {
                     menu.classList.remove('show');
+                    dropdown.classList.remove('show');
+                    toggle.setAttribute('aria-expanded', 'false');
+                } else {
+                    menu.classList.add('show');
+                    dropdown.classList.add('show');
+                    toggle.setAttribute('aria-expanded', 'true');
                 }
             });
             
-            // Toggle current dropdown
-            dropdownMenu.classList.toggle('show');
-            dropdownToggle.setAttribute('aria-expanded', 
-                dropdownMenu.classList.contains('show'));
-        });
+            // Handle dropdown item clicks to auto-close menu
+            menu.addEventListener('click', function(e) {
+                if (e.target.classList.contains('dropdown-item') && e.target.tagName !== 'BUTTON') {
+                    menu.classList.remove('show');
+                    dropdown.classList.remove('show');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+    });
+    
+    // Close any open dropdowns when clicking outside (100% reliable on mobile touch viewports)
+    document.addEventListener('click', function(e) {
+        let clickedInsideDropdown = false;
         
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.remove('show');
-                dropdownToggle.setAttribute('aria-expanded', 'false');
+        dropdowns.forEach(dropdown => {
+            if (dropdown.contains(e.target)) {
+                clickedInsideDropdown = true;
             }
         });
         
-        // Close dropdown on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && dropdownMenu.classList.contains('show')) {
-                dropdownMenu.classList.remove('show');
-                dropdownToggle.setAttribute('aria-expanded', 'false');
-                dropdownToggle.focus();
-            }
-        });
-        
-        // Handle dropdown item clicks
-        dropdownMenu.addEventListener('click', function(e) {
-            if (e.target.classList.contains('dropdown-item') && 
-                e.target.tagName !== 'BUTTON') {
-                dropdownMenu.classList.remove('show');
-                dropdownToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-    }
+        if (!clickedInsideDropdown) {
+            document.querySelectorAll('.dropdown-menu.show').forEach(openMenu => {
+                openMenu.classList.remove('show');
+                openMenu.parentElement.classList.remove('show');
+                const toggle = openMenu.parentElement.querySelector('.dropdown-toggle');
+                if (toggle) toggle.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
+    
+    // Close dropdowns on Escape key press
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.dropdown-menu.show').forEach(openMenu => {
+                openMenu.classList.remove('show');
+                openMenu.parentElement.classList.remove('show');
+                const toggle = openMenu.parentElement.querySelector('.dropdown-toggle');
+                if (toggle) {
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.focus();
+                }
+            });
+        }
+    });
     
     // Alternative: If you have Bootstrap JavaScript loaded
     if (typeof bootstrap !== 'undefined') {
@@ -143,6 +181,21 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (typeof $ !== 'undefined' && $.fn.dropdown) {
         // Bootstrap 4 with jQuery
         $('.dropdown-toggle').dropdown();
+    }
+
+    // Make entire food card (.box) clickable to go to the food detail page
+    if (typeof $ !== 'undefined') {
+        $(document).on('click', '.food_section .box', function (e) {
+            // Prevent redirecting if the user clicks the "Add to Cart" button or any elements inside it
+            if ($(e.target).closest('.add-to-cart-btn').length > 0) {
+                return;
+            }
+            
+            var detailUrl = $(this).attr('data-detail-url');
+            if (detailUrl) {
+                window.location.href = detailUrl;
+            }
+        });
     }
 });
 

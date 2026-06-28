@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class GiamGia extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'giam_gia';
     protected $primaryKey = 'MaGiamGia';
@@ -23,6 +24,7 @@ class GiamGia extends Model
         'NgayKetThuc',
         'SoLuongToiDa',
         'SoLuongDaSuDung',
+        'GioiHanNguoiDung',
         'MoTa',
     ];
 
@@ -34,12 +36,31 @@ class GiamGia extends Model
         'GiamToiDa' => 'decimal:2',
         'SoLuongToiDa' => 'integer',
         'SoLuongDaSuDung' => 'integer',
+        'GioiHanNguoiDung' => 'integer',
     ];
 
     // Relationships
     public function donHang()
     {
         return $this->hasMany(DonHang::class, 'MaGiamGia', 'MaGiamGia');
+    }
+
+    // Kiểm tra user cụ thể có được sử dụng voucher này không
+    public function canUserUse($userId)
+    {
+        if (!$userId) {
+            return true;
+        }
+        if ($this->GioiHanNguoiDung === null) {
+            return true; // Không giới hạn
+        }
+
+        $usedCount = $this->donHang()
+            ->where('MaNguoiDung', $userId)
+            ->whereNotIn('TrangThai', ['Hủy']) // Loại trừ các đơn hàng đã bị hủy
+            ->count();
+
+        return $usedCount < $this->GioiHanNguoiDung;
     }
 
     // Kiểm tra voucher còn hiệu lực
@@ -51,7 +72,7 @@ class GiamGia extends Model
 
     public function isValid()
     {
-        return $this->isActive();
+        return $this->isActive() && $this->hasQuantityAvailable();
     }
 
     public function isExpired()
@@ -82,14 +103,18 @@ class GiamGia extends Model
         }
 
         if ($this->LoaiGiamGia === 'Số tiền') {
-            return min($this->PhanTram, $tongTien);
+            return min((float)$this->PhanTram, $tongTien);
+        }
+
+        if ($this->LoaiGiamGia === 'TienMat') {
+            return min((float)$this->GiamToiDa, $tongTien);
         }
 
         // Loại phần trăm
-        $discount = ($tongTien * $this->PhanTram) / 100;
+        $discount = ($tongTien * (float)$this->PhanTram) / 100;
 
-        if ($this->GiamToiDa) {
-            $discount = min($discount, $this->GiamToiDa);
+        if ($this->GiamToiDa && (float)$this->GiamToiDa > 0) {
+            $discount = min($discount, (float)$this->GiamToiDa);
         }
 
         return $discount;
@@ -135,12 +160,33 @@ class GiamGia extends Model
         return empty($result) ? 'Dưới 1 phút' : implode(' ', $result);
     }
 
+    public function getTimeRemainingColor()
+    {
+        if ($this->isExpired()) {
+            return 'danger';
+        }
+        $now = Carbon::now();
+        $endDate = Carbon::parse($this->NgayKetThuc);
+        if ($now->diffInDays($endDate) <= 3) {
+            return 'warning';
+        }
+        return 'success';
+    }
+
+    public function getTimeRemainingShort()
+    {
+        return $this->getTimeRemaining();
+    }
+
     public function getPhanTramFormatAttribute()
     {
         if ($this->LoaiGiamGia === 'Số tiền') {
-            return number_format($this->PhanTram, 0, ',', '.') . 'đ';
+            return number_format((float)$this->PhanTram, 0, ',', '.') . 'đ';
         }
-        return $this->PhanTram . '%';
+        if ($this->LoaiGiamGia === 'TienMat') {
+            return number_format((float)$this->GiamToiDa, 0, ',', '.') . 'đ';
+        }
+        return ((float)$this->PhanTram) . '%';
     }
 
     // Scopes
@@ -160,5 +206,18 @@ class GiamGia extends Model
                 $q->whereNull('SoLuongToiDa')
                   ->orWhereRaw('SoLuongDaSuDung < SoLuongToiDa');
             });
+    }
+
+    public function scopeExpired($query)
+    {
+        return $query->where('NgayKetThuc', '<', Carbon::now());
+    }
+
+    public function scopeExpiringSoon($query)
+    {
+        $now = Carbon::now();
+        $soon = Carbon::now()->addDays(3);
+        return $query->where('NgayKetThuc', '>=', $now)
+            ->where('NgayKetThuc', '<=', $soon);
     }
 }

@@ -108,8 +108,8 @@ function clearVoucherError() {
 function validateName(name) {
     if (!name.trim())
         return "Họ tên người nhận hàng không được để trống.";
-    if (name.length < 10)
-        return "Vui lòng điền họ tên lớn hơn 10 ký tự.";
+    if (name.length < 2)
+        return "Vui lòng điền họ tên hợp lệ (tối thiểu 2 ký tự).";
     if (name.length > 100)
         return "Vui lòng điền họ tên nhỏ hơn 100 ký tự.";
     if (!/^[a-zA-ZÀ-ỹ\s]+$/.test(name))
@@ -208,10 +208,26 @@ function updatePricing(voucher) {
     const discountRow = document.getElementById("discountRow");
     const discountAmount = document.getElementById("discountAmount");
     const totalAmount = document.getElementById("totalAmount");
-    if (discountRow && discountAmount && totalAmount) {
-        discountRow.style.display = "flex";
-        discountAmount.textContent = `-${voucher.discount} đ`;
-        totalAmount.textContent = `${voucher.total} đ`;
+    if (voucher && discountRow && discountAmount && totalAmount) {
+        discountRow.style.cssText = 'display: flex !important;';
+        
+        let discountClean = voucher.discount.toString().replace(/[^0-9.-]/g, '').trim();
+        let totalClean = voucher.total.toString().replace(/[^0-9.-]/g, '').trim();
+        
+        if (!isNaN(parseFloat(discountClean))) {
+            discountClean = parseFloat(discountClean).toLocaleString('vi-VN');
+        }
+        if (!isNaN(parseFloat(totalClean))) {
+            totalClean = parseFloat(totalClean).toLocaleString('vi-VN');
+        }
+
+        discountAmount.textContent = `-${discountClean} đ`;
+        totalAmount.textContent = `${totalClean} đ`;
+    } else if (!voucher && discountRow && totalAmount) {
+        discountRow.style.cssText = 'display: none !important;';
+        if (typeof subtotal !== 'undefined') {
+            totalAmount.textContent = `${subtotal.toLocaleString('vi-VN')} đ`;
+        }
     }
 }
 
@@ -403,11 +419,55 @@ document.addEventListener("DOMContentLoaded", function () {
                 return false;
             }
 
-            submitBtn.innerHTML =
-                '<i class="fa fa-spinner fa-spin"></i> Đang xử lý...';
-            submitBtn.disabled = true;
+            e.preventDefault();
+            
+            const selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'COD';
+            let warningText = '';
+            
+            if (selectedPaymentMethod === 'Online') {
+                warningText = 'Đơn hàng sẽ không thể thay đổi sau khi chuyển sang bước Thanh toán trực tuyến.';
+            } else {
+                warningText = 'Đơn hàng sẽ được gửi ngay đến nhà hàng để chuẩn bị và không thể thay đổi.';
+            }
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Xác nhận đặt hàng',
+                    html: `Vui lòng kiểm tra kỹ danh sách món ăn, số lượng và địa chỉ giao hàng.<br><br><span style="color: #e53e3e; font-weight: 600;">Lưu ý: ${warningText}</span>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-check"></i> Xác nhận',
+                    cancelButtonText: 'Quay lại',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang xử lý...';
+                        submitBtn.disabled = true;
+                        form.submit();
+                    } else {
+                        submitBtn.innerHTML = '<i class="fa fa-check-circle"></i> Đặt hàng ngay';
+                        submitBtn.disabled = false;
+                    }
+                });
+            } else {
+                submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang xử lý...';
+                submitBtn.disabled = true;
+                form.submit();
+            }
         });
     }
+
+    // Xử lý bfcache (trường hợp người dùng ấn nút Back từ PayOS hoặc trang khác)
+    window.addEventListener('pageshow', function (event) {
+        // event.persisted = true nghĩa là trang được load lại từ bộ nhớ đệm của trình duyệt (bfcache) mà không cần gọi Server
+        if (event.persisted) {
+            // Ép trình duyệt tải lại trang (reload) để Server PHP chạy logic kiểm tra giỏ hàng
+            // Từ đó CheckoutController sẽ thấy giỏ trống và redirect về Lịch sử đơn hàng
+            window.location.reload();
+        }
+    });
 });
 
 // Export functions for testing

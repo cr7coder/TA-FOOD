@@ -16,15 +16,21 @@ class NhaHang extends Model
         'TenNhaHang',
         'DiaChi',
         'SoDienThoai',
+        'Email',
         'GioMoCua',
         'GioDongCua',
         'MaNguoiDung',
+        'latitude',
+        'longitude',
+        'phi_ship_co_ban',
+        'phi_ship_moi_km',
+        'km_mien_phi',
+        'commission_rate',
+        'HinhAnh',
+        'TrangThai',
     ];
 
-    protected $casts = [
-        'GioMoCua' => 'datetime:H:i',
-        'GioDongCua' => 'datetime:H:i',
-    ];
+    // Casting removed for better TIME column compatibility
 
     // Relationships
     public function owner()
@@ -54,6 +60,17 @@ class NhaHang extends Model
         return $this->GioDongCua ? substr($this->GioDongCua, 0, 5) : '';
     }
 
+    public function getHinhAnhUrlAttribute()
+    {
+        if ($this->HinhAnh) {
+            if (filter_var($this->HinhAnh, FILTER_VALIDATE_URL)) {
+                return $this->HinhAnh;
+            }
+            return asset('storage/' . $this->HinhAnh);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->TenNhaHang) . '&background=ffbe33&color=222831&size=128&bold=true';
+    }
+
     // Helper methods
     public function isOpen()
     {
@@ -68,5 +85,10 @@ class NhaHang extends Model
     public function getTongMonAnAttribute()
     {
         return $this->monAn()->count();
+    }
+
+    public function scopeHoatDong($query)
+    {
+        return $query->where('TrangThai', 'Hoạt động');
     }
 }

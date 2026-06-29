@@ -676,19 +676,19 @@
             0% {
                 box-shadow: 0 0 0 0 rgba(255, 190, 51, 0.9);
                 border-color: #ffbe33 !important;
-                background-color: #fff9db !important;
+                background: #fff9db !important;
                 transform: translateY(-6px) scale(1.03);
             }
             30% {
                 box-shadow: 0 0 25px 12px rgba(255, 190, 51, 0.5);
                 border-color: #ffbe33 !important;
-                background-color: #fffbeb !important;
+                background: #fffbeb !important;
                 transform: translateY(-6px) scale(1.03);
             }
             100% {
                 box-shadow: 0 0 0 0 rgba(255, 190, 51, 0);
                 border-color: rgba(0, 0, 0, 0.05) !important;
-                background-color: #f8fafc !important;
+                background: #f8fafc !important;
                 transform: translateY(0) scale(1);
             }
         }
@@ -882,22 +882,35 @@
             });
 
             // Check for direct review target via URL hash
-            const hash = window.location.hash;
-            if (hash && hash.startsWith('#review-')) {
-                const targetCard = container.querySelector(hash);
-                if (targetCard) {
-                    targetCard.classList.add('highlight-pulse');
-                    
-                    // Auto-scroll the horizontal carousel container to this card
-                    setTimeout(() => {
-                        container.scrollTo({
-                            left: targetCard.offsetLeft - container.offsetLeft - 20,
-                            behavior: 'smooth'
-                        });
-                        updateButtons();
-                    }, 600);
+            function handleHashHighlight() {
+                const hash = window.location.hash;
+                if (hash && hash.startsWith('#review-')) {
+                    const targetCard = container.querySelector(hash);
+                    if (targetCard) {
+                        // Reset animation if already present
+                        targetCard.classList.remove('highlight-pulse');
+                        void targetCard.offsetWidth; // Trigger DOM reflow to restart CSS keyframe animation
+                        targetCard.classList.add('highlight-pulse');
+                        
+                        // Auto-scroll the horizontal carousel container to this card
+                        setTimeout(() => {
+                            container.scrollTo({
+                                left: targetCard.offsetLeft - container.offsetLeft - 20,
+                                behavior: 'smooth'
+                            });
+                            updateButtons();
+                        }, 300);
+                    }
                 }
             }
+
+            // Bind to window load and hashchange events for maximum reliability
+            if (document.readyState === 'complete') {
+                handleHashHighlight();
+            } else {
+                window.addEventListener('load', handleHashHighlight);
+            }
+            window.addEventListener('hashchange', handleHashHighlight);
 
             updateButtons(); // Init state
 

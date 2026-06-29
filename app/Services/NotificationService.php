@@ -27,7 +27,7 @@ class NotificationService
     /**
      * Thêm thông báo mới cho người dùng
      */
-    public static function add($userId, $title, $message, $orderId = null)
+    public static function add($userId, $title, $message, $orderId = null, $targetUrl = null)
     {
         // Kiểm tra xem admin có bật cấu hình notify_order trong cài đặt hệ thống hay không
         if (!SettingService::check('notify_order', true)) {
@@ -41,6 +41,7 @@ class NotificationService
             'title' => $title,
             'message' => $message,
             'order_id' => $orderId,
+            'target_url' => $targetUrl,
             'is_read' => false,
             'created_at' => now()->format('Y-m-d H:i:s'),
             'time_diff' => 'Vừa xong'

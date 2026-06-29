@@ -56,7 +56,8 @@ class ReviewController extends Controller
                 $review->MaNguoiDung,
                 '💬 Nhà hàng đã phản hồi đánh giá của bạn!',
                 "Cửa hàng \"{$tenNhaHang}\" vừa phản hồi đánh giá của bạn về món \"{$tenMonAn}\".",
-                $review->MaDonHang
+                $review->MaDonHang,
+                route('food.detail', $review->MaMonAn)
             );
         }
 

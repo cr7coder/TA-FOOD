@@ -2111,7 +2111,7 @@
                 return '#d97706'; // pending
             }
 
-            function showToast(title, message, orderId) {
+            function showToast(title, message, orderId, targetUrl = null) {
                 const toastContainer = document.getElementById('liveToastContainer');
                 if (!toastContainer) return;
 
@@ -2139,10 +2139,12 @@
                 toastContainer.appendChild(card);
                 setTimeout(() => card.classList.add('show'), 100);
 
-                // Clicking the toast goes to order detail
+                // Clicking the toast goes to order detail or custom target URL
                 card.addEventListener('click', function(e) {
                     if (e.target.classList.contains('close-toast-btn')) return;
-                    if (orderId) {
+                    if (targetUrl) {
+                        window.location.href = targetUrl;
+                    } else if (orderId) {
                         window.location.href = `/orders/${orderId}`;
                     }
                 });
@@ -2199,7 +2201,7 @@
                                 notifications.forEach(n => {
                                     const { icon, bg } = getStatusIcon(n.message);
                                     const unreadClass = !n.is_read ? 'unread' : '';
-                                    const orderUrl = n.order_id ? `/orders/${n.order_id}` : '#';
+                                    const orderUrl = n.target_url ? n.target_url : (n.order_id ? `/orders/${n.order_id}` : '#');
                                     const displayTitle = (n.title && n.title.trim()) ? n.title : 'Cập nhật đơn hàng';
 
                                     html += `
@@ -2223,7 +2225,7 @@
 
                                     // Push dynamic real-time toast for *NEW* unread notifications
                                     if (!isFirstLoad && !n.is_read && !knownNotifications.has(n.id)) {
-                                        showToast(n.title, n.message, n.order_id);
+                                        showToast(n.title, n.message, n.order_id, n.target_url);
                                         
                                         // Tự động load lại dữ liệu màn hình nếu khách đang ở trang Đơn hàng
                                         if (window.location.pathname.includes('/orders')) {

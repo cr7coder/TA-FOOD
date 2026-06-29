@@ -295,8 +295,7 @@
                                     <div class="reviews-horizontal-container {{ $food->binhLuans->count() === 1 ? 'single-review-mode' : '' }}" id="reviewsContainer">
                                         @foreach($food->binhLuans as $binhLuan)
                                         <div class="review-card-item" id="review-{{ $binhLuan->id }}">
-                                            <!-- Floating highlighted badge -->
-                                            <div class="highlight-badge"><i class="fas fa-bell me-1"></i> Phản hồi mới</div>
+
                                                 <div class="review-header d-flex justify-content-between align-items-start mb-2">
                                                 <div class="reviewer-info d-flex align-items-center">
                                                     <div class="reviewer-avatar mr-3 me-3" style="flex-shrink: 0;">
@@ -674,67 +673,23 @@
             position: relative; /* Ensure relative positioning for child elements */
         }
 
-        /* Floating highlighted badge */
-        .highlight-badge {
-            position: absolute;
-            top: -12px;
-            right: 15px;
-            background: linear-gradient(135deg, #ff9f00 0%, #ff6f00 100%);
-            color: white !important;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(255, 111, 0, 0.4);
-            opacity: 0;
-            transform: translateY(12px) scale(0.7);
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: none;
-            z-index: 15;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .review-card-item.highlight-pulse .highlight-badge {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* Double beat heartbeat pulsing keyframe animation */
+        /* Gentle bounce animation mimicking hover effect */
         @keyframes reviewGlowPulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(255, 190, 51, 0);
-                border-color: rgba(255, 190, 51, 0.2) !important;
+            0%, 50%, 100% {
+                transform: translateY(0);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
+                border-color: rgba(0, 0, 0, 0.05) !important;
                 background: #f8fafc !important;
-                transform: translateY(0) scale(1);
             }
-            15% {
-                box-shadow: 0 0 35px 15px rgba(255, 190, 51, 0.85), inset 0 0 15px rgba(255, 190, 51, 0.4);
+            25%, 75% {
+                transform: translateY(-6px);
+                box-shadow: 0 10px 25px rgba(255, 190, 51, 0.2) !important;
                 border-color: #ffbe33 !important;
-                background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%) !important;
-                transform: translateY(-12px) scale(1.05);
-            }
-            30% {
-                box-shadow: 0 0 20px 8px rgba(255, 190, 51, 0.4), inset 0 0 8px rgba(255, 190, 51, 0.2);
-                border-color: #ffbe33 !important;
-                background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%) !important;
-                transform: translateY(-8px) scale(1.03);
-            }
-            45% {
-                box-shadow: 0 0 35px 15px rgba(255, 190, 51, 0.75), inset 0 0 15px rgba(255, 190, 51, 0.4);
-                border-color: #ffbe33 !important;
-                background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%) !important;
-                transform: translateY(-12px) scale(1.05);
-            }
-            100% {
-                box-shadow: 0 0 15px 4px rgba(255, 190, 51, 0.35), inset 0 0 8px rgba(255, 190, 51, 0.15);
-                border-color: rgba(255, 190, 51, 0.8) !important;
                 background: #ffffff !important;
-                transform: translateY(0) scale(1);
             }
         }
         .review-card-item.highlight-pulse {
-            animation: reviewGlowPulse 6s ease-out forwards;
+            animation: reviewGlowPulse 4s ease-in-out forwards;
             z-index: 10;
         }
         .review-card-item:hover {

@@ -677,23 +677,29 @@
                 box-shadow: 0 0 0 0 rgba(255, 190, 51, 0.9);
                 border-color: #ffbe33 !important;
                 background: #fff9db !important;
-                transform: translateY(-6px) scale(1.03);
+                transform: translateY(-8px) scale(1.03);
             }
-            30% {
-                box-shadow: 0 0 25px 12px rgba(255, 190, 51, 0.5);
+            25% {
+                box-shadow: 0 0 25px 12px rgba(255, 190, 51, 0.6);
                 border-color: #ffbe33 !important;
                 background: #fffbeb !important;
-                transform: translateY(-6px) scale(1.03);
+                transform: translateY(-8px) scale(1.03);
+            }
+            60% {
+                box-shadow: 0 0 15px 6px rgba(255, 190, 51, 0.3);
+                border-color: #ffbe33 !important;
+                background: #fffdf5 !important;
+                transform: translateY(-4px) scale(1.01);
             }
             100% {
-                box-shadow: 0 0 0 0 rgba(255, 190, 51, 0);
-                border-color: rgba(0, 0, 0, 0.05) !important;
-                background: #f8fafc !important;
+                box-shadow: 0 0 12px 3px rgba(255, 190, 51, 0.25);
+                border-color: rgba(255, 190, 51, 0.6) !important;
+                background: #ffffff !important;
                 transform: translateY(0) scale(1);
             }
         }
         .review-card-item.highlight-pulse {
-            animation: reviewGlowPulse 4s ease-out forwards;
+            animation: reviewGlowPulse 6s ease-out forwards;
             position: relative;
             z-index: 10;
         }
@@ -892,13 +898,14 @@
                         void targetCard.offsetWidth; // Trigger DOM reflow to restart CSS keyframe animation
                         targetCard.classList.add('highlight-pulse');
                         
-                        // Auto-scroll the horizontal carousel container to this card
+                        // Smoothly scroll both window (vertically) and carousel (horizontally) to this specific card
                         setTimeout(() => {
-                            container.scrollTo({
-                                left: targetCard.offsetLeft - container.offsetLeft - 20,
-                                behavior: 'smooth'
+                            targetCard.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center',
+                                inline: 'center'
                             });
-                            updateButtons();
+                            setTimeout(updateButtons, 500);
                         }, 300);
                     }
                 }

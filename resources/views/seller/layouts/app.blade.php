@@ -908,7 +908,7 @@
         }
 
         if ("{{ Auth::check() }}") {
-            setInterval(checkOrders, 30000); // Poll every 30s
+            setInterval(checkOrders, 5000); // Poll every 5s for real-time responsiveness
             setTimeout(checkOrders, 2000);   // Initial check
         }
     </script>

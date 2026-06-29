@@ -245,7 +245,7 @@
                         @endif
                     </div> --}}
 
-                    <div class="col-12 mt-5">
+                    <div class="col-12 mt-5" id="reviews-section">
                         <!-- Reviews Section Title -->
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3 class="reviews-title mb-0">

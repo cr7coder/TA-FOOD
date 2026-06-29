@@ -581,7 +581,7 @@
     })();
 </script>
 
-@if(session('success'))
+@if(session('success') && !request()->routeIs('checkout.success'))
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
@@ -593,7 +593,7 @@
     </script>
 @endif
 
-@if(session('error'))
+@if(session('error') && !request()->routeIs('checkout.success'))
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {

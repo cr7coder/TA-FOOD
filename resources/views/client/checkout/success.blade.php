@@ -425,4 +425,27 @@
             .table th:nth-child(4), .table td:nth-child(4) { width: 30%; text-align: right; }   /* Cột thành tiền */
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tự động tắt/ẩn thông báo flash sau 3 giây (3000ms)
+            const alerts = document.querySelectorAll('.success_section .alert-success, .success_section .alert-danger');
+            alerts.forEach(function (alert) {
+                setTimeout(function () {
+                    // Hiệu ứng transition biến mất mượt mà
+                    alert.style.transition = 'opacity 0.6s ease, max-height 0.6s ease, margin-size 0.6s ease, padding 0.6s ease, margin 0.6s ease';
+                    alert.style.opacity = '0';
+                    alert.style.maxHeight = '0px';
+                    alert.style.margin = '0px';
+                    alert.style.padding = '0px';
+                    alert.style.overflow = 'hidden';
+                    
+                    // Xóa hoàn toàn khỏi DOM sau khi hiệu ứng ẩn hoàn tất
+                    setTimeout(function () {
+                        alert.remove();
+                    }, 600);
+                }, 3000); // Tự động ẩn sau 3 giây
+            });
+        });
+    </script>
 @endsection

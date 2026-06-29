@@ -48,6 +48,18 @@ class ReviewController extends Controller
             'phan_hoi_at' => Carbon::now('Asia/Ho_Chi_Minh'),
         ]);
 
+        // Gửi thông báo đến Khách hàng (User) khi Seller phản hồi đánh giá
+        if ($review->MaNguoiDung) {
+            $tenNhaHang = $restaurant->TenNhaHang ?? 'Cửa hàng';
+            $tenMonAn = $review->monAn->TenMonAn ?? 'món ăn';
+            \App\Services\NotificationService::add(
+                $review->MaNguoiDung,
+                '💬 Nhà hàng đã phản hồi đánh giá của bạn!',
+                "Cửa hàng \"{$tenNhaHang}\" vừa phản hồi đánh giá của bạn về món \"{$tenMonAn}\".",
+                $review->MaDonHang
+            );
+        }
+
         return redirect()->back()->with('success', 'Đã gửi phản hồi thành công.');
     }
 }

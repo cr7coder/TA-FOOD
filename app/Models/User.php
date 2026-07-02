@@ -112,7 +112,7 @@ class User extends Authenticatable
     public function donHang()
     {
         return $this->hasMany(DonHang::class, 'MaNguoiDung', 'MaNguoiDung')
-            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc');    
     }
 
     public function nhaHang()

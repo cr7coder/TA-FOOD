@@ -30,6 +30,26 @@ class ChatController extends Controller
 
         $messageLower = mb_strtolower($message, 'UTF-8');
 
+        // 0. Public Payment Methods Check (No login required!)
+        $isPaymentQuery = false;
+        $paymentTerms = ['thanh toán', 'chuyển khoản', 'ngân hàng', 'vietqr', 'payos', 'momo', 'banking', 'cod'];
+        foreach ($paymentTerms as $term) {
+            if (str_contains($messageLower, $term)) {
+                $isPaymentQuery = true;
+                break;
+            }
+        }
+        if ($isPaymentQuery) {
+            $replyMessage = "Dạ! 💳 Về **giao dịch thanh toán**, hệ thống TAFOOD hỗ trợ các hình thức:\n1. 💵 **Thanh toán tiền mặt khi nhận hàng (COD).**\n2. 📲 **Chuyển khoản VietQR siêu tốc:** Hệ thống sẽ tự tạo mã QR động chứa sẵn số tiền và mã giao dịch tại bước thanh toán để bạn quét app ngân hàng thanh toán tự động, tiền sẽ được duyệt ngay lập tức nhé! 🥰";
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'message' => $replyMessage,
+                    'recommended_foods' => []
+                ]
+            ]);
+        }
+
         // Secure Information Interception (Intents: Orders, Personal Profile, Payments)
         $isSecureQuery = false;
         $secureTerms = [
@@ -37,8 +57,8 @@ class ChatController extends Controller
             'đơn hàng', 'đang ở đâu', 'bao giờ giao', 'hủy đơn', 'kiểm tra', 'mã đơn', 'shipper', 'tra cứu đơn', 'tìm đơn',
             // Personal info terms
             'thông tin cá nhân', 'tài khoản', 'mật khẩu', 'profile', 'số điện thoại', 'sđt', 'email', 'địa chỉ của tôi', 'hồ sơ',
-            // Payment terms
-            'thanh toán', 'chuyển khoản', 'ngân hàng', 'ví tiền', 'vietqr', 'payos', 'momo', 'nạp tiền', 'banking', 'số dư'
+            // Payment terms (requiring login)
+            'ví tiền', 'nạp tiền', 'số dư'
         ];
         
         foreach ($secureTerms as $term) {
@@ -187,10 +207,6 @@ class ChatController extends Controller
                 $replyMessage = "Dạ! 📧 Email đang đăng ký trên tài khoản TAFOOD của bạn là: **{$emailStr}**\n\n"
                     . "Email này được dùng để nhận thông báo đơn hàng và khôi phục mật khẩu. Nếu bạn muốn thay đổi, hãy vào phần **Thông tin tài khoản** nhé! 🔐 [GO_TO_PROFILE]";
 
-            // --- Intent: Thanh toán ---
-            } elseif (str_contains($messageLower, 'thanh toán') || str_contains($messageLower, 'chuyển khoản') || str_contains($messageLower, 'ngân hàng') || str_contains($messageLower, 'vietqr') || str_contains($messageLower, 'momo') || str_contains($messageLower, 'banking')) {
-                $replyMessage = "Dạ! 💳 Về **giao dịch thanh toán**, hệ thống TAFOOD hỗ trợ các hình thức:\n1. 💵 **Thanh toán tiền mặt khi nhận hàng (COD).**\n2. 📲 **Chuyển khoản VietQR siêu tốc:** Hệ thống sẽ tự tạo mã QR động chứa sẵn số tiền và mã giao dịch tại bước thanh toán để bạn quét app ngân hàng thanh toán tự động, tiền sẽ được duyệt ngay lập tức nhé! 🥰";
-
             // --- Generic secure fallback ---
             } else {
                 $displayName = $user->TenNguoiDung ?? 'Khách hàng';
@@ -260,9 +276,11 @@ Dưới đây là danh sách CÁC MÃ GIẢM GIÁ THẬT ĐANG HOẠT ĐỘNG:
 QUY TẮC PHÂN TÍCH Ý ĐỊNH VÀ PHẢN HỒI (INTENTS & BEHAVIORS):
 Bạn phải hiểu và xử lý xuất sắc các nhóm ý định sau đây của Khách hàng:
 
-A. Tìm kiếm món ăn / Nhà hàng:
-- Khi người dùng muốn tìm món hoặc thèm ăn một loại đồ ăn cụ thể, hãy kiểm tra danh sách MÓN ĂN THẬT phía trên. Nếu có món phù hợp, hãy tư vấn và đưa ID của món đó vào 'recommended_food_ids'.
-- Nếu không có món đó trong danh sách, hãy giải thích lịch sự và gợi ý các món tương tự đang có sẵn trên hệ thống.
+A. Gợi ý và Khám phá ẩm thực (Recommendation):
+1. Tìm món/nhà hàng: Khi khách hàng tìm món ăn hoặc thèm ăn một loại đồ ăn cụ thể, hãy kiểm tra danh sách MÓN ĂN THẬT. Nếu có món phù hợp, hãy tư vấn và đưa ID của món đó vào 'recommended_food_ids'. Nếu không có, gợi ý các món tương tự đang có sẵn.
+2. Gợi ý theo cảm xúc/thời tiết: Nếu khách hàng hỏi thời tiết lạnh/mưa hay cảm xúc buồn chán/đói bụng, hãy gợi ý các nhóm món ăn thích hợp (trời lạnh/mưa gợi ý các món ăn nóng ấm như lẩu, nướng, bún, phở, cháo, mì; buồn chán gợi ý ngọt/ăn vặt như trà sữa, chè, bánh ngọt).
+3. Gợi ý theo ngân sách: Nếu khách đề cập đến ngân sách cụ thể (ví dụ: tầm 30k, dưới 50k...), hãy chỉ chọn đề xuất các món ăn từ danh sách MÓN ĂN THẬT có giá (price) nhỏ hơn hoặc bằng ngân sách đó.
+4. Gợi ý theo chế độ ăn uống: Nếu khách hàng yêu cầu ăn chay, ít calo, ăn kiêng..., hãy tìm các món chay (có chữ 'Chay'), salad hoặc thức uống lành mạnh tốt cho sức khỏe trong danh sách MÓN ĂN THẬT để tư vấn.
 
 B. Hỏi về Menu / Giá cả / Phí:
 - Tư vấn về giá của món ăn cụ thể trong danh sách.
@@ -585,6 +603,16 @@ Nếu không có gợi ý món cụ thể nào, hãy để mảng 'recommended_f
             }
         }
 
+        // 5b. High Priority: Hunger / Thirst check
+        $hungerTerms = ['đói', 'thèm', 'thèm ăn', 'khát', 'uống gì', 'ăn gì', 'ăn gì ngon', 'đói bụng', 'muốn ăn', 'ăn gì đây'];
+        $isHungry = false;
+        foreach ($hungerTerms as $term) {
+            if (str_contains($messageLower, $term)) {
+                $isHungry = true;
+                break;
+            }
+        }
+
         // 3. High Priority: Voucher check
         if (str_contains($messageLower, 'voucher') || str_contains($messageLower, 'khuyến mãi') || str_contains($messageLower, 'mã') || str_contains($messageLower, 'giam gia')) {
             if ($activeVouchers->count() > 0) {
@@ -782,35 +810,107 @@ Nếu không có gợi ý món cụ thể nào, hãy để mảng 'recommended_f
                     $cleanQuery = $contextRestaurantName;
                 }
 
-                if ($isGreeting || empty($cleanQuery) || mb_strlen($cleanQuery, 'UTF-8') < 2) {
+                if ($isGreeting || $isHungry || empty($cleanQuery) || mb_strlen($cleanQuery, 'UTF-8') < 2) {
                     // Return default greeting with top-rated items
                     $foods = $activeFoods->sortByDesc('rating')->take(3);
                     $matchedIds = $foods->pluck('id')->toArray();
-                    $replyMessage = "Chào bạn! Mình là Trợ lý Ẩm thực TAFOOD AI 🤖. Mình có thể giúp bạn tìm các món ngon, định vị các quán bán chạy nhất, hoặc săn mã giảm giá hot giúp bạn.\n\nGợi ý ngay cho bạn 3 món ăn nổi tiếng đang được đánh giá rất cao dưới đây nè! 👇";
+                    if ($isHungry) {
+                        $replyMessage = "Dạ, đói bụng rồi đúng không nè? 🥰 Để mình cứu đói cho bạn ngay nhé! Dưới đây là top 3 món ăn nổi tiếng bán chạy nhất, được đánh giá cực cao trên hệ thống TAFOOD nè, bạn xem chọn món ưng ý nha! 👇";
+                    } else {
+                        $replyMessage = "Chào bạn! Mình là Trợ lý Ẩm thực TAFOOD AI 🤖. Mình có thể giúp bạn tìm các món ngon, định vị các quán bán chạy nhất, hoặc săn mã giảm giá hot giúp bạn.\n\nGợi ý ngay cho bạn 3 món ăn nổi tiếng đang được đánh giá rất cao dưới đây nè! 👇";
+                    }
                 } else {
+                    // Extract budget if present in message
+                    $maxBudget = null;
+                    if (preg_match('/(?:tầm|dưới|khoảng|<=|giá)?\s*(\d+)\s*(k|đ|đồng|dồng|nghìn)?/i', $messageLower, $matches)) {
+                        $num = (float)$matches[1];
+                        $unit = $matches[2] ?? '';
+                        if (in_array(strtolower($unit), ['k', 'nghìn'])) {
+                            $maxBudget = $num * 1000;
+                        } elseif ($num < 1000) {
+                            $maxBudget = $num * 1000;
+                        } else {
+                            $maxBudget = $num;
+                        }
+                    }
+
+                    // Check vegetarian
+                    $isVegetarian = str_contains($messageLower, 'chay') || str_contains($messageLower, 'ăn chay');
+
+                    // Check weather/emotion
+                    $isColdOrRainy = str_contains($messageLower, 'lạnh') || str_contains($messageLower, 'mưa') || str_contains($messageLower, 'đông');
+                    $isSadOrSnack = str_contains($messageLower, 'buồn') || str_contains($messageLower, 'vặt') || str_contains($messageLower, 'nhâm nhi');
+
                     // Search active foods dynamically using smart accent-insensitive all-word matching!
-                    $foods = $activeFoods->filter(function($f) use ($cleanQuery) {
-                        $foodNameNormalized = mb_strtolower($this->removeAccents($f['name']), 'UTF-8');
-                        $foodCatNormalized = mb_strtolower($this->removeAccents($f['category']), 'UTF-8');
-                        $foodResNormalized = mb_strtolower($this->removeAccents($f['restaurant_name']), 'UTF-8');
-                        
-                        $queryNormalized = mb_strtolower($this->removeAccents($cleanQuery), 'UTF-8');
-                        
-                        // Handle interchangeable 'my' / 'mi' in normalized space too
-                        $queryNormalized = str_replace('my', 'mi', $queryNormalized);
-                        $foodNameNormalized = str_replace('my', 'mi', $foodNameNormalized);
-                        $foodCatNormalized = str_replace('my', 'mi', $foodCatNormalized);
-                        $foodResNormalized = str_replace('my', 'mi', $foodResNormalized);
-                        
-                        $queryWords = array_filter(explode(' ', $queryNormalized));
-                        if (empty($queryWords)) return false;
-                        
-                        foreach ($queryWords as $word) {
-                            $inName = str_contains($foodNameNormalized, $word);
-                            $inCat = str_contains($foodCatNormalized, $word);
-                            $inRes = str_contains($foodResNormalized, $word);
-                            if (!$inName && !$inCat && !$inRes) {
+                    $foods = $activeFoods->filter(function($f) use ($cleanQuery, $maxBudget, $isVegetarian, $isColdOrRainy, $isSadOrSnack) {
+                        // 1. Budget filter
+                        if ($maxBudget !== null && (float)$f['price'] > $maxBudget) {
+                            return false;
+                        }
+
+                        // 2. Vegetarian filter
+                        if ($isVegetarian) {
+                            $name = mb_strtolower($f['name'], 'UTF-8');
+                            $cat = mb_strtolower($f['category'], 'UTF-8');
+                            if (!str_contains($name, 'chay') && !str_contains($cat, 'chay')) {
                                 return false;
+                            }
+                        }
+
+                        // 3. Weather / Emotion filter
+                        if ($isColdOrRainy) {
+                            $name = mb_strtolower($f['name'], 'UTF-8');
+                            $cat = mb_strtolower($f['category'], 'UTF-8');
+                            $hotTerms = ['lẩu', 'nướng', 'súp', 'cháo', 'bún', 'phở', 'mì', 'hotpot', 'bbq'];
+                            $isHotFood = false;
+                            foreach ($hotTerms as $term) {
+                                if (str_contains($name, $term) || str_contains($cat, $term)) {
+                                    $isHotFood = true;
+                                    break;
+                                }
+                            }
+                            if (!$isHotFood) return false;
+                        }
+
+                        if ($isSadOrSnack) {
+                            $name = mb_strtolower($f['name'], 'UTF-8');
+                            $cat = mb_strtolower($f['category'], 'UTF-8');
+                            $snackTerms = ['trà sữa', 'vặt', 'bánh', 'chè', 'cafe', 'cà phê', 'đá', 'snack', 'nem chua', 'khoai tây'];
+                            $isSnack = false;
+                            foreach ($snackTerms as $term) {
+                                if (str_contains($name, $term) || str_contains($cat, $term)) {
+                                    $isSnack = true;
+                                    break;
+                                }
+                            }
+                            if (!$isSnack) return false;
+                        }
+
+                        // If there is search keyword
+                        if (!empty($cleanQuery) && mb_strlen($cleanQuery, 'UTF-8') >= 2) {
+                            $foodNameNormalized = mb_strtolower($this->removeAccents($f['name']), 'UTF-8');
+                            $foodCatNormalized = mb_strtolower($this->removeAccents($f['category']), 'UTF-8');
+                            $foodResNormalized = mb_strtolower($this->removeAccents($f['restaurant_name']), 'UTF-8');
+                            
+                            $queryNormalized = mb_strtolower($this->removeAccents($cleanQuery), 'UTF-8');
+                            
+                            // Handle interchangeable 'my' / 'mi'
+                            $queryNormalized = str_replace('my', 'mi', $queryNormalized);
+                            $foodNameNormalized = str_replace('my', 'mi', $foodNameNormalized);
+                            $foodCatNormalized = str_replace('my', 'mi', $foodCatNormalized);
+                            $foodResNormalized = str_replace('my', 'mi', $foodResNormalized);
+                            
+                            $queryWords = array_filter(explode(' ', $queryNormalized));
+                            foreach ($queryWords as $word) {
+                                if (in_array($word, ['muon', 'an', 'tim', 'gi', 'ngon', 'lam', 'qua', 'lanh', 'mua', 'nong', 'buon', 'chay', 'duoi', 'tam', 'khoang'])) {
+                                    continue;
+                                }
+                                $inName = str_contains($foodNameNormalized, $word);
+                                $inCat = str_contains($foodCatNormalized, $word);
+                                $inRes = str_contains($foodResNormalized, $word);
+                                if (!$inName && !$inCat && !$inRes) {
+                                    return false;
+                                }
                             }
                         }
                         return true;
@@ -820,6 +920,16 @@ Nếu không có gợi ý món cụ thể nào, hãy để mảng 'recommended_f
                         $matchedIds = $foods->pluck('id')->toArray();
                         if ($isReferencingPreviousRestaurant) {
                             $replyMessage = "Dạ! Dựa theo lịch sử trò chuyện của chúng mình, đây là thực đơn các món ngon cực đắt khách của **\"" . $contextRestaurantName . "\"** dành riêng cho bạn nè! 😍👇";
+                        } elseif ($maxBudget !== null && $isVegetarian) {
+                            $replyMessage = "Dạ, đây là các món chay thanh đạm dưới **" . number_format($maxBudget, 0, ',', '.') . "đ** đang sẵn có trên TAFOOD dành cho bạn nè! 🌿👇";
+                        } elseif ($maxBudget !== null) {
+                            $replyMessage = "Dạ, đây là các món ngon siêu tiết kiệm có giá dưới **" . number_format($maxBudget, 0, ',', '.') . "đ** cực đắt khách trên TAFOOD nè! Bạn xem chọn món nha! 💸👇";
+                        } elseif ($isVegetarian) {
+                            $replyMessage = "Dạ, đây là các món chay thanh tịnh, bổ dưỡng đang mở bán trên TAFOOD nè! Mời bạn chọn nhé! 🌿👇";
+                        } elseif ($isColdOrRainy) {
+                            $replyMessage = "Trời lạnh/mưa thế này thì làm một bữa nóng hổi là nhất rồi! 🌧️❄️ Gợi ý cho bạn các món ăn nóng hổi cực hợp thời tiết dưới đây nè: 👇";
+                        } elseif ($isSadOrSnack) {
+                            $replyMessage = "Đang buồn chán hay thèm ăn vặt thì phải thử ngay những món ngọt/ăn vặt siêu giải sầu dưới đây nha! 🥰🥤👇";
                         } else {
                             $replyMessage = "Dạ, hệ thống TAFOOD đang bán những món ngon liên quan đến **\"" . $cleanQuery . "\"** cực hấp dẫn dưới đây nè! Bạn xem chọn món ưng ý nhé! 😍👇";
                         }
@@ -843,7 +953,13 @@ Nếu không có gợi ý món cụ thể nào, hãy để mảng 'recommended_f
                         // Fallback to top-rated items but explain that food wasn't found
                         $foods = $activeFoods->sortByDesc('rating')->take(3);
                         $matchedIds = $foods->pluck('id')->toArray();
-                        $replyMessage = "Tiếc quá, hiện tại hệ thống chưa bán món liên quan đến **\"" . $cleanQuery . "\"**. Bạn có muốn dùng thử những món ngon nổi tiếng cực hot đang được yêu thích dưới đây không nè? 🥺👇";
+                        if ($maxBudget !== null) {
+                            $replyMessage = "Tiếc quá, hiện tại hệ thống chưa có món nào dưới **" . number_format($maxBudget, 0, ',', '.') . "đ**. Bạn có muốn tham khảo các món ngon bán chạy nhất đang được yêu thích dưới đây không nè? 🥺👇";
+                        } elseif ($isVegetarian) {
+                            $replyMessage = "Tiếc quá, hiện tại hệ thống chưa bán món chay nào phù hợp. Bạn có muốn dùng thử những món ngon nổi tiếng cực hot đang được yêu thích dưới đây không nè? 🥺👇";
+                        } else {
+                            $replyMessage = "Tiếc quá, hiện tại hệ thống chưa bán món liên quan đến **\"" . $cleanQuery . "\"**. Bạn có muốn dùng thử những món ngon nổi tiếng cực hot đang được yêu thích dưới đây không nè? 🥺👇";
+                        }
                     }
                 }
             }

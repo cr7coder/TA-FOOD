@@ -27,6 +27,8 @@ class User extends Authenticatable
         'DiaChiTruongHoc',
         'VaiTro',
         'AnhDaiDien',
+        'GoogleId',
+        'TrangThai',
     ];
 
     protected $hidden = [
@@ -85,6 +87,27 @@ class User extends Authenticatable
     public function getSDTAttribute()
     {
         return $this->SoDienThoai;
+    }
+
+    // GoogleId & TrangThai aliases for Class Diagram compatibility
+    public function getGoogleIdAttribute()
+    {
+        return $this->attributes['google_id'] ?? null;
+    }
+
+    public function setGoogleIdAttribute($value)
+    {
+        $this->attributes['google_id'] = $value;
+    }
+
+    public function getTrangThaiAttribute()
+    {
+        return $this->attributes['TrangThai'] ?? $this->attributes['trang_thai'] ?? null;
+    }
+
+    public function setTrangThaiAttribute($value)
+    {
+        $this->attributes['TrangThai'] = $value;
     }
 
     public function getEmailAttribute($value)

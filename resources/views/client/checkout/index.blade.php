@@ -764,6 +764,52 @@
                 width: 100%;
             }
         }
+
+        /* Suggestions list dropdown styling */
+        .address-suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 5px;
+            display: none;
+            padding: 5px 0;
+        }
+        
+        .address-suggestion-item {
+            padding: 10px 15px;
+            color: #333333;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .address-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .address-suggestion-item:hover {
+            background: #f8f9fa;
+            color: #ffbe33;
+        }
+
+        .address-suggestion-item i {
+            color: #ffbe33;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
     </style>
 
     {{--
@@ -889,6 +935,47 @@
             const addressInput = document.getElementById("customer_address");
             const latField = document.getElementById('customer_lat');
             const lngField = document.getElementById('customer_lng');
+            const GOONG_API_KEY = @json(env('GOONG_API_KEY'));
+
+            // Ensure relative positioning on parent for absolute suggestions container
+            if (addressInput && addressInput.parentNode) {
+                addressInput.parentNode.style.position = "relative";
+            }
+
+            async function geocodeAddressQuery(q) {
+                if (GOONG_API_KEY && GOONG_API_KEY.trim() !== '' && !GOONG_API_KEY.includes('GOONG_API_KEY')) {
+                    try {
+                        const response = await fetch(`https://rsapi.goong.io/geocode?address=${encodeURIComponent(q)}&api_key=${GOONG_API_KEY}`);
+                        const data = await response.json();
+                        if (data && data.results && data.results.length > 0) {
+                            const location = data.results[0].geometry.location;
+                            return {
+                                lat: parseFloat(location.lat),
+                                lng: parseFloat(location.lng),
+                                success: true
+                            };
+                        }
+                    } catch (e) {
+                        console.warn("Goong Geocoding failed, falling back to Nominatim:", e);
+                    }
+                }
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=vn`);
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        return {
+                            lat: parseFloat(data[0].lat),
+                            lng: parseFloat(data[0].lon),
+                            success: true
+                        };
+                    }
+                } catch (e) {
+                    console.error("Nominatim Geocoding failed:", e);
+                }
+
+                return { success: false };
+            }
 
             // 1. Address tabs quick select (DB-driven, server-side rendered)
             const tagButtons = document.querySelectorAll(".checkout-tag-btn");
@@ -949,19 +1036,16 @@
                                 statusEl.className = 'd-block mt-1 text-info';
                                 statusEl.textContent = 'Đang xác định tọa độ...';
                             }
-                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`)
-                                .then(r => r.json())
-                                .then(data => {
-                                    if (data && data.length > 0) {
-                                        const lat = parseFloat(data[0].lat);
-                                        const lng = parseFloat(data[0].lon);
-                                        if (latField) latField.value = lat;
-                                        if (lngField) lngField.value = lng;
+                            geocodeAddressQuery(addr)
+                                .then(res => {
+                                    if (res.success) {
+                                        if (latField) latField.value = res.lat;
+                                        if (lngField) lngField.value = res.lng;
                                         if (statusEl) {
                                             statusEl.className = 'd-block mt-1 text-success font-weight-bold';
                                             statusEl.textContent = 'Định vị địa chỉ thành công!';
                                         }
-                                        if (window.recalculateShipping) window.recalculateShipping(lat, lng);
+                                        if (window.recalculateShipping) window.recalculateShipping(res.lat, res.lng);
                                     } else {
                                         if (statusEl) {
                                             statusEl.className = 'd-block mt-1 text-warning';
@@ -1013,34 +1097,32 @@
                             statusEl.className = 'd-block mt-1 text-info';
                             statusEl.textContent = 'Đang xác định tọa độ địa chỉ giao hàng...';
                         }
-                        try {
-                            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(currentAddress)}&limit=1`);
-                            const data = await res.json();
-                            if (data && data.length > 0) {
-                                const lat = parseFloat(data[0].lat);
-                                const lng = parseFloat(data[0].lon);
-                                latField.value = lat;
-                                lngField.value = lng;
-                                if (statusEl) {
-                                    statusEl.className = 'd-block mt-1 text-success';
-                                    statusEl.textContent = 'Định vị địa chỉ thành công!';
+                        geocodeAddressQuery(currentAddress)
+                            .then(res => {
+                                if (res.success) {
+                                    latField.value = res.lat;
+                                    lngField.value = res.lng;
+                                    if (statusEl) {
+                                        statusEl.className = 'd-block mt-1 text-success';
+                                        statusEl.textContent = 'Định vị địa chỉ thành công!';
+                                    }
+                                    recalculateShipping(res.lat, res.lng);
+                                } else {
+                                    if (statusEl) {
+                                        statusEl.className = 'd-block mt-1 text-warning';
+                                        statusEl.textContent = 'Không tìm thấy tọa độ địa chỉ. Phí ship mặc định được áp dụng.';
+                                    }
+                                    recalculateShipping('', '');
                                 }
-                                recalculateShipping(lat, lng);
-                            } else {
+                            })
+                            .catch(err => {
+                                console.warn("Dynamic geocoding failed: " + err.message);
                                 if (statusEl) {
                                     statusEl.className = 'd-block mt-1 text-warning';
-                                    statusEl.textContent = 'Không tìm thấy tọa độ địa chỉ. Phí ship mặc định được áp dụng.';
+                                    statusEl.textContent = 'Lỗi định vị. Phí ship mặc định được áp dụng.';
                                 }
                                 recalculateShipping('', '');
-                            }
-                        } catch (e) {
-                            console.warn("Dynamic geocoding failed: " + e.message);
-                            if (statusEl) {
-                                statusEl.className = 'd-block mt-1 text-warning';
-                                statusEl.textContent = 'Lỗi định vị. Phí ship mặc định được áp dụng.';
-                            }
-                            recalculateShipping('', '');
-                        }
+                            });
                     }
                 } else {
                     recalculateShipping();
@@ -1048,6 +1130,147 @@
             } else {
                 recalculateShipping();
             }
+
+            // Setup Autocomplete suggestions dropdown for checkout address input
+            function setupAutocomplete(inputElement) {
+                if (!inputElement) return;
+
+                let suggestionsBox = document.createElement("div");
+                suggestionsBox.className = "address-suggestions-list";
+                inputElement.parentNode.appendChild(suggestionsBox);
+
+                let autocompleteTimeout = null;
+
+                document.addEventListener("click", function(e) {
+                    if (e.target !== inputElement && e.target !== suggestionsBox && !suggestionsBox.contains(e.target)) {
+                        suggestionsBox.style.display = "none";
+                    }
+                });
+
+                inputElement.addEventListener("input", function() {
+                    const query = this.value.trim();
+                    clearTimeout(autocompleteTimeout);
+
+                    if (query.length < 3) {
+                        suggestionsBox.style.display = "none";
+                        suggestionsBox.innerHTML = "";
+                        return;
+                    }
+
+                    autocompleteTimeout = setTimeout(async () => {
+                        try {
+                            if (GOONG_API_KEY && GOONG_API_KEY.trim() !== '' && !GOONG_API_KEY.includes('GOONG_API_KEY')) {
+                                const res = await fetch(`https://rsapi.goong.io/Place/AutoComplete?api_key=${GOONG_API_KEY}&input=${encodeURIComponent(query)}`);
+                                const data = await res.json();
+                                // Check if input value matches query to avoid race conditions
+                                if (inputElement.value.trim() !== query) return;
+                                if (data && data.predictions) {
+                                    renderGoongSuggestions(data.predictions, suggestionsBox, inputElement);
+                                }
+                            } else {
+                                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=vn&accept-language=vi`);
+                                const data = await res.json();
+                                // Check if input value matches query to avoid race conditions
+                                if (inputElement.value.trim() !== query) return;
+                                if (data) {
+                                    renderNominatimSuggestions(data, suggestionsBox, inputElement);
+                                }
+                            }
+                        } catch (err) {
+                            console.warn("Autocomplete error:", err);
+                        }
+                    }, 350); // Lowered to 350ms for snappier suggestions
+                });
+
+                inputElement.addEventListener("focus", function() {
+                    if (this.value.trim().length >= 3 && suggestionsBox.children.length > 0) {
+                        suggestionsBox.style.display = "block";
+                    }
+                });
+            }
+
+            function renderNominatimSuggestions(results, box, input) {
+                box.innerHTML = "";
+                if (results.length === 0) {
+                    box.style.display = "none";
+                    return;
+                }
+
+                results.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "address-suggestion-item";
+                    div.innerHTML = `<i class="fa fa-map-marker-alt"></i> <span>${item.display_name}</span>`;
+                    
+                    div.addEventListener("click", function() {
+                        const address = item.display_name;
+                        input.value = address;
+                        box.style.display = "none";
+
+                        const lat = parseFloat(item.lat);
+                        const lng = parseFloat(item.lon);
+
+                        if (latField) latField.value = lat;
+                        if (lngField) lngField.value = lng;
+
+                        const statusEl = document.getElementById('geoStatus');
+                        if (statusEl) {
+                            statusEl.className = 'd-block mt-1 text-success font-weight-bold';
+                            statusEl.textContent = 'Định vị địa chỉ thành công!';
+                        }
+
+                        recalculateShipping(lat, lng);
+                        autoHighlightFromValue(address);
+                    });
+                    box.appendChild(div);
+                });
+                box.style.display = "block";
+            }
+
+            async function renderGoongSuggestions(predictions, box, input) {
+                box.innerHTML = "";
+                if (predictions.length === 0) {
+                    box.style.display = "none";
+                    return;
+                }
+
+                predictions.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "address-suggestion-item";
+                    div.innerHTML = `<i class="fa fa-map-marker-alt"></i> <span>${item.description}</span>`;
+                    
+                    div.addEventListener("click", async function() {
+                        const address = item.description;
+                        input.value = address;
+                        box.style.display = "none";
+
+                        try {
+                            const detailRes = await fetch(`https://rsapi.goong.io/Place/Detail?api_key=${GOONG_API_KEY}&place_id=${item.place_id}`);
+                            const detailData = await detailRes.json();
+                            if (detailData && detailData.result && detailData.result.geometry) {
+                                const lat = detailData.result.geometry.location.lat;
+                                const lng = detailData.result.geometry.location.lng;
+                                if (latField) latField.value = lat;
+                                if (lngField) lngField.value = lng;
+
+                                const statusEl = document.getElementById('geoStatus');
+                                if (statusEl) {
+                                    statusEl.className = 'd-block mt-1 text-success font-weight-bold';
+                                    statusEl.textContent = 'Định vị địa chỉ thành công!';
+                                }
+
+                                recalculateShipping(lat, lng);
+                                autoHighlightFromValue(address);
+                            }
+                        } catch (err) {
+                            console.error("Error fetching Goong place details:", err);
+                        }
+                    });
+                    box.appendChild(div);
+                });
+                box.style.display = "block";
+            }
+
+            setupAutocomplete(addressInput);
 
             setupVoucherHandler();
             setupVoucherCards();

@@ -57,6 +57,82 @@ class BinhLuan extends Model
         return $stars;
     }
 
+    // Class Diagram Aliases
+    public function getMaBinhLuanAttribute()
+    {
+        return $this->attributes['id'] ?? $this->id;
+    }
+
+    public function getDiemDanhGiaAttribute()
+    {
+        return $this->attributes['diem_danh_gia'] ?? null;
+    }
+
+    public function setDiemDanhGiaAttribute($value)
+    {
+        $this->attributes['diem_danh_gia'] = $value;
+    }
+
+    public function getDaMuaAttribute()
+    {
+        return $this->attributes['da_mua'] ?? null;
+    }
+
+    public function setDaMuaAttribute($value)
+    {
+        $this->attributes['da_mua'] = $value;
+    }
+
+    public function getNoiDungAttribute()
+    {
+        return $this->attributes['noi_dung'] ?? null;
+    }
+
+    public function setNoiDungAttribute($value)
+    {
+        $this->attributes['noi_dung'] = $value;
+    }
+
+    public function getPhanHoiAttribute()
+    {
+        return $this->attributes['phan_hoi'] ?? null;
+    }
+
+    public function setPhanHoiAttribute($value)
+    {
+        $this->attributes['phan_hoi'] = $value;
+    }
+
+    public function getPhanHoiAtAttribute()
+    {
+        return $this->attributes['phan_hoi_at'] ?? null;
+    }
+
+    public function setPhanHoiAtAttribute($value)
+    {
+        $this->attributes['phan_hoi_at'] = $value;
+    }
+
+    public function getHinhAnhAttribute($value)
+    {
+        return $this->attributes['hinh_anh'] ?? $value;
+    }
+
+    public function setHinhAnhAttribute($value)
+    {
+        $this->attributes['hinh_anh'] = $value;
+    }
+
+    public function getTrangThaiAttribute()
+    {
+        return $this->attributes['trang_thai'] ?? null;
+    }
+
+    public function setTrangThaiAttribute($value)
+    {
+        $this->attributes['trang_thai'] = $value;
+    }
+
     // Scopes
     public function scopeDaDuyet($query)
     {

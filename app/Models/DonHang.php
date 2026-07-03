@@ -74,6 +74,26 @@ class DonHang extends Model
     }
 
     // Accessors
+    // Class Diagram Aliases
+    public function getLyDoHuyAttribute()
+    {
+        return $this->attributes['ly_do_huy'] ?? null;
+    }
+
+    public function setLyDoHuyAttribute($value)
+    {
+        $this->attributes['ly_do_huy'] = $value;
+    }
+
+    public function getNguoiHuyAttribute()
+    {
+        return $this->attributes['nguoi_huy'] ?? null;
+    }
+
+    public function setNguoiHuyAttribute($value)
+    {
+        $this->attributes['nguoi_huy'] = $value;
+    }
     public function getTongTienFormatAttribute()
     {
         return number_format((float)$this->TongTien, 0, ',', '.');

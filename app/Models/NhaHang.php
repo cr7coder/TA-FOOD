@@ -50,6 +50,66 @@ class NhaHang extends Model
     }
 
     // Accessors
+    // Class Diagram Aliases
+    public function getLatitudeAttribute($value)
+    {
+        return $this->attributes['latitude'] ?? $value;
+    }
+
+    public function setLatitudeAttribute($value)
+    {
+        $this->attributes['latitude'] = $value;
+    }
+
+    public function getLongitudeAttribute($value)
+    {
+        return $this->attributes['longitude'] ?? $value;
+    }
+
+    public function setLongitudeAttribute($value)
+    {
+        $this->attributes['longitude'] = $value;
+    }
+
+    public function getPhiShipCoBanAttribute($value)
+    {
+        return $this->attributes['phi_ship_co_ban'] ?? $value;
+    }
+
+    public function setPhiShipCoBanAttribute($value)
+    {
+        $this->attributes['phi_ship_co_ban'] = $value;
+    }
+
+    public function getPhiShipMoiKmAttribute($value)
+    {
+        return $this->attributes['phi_ship_moi_km'] ?? $value;
+    }
+
+    public function setPhiShipMoiKmAttribute($value)
+    {
+        $this->attributes['phi_ship_moi_km'] = $value;
+    }
+
+    public function getKmMienPhiAttribute($value)
+    {
+        return $this->attributes['km_mien_phi'] ?? $value;
+    }
+
+    public function setKmMienPhiAttribute($value)
+    {
+        $this->attributes['km_mien_phi'] = $value;
+    }
+
+    public function getCommissionRateAttribute($value)
+    {
+        return $this->attributes['commission_rate'] ?? $value;
+    }
+
+    public function setCommissionRateAttribute($value)
+    {
+        $this->attributes['commission_rate'] = $value;
+    }
     public function getGioMoCuaForFormAttribute(): string
     {
         return $this->GioMoCua ? substr($this->GioMoCua, 0, 5) : '';

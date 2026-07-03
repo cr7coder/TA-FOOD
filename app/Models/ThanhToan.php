@@ -37,6 +37,26 @@ class ThanhToan extends Model
     }
 
     // Accessors
+    // Class Diagram Aliases
+    public function getPayosOrderCodeAttribute()
+    {
+        return $this->attributes['payos_order_code'] ?? null;
+    }
+
+    public function setPayosOrderCodeAttribute($value)
+    {
+        $this->attributes['payos_order_code'] = $value;
+    }
+
+    public function getMinhChungThanhToanAttribute()
+    {
+        return $this->attributes['minh_chung_thanh_toan'] ?? null;
+    }
+
+    public function setMinhChungThanhToanAttribute($value)
+    {
+        $this->attributes['minh_chung_thanh_toan'] = $value;
+    }
     public function getSoTienFormatAttribute()
     {
         return number_format((float)$this->SoTien, 0, ',', '.');

@@ -15,7 +15,7 @@ use App\Models\ThanhToan;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để thanh toán');
@@ -25,12 +25,20 @@ class CheckoutController extends Controller
             ->where('MaNguoiDung', Auth::user()->MaNguoiDung)
             ->first();
 
+        $selectedItemsStr = $request->query('items');
+        $selectedIds = $selectedItemsStr ? explode(',', $selectedItemsStr) : null;
+
         $cartItems = [];
         $subtotal = 0;
         $defaultShippingFee = 0;
 
         if ($gioHang && $gioHang->chiTiet->count() > 0) {
-            $cartItems = $gioHang->chiTiet->map(function ($item) {
+            $chiTietFiltered = $gioHang->chiTiet;
+            if ($selectedIds) {
+                $chiTietFiltered = $chiTietFiltered->filter(fn($item) => in_array($item->MaMonAn, $selectedIds));
+            }
+
+            $cartItems = $chiTietFiltered->map(function ($item) {
                 $price = (float)($item->monAn->Gia ?? 0);
                 $itemTotal = $item->SoLuong * $price;
                 return [
@@ -46,7 +54,7 @@ class CheckoutController extends Controller
             $subtotal = collect($cartItems)->sum('total');
 
             // Tính toán phí vận chuyển mặc định (không có tọa độ, dựa trên phí ship cơ bản của từng nhà hàng)
-            $itemsByRestaurant = $gioHang->chiTiet->groupBy(function($ct) {
+            $itemsByRestaurant = $chiTietFiltered->groupBy(function($ct) {
                 return $ct->monAn->MaNhaHang;
             });
             foreach ($itemsByRestaurant as $maNhaHang => $items) {
@@ -581,18 +589,27 @@ class CheckoutController extends Controller
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập');
         }
 
+        $selectedItemsStr = $request->input('selected_items');
+        $selectedIds = $selectedItemsStr ? explode(',', $selectedItemsStr) : null;
+
         $gioHang = GioHang::with(['chiTiet.monAn'])
             ->where('MaNguoiDung', $user->MaNguoiDung)
             ->first();
 
         if (!$gioHang || $gioHang->chiTiet->isEmpty()) {
-            // Khi người dùng bấm Back từ PayOS, bfcache reload lại trang checkout
-            // Giỏ hàng lúc này đã bị xóa do đơn hàng đã được tạo.
-            // Vì vậy chuyển hướng họ về Lịch sử đơn hàng là hợp lý nhất.
             return redirect()->route('orders.history')->with('error', 'Giỏ hàng của bạn đang trống. Vui lòng kiểm tra lại đơn hàng vừa tạo tại đây.');
         }
 
-        $itemsByRestaurant = $gioHang->chiTiet->groupBy(function($ct) {
+        $chiTietFiltered = $gioHang->chiTiet;
+        if ($selectedIds) {
+            $chiTietFiltered = $chiTietFiltered->filter(fn($ct) => in_array($ct->MaMonAn, $selectedIds));
+        }
+
+        if ($chiTietFiltered->isEmpty()) {
+            return redirect()->route('orders.history')->with('error', 'Không tìm thấy sản phẩm nào được chọn để đặt hàng.');
+        }
+
+        $itemsByRestaurant = $chiTietFiltered->groupBy(function($ct) {
             return $ct->monAn->MaNhaHang;
         });
 
@@ -711,9 +728,16 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // Xóa giỏ hàng
-            $gioHang->chiTiet()->delete();
-            $gioHang->delete();
+            // Xóa các món đã đặt mua khỏi giỏ hàng
+            if (isset($selectedIds) && $selectedIds) {
+                $gioHang->chiTiet()->whereIn('MaMonAn', $selectedIds)->delete();
+                if ($gioHang->chiTiet()->count() === 0) {
+                    $gioHang->delete();
+                }
+            } else {
+                $gioHang->chiTiet()->delete();
+                $gioHang->delete();
+            }
 
             // Xóa voucher trong session
             session()->forget('checkout.voucher');

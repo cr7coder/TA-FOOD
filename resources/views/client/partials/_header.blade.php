@@ -29,6 +29,12 @@
                         </div>
                     </div>
 
+                    {{-- Cart Link to Cart Page --}}
+                    <a href="{{ route('cart.index') }}" style="color: white; font-size: 22px; padding: 4px 6px; margin-right: 15px; margin-left: 10px; transition: transform 0.2s; position: relative; display: inline-block;" onmouseover="this.style.transform='scale(1.15)';" onmouseout="this.style.transform='scale(1)';" title="Giỏ hàng của tôi">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="badge bg-danger rounded-circle position-absolute" id="headerCartCount" style="font-size: 9px; padding: 3px 5px; top: -3px; right: -3px; border: 1px solid #222831; color: white; display: none;">0</span>
+                    </a>
+
                     {{-- User Dropdown --}}
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle user-dropdown" data-toggle="dropdown"

@@ -536,7 +536,7 @@
                 this.classList.toggle('fa-eye-slash');
             });
 
-            // Handle form submission
+            // nhan dang nhap
             loginForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
 

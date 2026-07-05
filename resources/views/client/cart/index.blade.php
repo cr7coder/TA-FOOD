@@ -193,7 +193,7 @@
         text-align: center;
         padding: 60px 20px;
     }
-    .cart-empty i {
+    .cart-empty > i {
         font-size: 60px;
         color: #cbd5e0;
         margin-bottom: 16px;
@@ -217,6 +217,12 @@
         font-size: 15px;
         transition: all 0.25s;
         box-shadow: 0 4px 15px rgba(255,105,0,0.2);
+    }
+    .btn-shop i {
+        font-size: 16px;
+        color: white;
+        margin-bottom: 0;
+        display: inline-block;
     }
     .btn-shop:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,105,0,0.3); }
 
@@ -329,6 +335,62 @@
         .cart-summary-panel { position: static; }
         .cart-page-wrapper { margin: 16px auto; }
     }
+
+    /* Shopee-style elements */
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #ffbe33;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .cart-select-all-bar {
+        display: flex;
+        align-items: center;
+        padding: 16px 24px;
+        background: #f8fafc;
+        border-bottom: 1.5px solid #edf2f7;
+        margin-bottom: 0px;
+    }
+    .cart-shop-group {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        margin: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    .cart-shop-header {
+        background: #f8fafc;
+        padding: 12px 20px;
+        border-bottom: 1px solid #edf2f7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .shop-name-label {
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0;
+        cursor: pointer;
+        font-size: 14.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .shop-name-label i {
+        color: #ffbe33;
+    }
+    .cart-shop-items {
+        padding: 16px;
+    }
+    .cart-item-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-right: 4px;
+    }
 </style>
 
 <div class="cart-page-wrapper">
@@ -391,7 +453,6 @@
                     <span>Tổng cộng</span>
                     <span class="summary-value" id="summaryTotal">0 đ</span>
                 </div>
-
                 <a href="{{ route('checkout.index') }}" id="btnCheckout" class="btn-checkout" style="pointer-events:none;opacity:0.5;">
                     <i class="fas fa-credit-card"></i> Thanh toán ngay
                 </a>
@@ -404,37 +465,73 @@
 </div>
 
 <script>
+    console.log("TA-FOOD: Cart index script loaded!");
     const CSRF = '{{ csrf_token() }}';
+
+    let currentCartData = null;
+    let selectedIds = [];
+    let initializedSelected = false;
 
     function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
     }
 
     async function loadCart() {
+        console.log("TA-FOOD: loadCart function started!");
         try {
-            const res = await fetch('/api/v1/cart', {
-                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
+            const res = await fetch('/cart', {
+                headers: { 
+                    'Accept': 'application/json', 
+                    'X-CSRF-TOKEN': CSRF,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 credentials: 'same-origin'
             });
+            console.log("TA-FOOD: fetch completed with status:", res.status);
+            if (!res.ok) {
+                const text = await res.text();
+                alert('HTTP Error: ' + res.status + '\nResponse: ' + text.substring(0, 300));
+                return;
+            }
             const data = await res.json();
-            renderCart(data);
+            console.log("TA-FOOD: JSON parsed successfully:", data);
+            renderFullCartPage(data);
         } catch (e) {
+            alert('JavaScript Error: ' + e.message);
             console.error(e);
         }
     }
 
-    function renderCart(data) {
+    function renderFullCartPage(data) {
+        currentCartData = data;
         document.getElementById('cartSkeleton').style.display = 'none';
         const list = document.getElementById('cartItemsList');
         const empty = document.getElementById('cartEmptyState');
+        
         const items = data.data?.items ?? data.data ?? [];
         const total = data.data?.total ?? data.total ?? 0;
         const count = data.data?.count ?? data.count ?? 0;
 
+        // Lọc các item ID đã bị xóa khỏi giỏ hàng
+        const activeIds = items.map(i => i.id);
+        selectedIds = selectedIds.filter(id => activeIds.includes(id));
+
+        // Tự động chọn tất cả sản phẩm ở lần tải đầu tiên
+        if (!initializedSelected && items.length > 0) {
+            selectedIds = items.map(i => i.id);
+            initializedSelected = true;
+        }
+
+        // Tính toán tổng số lượng và tổng tiền của các món ĐÃ CHỌN
+        const selectedItems = items.filter(i => selectedIds.includes(i.id));
+        const selectedSubtotal = selectedItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const selectedCount = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
+
+        // Cập nhật các badge số lượng và thông tin tổng tiền
         document.getElementById('cartCountBadge').textContent = count;
-        document.getElementById('summaryCount').textContent = count;
-        document.getElementById('summarySubtotal').textContent = formatCurrency(total);
-        document.getElementById('summaryTotal').textContent = formatCurrency(total);
+        document.getElementById('summaryCount').textContent = selectedCount;
+        document.getElementById('summarySubtotal').textContent = formatCurrency(selectedSubtotal);
+        document.getElementById('summaryTotal').textContent = formatCurrency(selectedSubtotal);
 
         if (!items || items.length === 0) {
             list.style.display = 'none';
@@ -447,30 +544,137 @@
 
         list.style.display = 'block';
         empty.style.display = 'none';
-        document.getElementById('btnCheckout').style.pointerEvents = '';
-        document.getElementById('btnCheckout').style.opacity = '1';
         document.getElementById('btnClearCart').style.display = 'block';
 
-        list.innerHTML = items.map(item => `
-            <div class="cart-item" id="item-${item.id}">
-                <img class="cart-item-img" src="${item.image}" alt="${item.name}"
-                     onerror="this.src='{{ asset('images/no-image.png') }}'">
-                <div class="cart-item-details">
-                    <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">${formatCurrency(item.price)}</div>
-                </div>
-                <div class="qty-controls">
-                    <button class="qty-btn delete-btn" title="Xóa" onclick="removeItem(${item.id})">
-                        <i class="fas fa-trash-alt" style="font-size:13px;"></i>
-                    </button>
-                    <button class="qty-btn" onclick="changeQty(${item.id}, ${item.quantity - 1})">−</button>
-                    <span class="qty-value" id="qty-${item.id}">${item.quantity}</span>
-                    <button class="qty-btn" onclick="changeQty(${item.id}, ${item.quantity + 1})">+</button>
-                </div>
-                <div class="cart-item-subtotal">${formatCurrency(item.price * item.quantity)}</div>
+        // Cập nhật nút Thanh toán: Chỉ cho phép click nếu chọn ít nhất 1 món
+        const btnCheckout = document.getElementById('btnCheckout');
+        if (selectedIds.length === 0) {
+            btnCheckout.style.pointerEvents = 'none';
+            btnCheckout.style.opacity = '0.5';
+            btnCheckout.href = '#';
+        } else {
+            btnCheckout.style.pointerEvents = '';
+            btnCheckout.style.opacity = '1';
+            btnCheckout.href = `/checkout?items=${selectedIds.join(',')}`;
+        }
+
+        let html = '';
+
+        // Thanh Chọn Tất Cả (Shopee style)
+        const allChecked = items.length > 0 && items.every(item => selectedIds.includes(item.id));
+        html += `
+            <div class="cart-select-all-bar">
+                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" ${allChecked ? 'checked' : ''}>
+                <label for="selectAllCheckbox" style="margin-left: 8px; font-weight: 700; cursor: pointer; margin-bottom: 0; user-select: none;">
+                    Chọn tất cả (${selectedItems.length} món đã chọn)
+                </label>
             </div>
-        `).join('');
+        `;
+
+        // Nhóm các sản phẩm theo Nhà hàng
+        const groups = {};
+        items.forEach(item => {
+            const shopId = item.restaurant_id || 0;
+            const shopName = item.restaurant_name || 'Hệ thống TAFOOD';
+            if (!groups[shopId]) {
+                groups[shopId] = {
+                    id: shopId,
+                    name: shopName,
+                    items: []
+                };
+            }
+            groups[shopId].items.push(item);
+        });
+
+        // Vẽ danh sách nhóm theo từng nhà hàng
+        Object.values(groups).forEach(group => {
+            const shopId = group.id;
+            const shopName = group.name;
+            const shopItems = group.items;
+            
+            const allShopItemsChecked = shopItems.every(item => selectedIds.includes(item.id));
+            
+            html += `
+                <div class="cart-shop-group">
+                    <div class="cart-shop-header">
+                        <input type="checkbox" class="shop-checkbox" id="shop-chk-${shopId}" onchange="toggleSelectShop(${shopId}, this)" ${allShopItemsChecked ? 'checked' : ''}>
+                        <label for="shop-chk-${shopId}" class="shop-name-label" style="user-select: none;">
+                            <i class="fas fa-store"></i> ${shopName}
+                        </label>
+                    </div>
+                    <div class="cart-shop-items">
+            `;
+            
+            shopItems.forEach(item => {
+                const isChecked = selectedIds.includes(item.id);
+                html += `
+                    <div class="cart-item" id="item-${item.id}">
+                        <div class="cart-item-checkbox-wrapper">
+                            <input type="checkbox" class="item-checkbox" data-id="${item.id}" data-shop-id="${shopId}" ${isChecked ? 'checked' : ''} onchange="toggleSelectItem(${item.id}, ${shopId}, this)">
+                        </div>
+                        <img class="cart-item-img" src="${item.image}" alt="${item.name}" onerror="this.src='{{ asset('images/no-image.png') }}'">
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${formatCurrency(item.price)}</div>
+                        </div>
+                        <div class="qty-controls">
+                            <button class="qty-btn delete-btn" title="Xóa" onclick="removeItem(${item.id})">
+                                <i class="fas fa-trash-alt" style="font-size:13px;"></i>
+                            </button>
+                            <button class="qty-btn" onclick="changeQty(${item.id}, ${item.quantity - 1})">−</button>
+                            <span class="qty-value" id="qty-${item.id}">${item.quantity}</span>
+                            <button class="qty-btn" onclick="changeQty(${item.id}, ${item.quantity + 1})">+</button>
+                        </div>
+                        <div class="cart-item-subtotal">${formatCurrency(item.price * item.quantity)}</div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+        
+        list.innerHTML = html;
     }
+
+    function toggleSelectAll(el) {
+        const checked = el.checked;
+        const items = currentCartData?.data?.items ?? currentCartData?.data ?? [];
+        if (checked) {
+            selectedIds = items.map(i => i.id);
+        } else {
+            selectedIds = [];
+        }
+        renderFullCartPage(currentCartData);
+    }
+
+    function toggleSelectShop(shopId, el) {
+        const checked = el.checked;
+        const items = currentCartData?.data?.items ?? currentCartData?.data ?? [];
+        const shopItemIds = items.filter(i => (i.restaurant_id || 0) === shopId).map(i => i.id);
+        
+        if (checked) {
+            shopItemIds.forEach(id => {
+                if (!selectedIds.includes(id)) selectedIds.push(id);
+            });
+        } else {
+            selectedIds = selectedIds.filter(id => !shopItemIds.includes(id));
+        }
+        renderFullCartPage(currentCartData);
+    }
+
+    function toggleSelectItem(itemId, shopId, el) {
+        const checked = el.checked;
+        if (checked) {
+            if (!selectedIds.includes(itemId)) selectedIds.push(itemId);
+        } else {
+            selectedIds = selectedIds.filter(id => id !== itemId);
+        }
+        renderFullCartPage(currentCartData);
+    }
+
 
     async function changeQty(foodId, newQty) {
         if (newQty < 1) { removeItem(foodId); return; }
@@ -486,7 +690,7 @@
                 credentials: 'same-origin'
             });
             const data = await res.json();
-            renderCart(data);
+            renderFullCartPage(data);
             // Trigger floating cart update in master layout
             if (window.refreshFloatingCart) window.refreshFloatingCart();
         } catch (e) { console.error(e); }
@@ -502,7 +706,7 @@
                 credentials: 'same-origin'
             });
             const data = await res.json();
-            renderCart(data);
+            renderFullCartPage(data);
             if (window.refreshFloatingCart) window.refreshFloatingCart();
         } catch (e) { console.error(e); }
     }
@@ -516,7 +720,7 @@
                 credentials: 'same-origin'
             });
             const data = await res.json();
-            renderCart(data);
+            renderFullCartPage(data);
             if (window.refreshFloatingCart) window.refreshFloatingCart();
         } catch (e) { console.error(e); }
     }

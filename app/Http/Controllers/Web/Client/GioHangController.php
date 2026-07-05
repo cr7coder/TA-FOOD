@@ -24,7 +24,7 @@ class GioHangController extends Controller
 
     private function formatCartResponse(GioHang $gioHang)
     {
-        $gioHang->load('chiTiet.monAn');
+        $gioHang->load('chiTiet.monAn.nhaHang');
 
         $items = $gioHang->chiTiet->map(function ($ct) {
             return [
@@ -34,6 +34,8 @@ class GioHangController extends Controller
                 'image'    => $ct->monAn ? $ct->monAn->hinh_anh_url : asset('images/no-image.png'),
                 'quantity' => (int)$ct->SoLuong,
                 'total'    => (int)$ct->ThanhTien,
+                'restaurant_id' => $ct->monAn->MaNhaHang ?? 0,
+                'restaurant_name' => $ct->monAn->nhaHang->TenNhaHang ?? 'Hệ thống TAFOOD',
             ];
         })->values();
 
@@ -72,9 +74,9 @@ class GioHangController extends Controller
         if (!$monAn || $monAn->TrangThai !== 'Còn bán' || (!empty($monAn->DanhMuc) && !in_array($monAn->DanhMuc, $activeCategoryNames))) {
             return response()->json(['success' => false, 'message' => 'Món ăn không khả dụng hoặc đã ngừng bán'], 422);
         }
-
+        //tìm giỏ hàng của khách hàng đăng nh
         $gioHang = $this->resolveCart();
-
+        //dung model giohangchitiet de tim ban ghi chi tiet trong gio hang neu co roi thi update so luong con khong co thi them moi 
         $chiTiet = GioHangChiTiet::firstOrNew([
             'MaGioHang' => $gioHang->MaGioHang,
             'MaMonAn'   => $monAn->MaMonAn,

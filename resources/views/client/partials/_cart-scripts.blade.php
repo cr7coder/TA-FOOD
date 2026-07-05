@@ -109,6 +109,17 @@
             cartCount.style.display = count > 0 ? 'flex' : 'none';
         }
 
+        const headerCartCount = document.getElementById('headerCartCount');
+        if (headerCartCount) {
+            headerCartCount.textContent = count;
+            headerCartCount.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+
+        // Đồng bộ dữ liệu sang trang giỏ hàng lớn (nếu đang ở trang /cart)
+        if (typeof window.renderFullCartPage === 'function') {
+            window.renderFullCartPage(data);
+        }
+
         if (!items.length) {
             if (emptyCart) emptyCart.style.display = 'block';
             if (cartItems) cartItems.style.display = 'none';
@@ -248,7 +259,7 @@
     if (closeCart) closeCart.addEventListener('click', toggleCartModal);
     if (cartModal) cartModal.addEventListener('click', (e) => { if (e.target === cartModal) toggleCartModal(); });
 
-    // Use document-level event delegation for all add-to-cart-btn elements
+    // nut them gio hang
     document.addEventListener('click', async function (ev) {
         const btn = ev.target.closest('.add-to-cart-btn');
         if (!btn) return;
@@ -304,6 +315,10 @@
 
     // Kept as a no-op function for backwards compatibility with any remaining legacy scripts
     window.attachAddToCartListeners = function() {};
+
+    window.refreshFloatingCart = function() {
+        api(`${CART_BASE}`).then(renderCart).catch(() => { });
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
         // Cập nhật badge ban đầu

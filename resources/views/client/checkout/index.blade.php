@@ -52,6 +52,7 @@
 
             <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
                 @csrf
+                <input type="hidden" name="selected_items" value="{{ request('items') }}">
                 <div class="row">
                     <!-- Left Column - Order Summary -->
                     <div class="col-lg-8">

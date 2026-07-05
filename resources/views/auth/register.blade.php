@@ -642,7 +642,7 @@
                 }
             });
 
-            // Handle form submission
+            // gui dang ky
             registerForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
 
@@ -654,7 +654,7 @@
                 btnText.style.opacity = '0';
                 loadingSpinner.style.display = 'block';
 
-                // Validate client-side trước
+                // Validate client-side trước// hàm validateRegisterForm() nằm trong file register.js
                 const valid = await validateRegisterForm();
                 if (!valid) {
                     submitBtn.disabled = false;

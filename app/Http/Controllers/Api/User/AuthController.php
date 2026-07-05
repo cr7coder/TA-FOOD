@@ -371,8 +371,7 @@ class AuthController extends Controller
         }
 
         // Update password
-        $user->MatKhau = Hash::make($password);
-        $user->save();
+        $user->MatKhau = Hash::make($password);        $user->save();
 
         // Clear OTP from cache
         \Illuminate\Support\Facades\Cache::forget('otp_forgot_pwd_' . $email);

@@ -543,7 +543,7 @@
                 <span id="errorText"></span>
                 <button class="btn btn-warning mt-2" onclick="loadFoods(1, currentFilters)">Thử lại</button>
             </div>
-
+            <!-- xem chi tiet mon an -->
             <div class="filters-content">
                 <div class="row grid">
                     @foreach($foods as $food)
@@ -607,6 +607,7 @@
                                         <div class="options">
                                             <h6>{{ number_format($food->Gia, 0, ',', '.') }} đ</h6>
                                             <div class="d-flex gap-3 align-items-center">
+                                                <!-- mat xem chi -->
                                                 <a href="{{ route('food.detail', $food->MaMonAn) }}"
                                                     class="btn btn-warning rounded-circle shadow-sm"
                                                     style="width: 45px; height: 45px; min-width: 45px; min-height: 45px; max-width: 45px; max-height: 45px; padding: 0; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0; transition: all 0.3s ease;"

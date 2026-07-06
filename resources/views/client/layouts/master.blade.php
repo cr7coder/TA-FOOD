@@ -2042,6 +2042,12 @@
                 btn.addEventListener("click", async function(e) {
                     e.preventDefault();
                     
+                    const currentAddress = mainInput ? mainInput.value : "";
+                    if (!currentAddress.trim()) {
+                        alert("Vui lòng nhập hoặc ghim địa chỉ trước khi lưu!");
+                        return;
+                    }
+
                     const isAuthenticated = @json(Auth::check());
                     if (!isAuthenticated) {
                         if (window.showGlobalAlert) {
@@ -2050,6 +2056,17 @@
                             alert("Vui lòng đăng nhập để lưu địa chỉ của bạn!");
                         }
                         return;
+                    }
+
+                    const tag = this.getAttribute("data-tag");
+
+                    // Xác nhận lưu địa chỉ bằng popup confirm glassmorphic
+                    if (window.showConfirm) {
+                        const confirmed = await window.showConfirm(
+                            "Xác nhận lưu địa chỉ?",
+                            `Bạn có chắc chắn muốn lưu địa chỉ này làm <strong>${tag}</strong> không?<br><span style="font-size: 12.5px; color: #cbd5e1; display: block; margin-top: 8px; word-break: break-all; opacity: 0.85;">${currentAddress}</span>`
+                        );
+                        if (!confirmed) return;
                     }
                     
                     // Reset all tags style
@@ -2063,9 +2080,6 @@
                     this.style.background = "#ffbe33";
                     this.style.color = "#1e293b";
                     this.style.borderColor = "#ffbe33";
-                    
-                    const tag = this.getAttribute("data-tag");
-                    const currentAddress = mainInput ? mainInput.value : "";
                     
                     if (currentAddress.trim()) {
                         localStorage.setItem("ta_food_delivery_address", currentAddress);
@@ -2142,6 +2156,15 @@
                             alert("Vui lòng đăng nhập để lưu địa chỉ mặc định cho tài khoản của bạn!");
                         }
                         return;
+                    }
+
+                    // Xác nhận đặt địa chỉ mặc định bằng popup confirm glassmorphic
+                    if (window.showConfirm) {
+                        const confirmed = await window.showConfirm(
+                            "Đặt địa chỉ mặc định?",
+                            `Bạn có chắc chắn muốn lưu địa chỉ này làm địa chỉ mặc định không?<br><span style="font-size: 12.5px; color: #cbd5e1; display: block; margin-top: 8px; word-break: break-all; opacity: 0.85;">${currentAddress}</span>`
+                        );
+                        if (!confirmed) return;
                     }
 
                     btn.disabled = true;

@@ -425,6 +425,7 @@
                                                 <i class="fa fa-check-circle"></i>
                                                 <span id="manualAppliedVoucherText">Đã áp dụng mã giảm giá</span>
                                             </div>
+                                            <!-- bỏ voucher -->
                                             <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center"
                                                 id="removeManualVoucherBtn" style="white-space: nowrap; flex-shrink: 0;">
                                                 <i class="fa fa-times mr-1"></i> Bỏ
@@ -456,7 +457,7 @@
                                             id="totalAmount">{{ isset($bestVoucherApplied) && $bestVoucherApplied ? $bestVoucherApplied['total'] : number_format($subtotal, 0, ',', '.') . ' đ' }}</strong>
                                     </div>
                                 </div>
-
+                                        <!-- nút đặt hàng -->   
                                 <button type="submit" class="btn btn-success btn-lg w-100 mt-3" id="submitBtn">
                                     <i class="fa fa-check-circle"></i> Đặt hàng ngay
                                 </button>
@@ -1299,7 +1300,7 @@
 
         // Global variables - already declared above
         // subtotal and appliedVoucher are declared at the top of the script tag to avoid redeclaration syntax error
-
+        // <! tu dong goi ham -->
         function setupVoucherCards() {
             const voucherCards = document.querySelectorAll('.voucher-card');
 
@@ -1451,7 +1452,7 @@
                 appliedSection.style.display = 'none';
             }
         }
-
+        //bo giam gia
         function resetPricing() {
             updatePricing(null);
 
@@ -1475,7 +1476,7 @@
             })
             .catch(e => console.error('Failed to clear voucher session:', e));
         }
-
+        // ham ap dung ma giam gia
         function applyVoucherByCode(code, cardElement = null) {
             const voucherInput = document.getElementById('voucherInput');
             if (voucherInput) {
@@ -1491,7 +1492,7 @@
             // Call existing apply voucher function
             applyVoucher(code);
         }
-
+        // ham ap dung ma giam gia
         function applyVoucher(code) {
             const messageDiv = document.getElementById('voucherMessage');
 

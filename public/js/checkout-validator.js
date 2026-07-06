@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-    // Submit validation
+    // Sự kiện  đặt hàng ngay
     if (form && submitBtn) {
         form.addEventListener("submit", function (e) {
             let hasError = false;

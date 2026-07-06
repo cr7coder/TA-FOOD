@@ -453,6 +453,7 @@
                     <span>Tổng cộng</span>
                     <span class="summary-value" id="summaryTotal">0 đ</span>
                 </div>
+                <!-- button thanh toán ngay -->
                 <a href="{{ route('checkout.index') }}" id="btnCheckout" class="btn-checkout" style="pointer-events:none;opacity:0.5;">
                     <i class="fas fa-credit-card"></i> Thanh toán ngay
                 </a>

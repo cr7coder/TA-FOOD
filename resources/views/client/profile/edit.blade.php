@@ -745,7 +745,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadProfile();
 
-            const GOONG_API_KEY = @json(env('GOONG_API_KEY'));
+            const GOONG_API_KEY = @json(config('services.goong.api_key'));
 
             function setupProfileAutocomplete(inputElement) {
                 if (!inputElement) return;

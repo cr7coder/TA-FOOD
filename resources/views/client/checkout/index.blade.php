@@ -937,7 +937,7 @@
             const addressInput = document.getElementById("customer_address");
             const latField = document.getElementById('customer_lat');
             const lngField = document.getElementById('customer_lng');
-            const GOONG_API_KEY = @json(env('GOONG_API_KEY'));
+            const GOONG_API_KEY = @json(config('services.goong.api_key'));
 
             // Ensure relative positioning on parent for absolute suggestions container
             if (addressInput && addressInput.parentNode) {

@@ -47,5 +47,9 @@ return [
         'checksum_key' => env('PAYOS_CHECKSUM_KEY'),
     ],
 
+    'goong' => [
+        'api_key' => env('GOONG_API_KEY'),
+    ],
+
 ];
 

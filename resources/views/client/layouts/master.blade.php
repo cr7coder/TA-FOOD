@@ -1551,7 +1551,7 @@
             const mainLocation = document.getElementById("mainLocation");
             const headerSection = document.querySelector(".header_section");
             const headerAddressInput = document.querySelector(".header-address-input");
-            const GOONG_API_KEY = @json(env('GOONG_API_KEY'));
+            const GOONG_API_KEY = @json(config('services.goong.api_key'));
 
             async function fetchAddress(lat, lng) {
                 if (GOONG_API_KEY && GOONG_API_KEY.trim() !== '' && !GOONG_API_KEY.includes('GOONG_API_KEY')) {

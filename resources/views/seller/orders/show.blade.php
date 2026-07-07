@@ -291,6 +291,10 @@
                                     ? '<span style="background:#d1fae5;color:#065f46;border-radius:20px;padding:3px 12px;font-size:13px;font-weight:600;">✅ Đã thanh toán</span>'
                                     : data.ThanhToanInfo.TrangThai === 'Chờ xác nhận'
                                     ? '<span style="background:#fef3c7;color:#92400e;border-radius:20px;padding:3px 12px;font-size:13px;font-weight:600;">⏳ Chờ xác nhận</span>'
+                                    : data.ThanhToanInfo.TrangThai === 'Đã hoàn tiền'
+                                    ? '<span style="background:#eff6ff;color:#1e40af;border-radius:20px;padding:3px 12px;font-size:13px;font-weight:600;">↩️ Đã hoàn tiền</span>'
+                                    : data.ThanhToanInfo.TrangThai === 'Thất bại'
+                                    ? '<span style="background:#fee2e2;color:#991b1b;border-radius:20px;padding:3px 12px;font-size:13px;font-weight:600;">❌ Thất bại (Đã hủy)</span>'
                                     : '<span style="background:#f3f4f6;color:#6b7280;border-radius:20px;padding:3px 12px;font-size:13px;font-weight:600;">💳 Chờ thanh toán</span>'
                                 }
                             </div>

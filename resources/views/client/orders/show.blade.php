@@ -520,6 +520,10 @@
         background: #fee2e2;
         color: #991b1b;
     }
+    .badge-payment.refunded {
+        background: #eff6ff;
+        color: #1e40af;
+    }
 
     /* Detailed Timeline Log styling */
     .timeline-log-card {
@@ -893,8 +897,10 @@
             paymentStatusBadge = '<span class="badge-payment paid"><i class="fas fa-check-circle"></i> Đã thanh toán</span>';
         } else if (order.payment_status === 'Chờ xác nhận') {
             paymentStatusBadge = '<span class="badge-payment pending-confirm"><i class="fas fa-clock"></i> Chờ xác nhận CK</span>';
+        } else if (order.payment_status === 'Đã hoàn tiền') {
+            paymentStatusBadge = '<span class="badge-payment refunded"><i class="fas fa-undo"></i> Đã hoàn tiền</span>';
         } else if (order.payment_status === 'Thất bại') {
-            paymentStatusBadge = '<span class="badge-payment failed"><i class="fas fa-times-circle"></i> Thất bại</span>';
+            paymentStatusBadge = '<span class="badge-payment failed"><i class="fas fa-times-circle"></i> Thất bại (Đã hủy)</span>';
         } else {
             paymentStatusBadge = '<span class="badge-payment unpaid"><i class="fas fa-credit-card"></i> Chưa thanh toán</span>';
         }

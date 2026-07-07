@@ -290,11 +290,37 @@ class OrderController extends Controller
             $order->giamGia->decrementUsage();
         }
 
+        // Đồng bộ trạng thái thanh toán và hủy link PayOS
+        if ($order->thanhToan) {
+            // Hủy trực tiếp link trên cổng PayOS nếu chưa thanh toán
+            if ($order->thanhToan->payos_order_code && in_array($order->thanhToan->TrangThai, ['Chờ thanh toán', 'Thất bại'])) {
+                try {
+                    $payOSService = app(\App\Services\PayOSService::class);
+                    $payOSService->cancelPaymentLink((int)$order->thanhToan->payos_order_code, $request->input('reason', 'Khách hàng chủ động hủy đơn'));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Cancel PayOS link failed on customer cancel: ' . $e->getMessage());
+                }
+            }
+
+            if ($order->thanhToan->PhuongThuc !== 'COD' && $order->thanhToan->TrangThai === 'Đã thanh toán') {
+                $order->thanhToan->TrangThai = 'Đã hoàn tiền';
+            } else {
+                $order->thanhToan->TrangThai = 'Thất bại';
+            }
+            $order->thanhToan->save();
+        }
+
         // Gửi thông báo đến khách hàng
+        $friendlyMsg = "Đơn hàng ORD" . str_pad($order->MaDonHang, 5, '0', STR_PAD_LEFT) . " của bạn đã được bạn hủy thành công.";
+        if ($order->thanhToan && $order->thanhToan->TrangThai === 'Đã hoàn tiền') {
+            $soTienFmt = number_format((float)$order->thanhToan->SoTien, 0, ',', '.') . ' đ';
+            $friendlyMsg .= " Hệ thống đã thực hiện hoàn tiền tự động số tiền " . $soTienFmt . " vào tài khoản của bạn. Vui lòng kiểm tra lại!";
+        }
+
         \App\Services\NotificationService::add(
             $order->MaNguoiDung,
             "Hủy đơn hàng thành công",
-            "Đơn hàng ORD" . str_pad($order->MaDonHang, 5, '0', STR_PAD_LEFT) . " của bạn đã được bạn hủy thành công.",
+            $friendlyMsg,
             $order->MaDonHang
         );
 

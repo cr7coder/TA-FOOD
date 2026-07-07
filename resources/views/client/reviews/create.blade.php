@@ -847,7 +847,8 @@
                 });
 
                 const result = await response.json();
-
+                console.log(result);    
+                // phản hồi
                 if (response.ok && result.success) {
                     showSuccess(result.message || 'Đánh giá món ăn thành công');
                     

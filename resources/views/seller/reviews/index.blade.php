@@ -52,7 +52,7 @@
                                     </td>
                                     <td>
                                         <div class="mb-1 text-warning">
-                                            {!! $review->diem_danh_gia_html !!}
+                                            {!! $review->diem_sao_html !!}
                                         </div>
                                         <div class="text-dark small" style="max-width: 400px; white-space: normal;">
                                             {{ $review->noi_dung }}

@@ -103,14 +103,15 @@ class BinhLuan extends Model
         $this->attributes['phan_hoi'] = $value;
     }
 
-    public function getPhanHoiAtAttribute()
+    public function getPhanHoiAtAttribute($value)
     {
-        return $this->attributes['phan_hoi_at'] ?? null;
+        $val = $this->attributes['phan_hoi_at'] ?? $value;
+        return $val ? \Carbon\Carbon::parse($val) : null;
     }
 
     public function setPhanHoiAtAttribute($value)
     {
-        $this->attributes['phan_hoi_at'] = $value;
+        $this->attributes['phan_hoi_at'] = $value ? \Carbon\Carbon::parse($value) : null;
     }
 
     public function getHinhAnhAttribute($value)

@@ -227,6 +227,21 @@ class OrderController extends Controller
         $status = $request->status;
         $now = Carbon::now();
 
+        // Kiểm tra nếu đơn hàng đã bị hủy hoặc hoàn thành thì không cho phép cập nhật trạng thái nữa
+        if ($order->TrangThai === 'Hủy') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng này đã bị hủy trước đó, không thể thay đổi trạng thái!'
+            ], 422);
+        }
+
+        if ($order->TrangThai === 'Hoàn thành') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng này đã hoàn thành trước đó, không thể thay đổi trạng thái!'
+            ], 422);
+        }
+
         // Map UI Status to DB Status and handle timestamps
         if ($status === 'Đã xác nhận') {
             $order->TrangThai = 'Đã xác nhận';

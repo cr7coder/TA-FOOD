@@ -761,6 +761,7 @@
         function notifyCancelledOrder(order) {
             if (order.nguoi_huy === 'seller') {
                 if (typeof loadOrders === 'function') loadOrders();
+                if (typeof loadDetail === 'function' && typeof orderId !== 'undefined' && orderId == order.MaDonHang) loadDetail();
                 return;
             }
 
@@ -797,6 +798,7 @@
             });
 
             if (typeof loadOrders === 'function') loadOrders();
+            if (typeof loadDetail === 'function' && typeof orderId !== 'undefined' && orderId == order.MaDonHang) loadDetail();
         }
 
         function renderNotificationsToOffcanvas() {

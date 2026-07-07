@@ -254,7 +254,7 @@ class ChatController extends Controller
             });
 
         // 2. Fetch Gemini API Key
-        $apiKey = session('GEMINI_API_KEY') ?? env('GEMINI_API_KEY');
+        $apiKey = session('GEMINI_API_KEY') ?? config('services.gemini.api_key');
         
         // Fallback simulation if Gemini API Key is not set up
         if (empty($apiKey)) {

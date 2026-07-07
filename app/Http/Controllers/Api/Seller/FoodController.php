@@ -38,7 +38,7 @@ class FoodController extends Controller
                 $query->where('TenMonAn', 'like', '%' . $search . '%');
             }
 
-            $foods = $query->orderBy('created_at', 'desc')
+            $foods = $query->orderBy('MaMonAn', 'desc')
                 ->paginate($perPage);
 
             return response()->json([

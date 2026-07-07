@@ -34,6 +34,7 @@
         if (!form) return;
 
         form.addEventListener("submit", async function(e) {
+            // chống gửi lại nhiều lần
             e.preventDefault();
             e.stopPropagation();
 

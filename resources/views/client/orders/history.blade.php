@@ -1145,7 +1145,7 @@
                 },
                 credentials: 'same-origin'
             });
-
+            // chờ phản hồi
             const result = await response.json();
 
             if (response.ok && result.success) {
@@ -1377,7 +1377,7 @@
             customText.style.display = 'none';
         }
     }
-
+    // hủy
     window.confirmCancelOrderAction = async function() {
         if (!currentCancelOrderId) return;
         
@@ -1615,6 +1615,7 @@
                                 <i class="fas fa-phone-alt"></i> Liên hệ quán
                             </a>
                         ` : ''}
+                        {{-- xem chi tiet don hang --}}
                         <a href="/orders/${order.id}" class="action-btn primary-btn">
                             Xem chi tiết <i class="fas fa-chevron-right" style="font-size: 11px; margin-left: 2px;"></i>
                         </a>

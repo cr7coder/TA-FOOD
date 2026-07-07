@@ -757,7 +757,7 @@
                 },
                 credentials: 'same-origin'
             });
-
+             // phản hồi
             const result = await response.json();
 
             if (response.ok && result.success) {

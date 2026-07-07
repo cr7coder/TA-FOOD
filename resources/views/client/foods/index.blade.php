@@ -150,11 +150,11 @@
                     <i class="bi bi-geo-alt-fill"
                         style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: gray; font-size: 18px; z-index: 5;"></i>
 
-                    <!-- Input -->
+                    <!-- INPUT NHAP DIA CHI -->
                     <input id="addressInput" class="form-control rounded-pill" type="search" placeholder="Nhập địa chỉ..."
                         aria-label="Search" style="padding-left: 40px; padding-right: 45px; height: 45px; border-radius: 30px !important;">
 
-                    <!-- Icon Target cuối -->
+                    <!-- Icon GPS -->
                     <i id="getLocationBtn" class="bi bi-crosshair"
                         style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: gray; font-size: 18px; z-index: 5;" title="Tự động định vị GPS"></i>
                 </div>

@@ -1600,7 +1600,7 @@
                                 <i class="fas fa-redo"></i> Đặt lại món
                             </button>
                         ` : ''}
-                        ${(order.status === 'Chờ xác nhận' || order.status === 'Chờ xử lý') ? `
+                        ${(order.status === 'Chờ xác nhận' || order.status === 'Chờ xử lý' || order.status === 'Đã xác nhận') ? `
                             ${order.payment_method === 'Online' && order.payment_status === 'Chờ thanh toán' ? `
                             <a href="/checkout/payos-resume/${order.id}" class="action-btn primary-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);">
                                 <i class="fas fa-qrcode"></i> Thanh toán tiếp

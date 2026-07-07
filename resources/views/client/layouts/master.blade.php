@@ -1552,7 +1552,7 @@
             const headerSection = document.querySelector(".header_section");
             const headerAddressInput = document.querySelector(".header-address-input");
             const GOONG_API_KEY = @json(config('services.goong.api_key'));
-
+            // HAM GỌI API GOONG DỊCH NGƯỢC TỌA ĐỘ THÀNH CHỮ
             async function fetchAddress(lat, lng) {
                 if (GOONG_API_KEY && GOONG_API_KEY.trim() !== '' && !GOONG_API_KEY.includes('GOONG_API_KEY')) {
                     try {
@@ -1731,7 +1731,7 @@
                 }, debounceMs);
             }
 
-            // Setup Autocomplete Suggestions Dropdown
+            // HAM LAY GỢI Ý KHI NGƯỜI DÙNG NHẬP ĐỊA CHỈ
             function setupAutocomplete(inputElement) {
                 if (!inputElement) return;
 
@@ -1747,6 +1747,7 @@
                     }
                 });
 
+                // INPUT NHAP LIEU DIA CHI
                 inputElement.addEventListener("input", function() {
                     const query = this.value.trim();
                     clearTimeout(autocompleteTimeout);
@@ -1831,16 +1832,18 @@
                     const div = document.createElement("div");
                     div.className = "address-suggestion-item";
                     div.innerHTML = `<i class="fa fa-map-marker-alt"></i> <span>${item.description}</span>`;
-                    
+                    // CLICK VÀO GỢI Ý
                     div.addEventListener("click", async function() {
                         const address = item.description;
+                        // ĐIỀN VÀO INPUT
                         input.value = address;
+                        //  ẨN GỢI Ý
                         box.style.display = "none";
 
                         if (input === headerInput && mainInput) {
                             mainInput.value = address;
                         }
-
+                        // GỬI YÊU CẦU ĐẾN GOONG API ĐỂ LAY CHI TIẾT
                         try {
                             const detailRes = await fetch(`https://rsapi.goong.io/Place/Detail?api_key=${GOONG_API_KEY}&place_id=${item.place_id}`);
                             const detailData = await detailRes.json();
@@ -1944,7 +1947,7 @@
                     miniMapInstance.invalidateSize();
                 }, 100);
             }
-
+            // lay GPS tu trinh duyet
             function getLocationAndFillInputs() {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -2236,6 +2239,7 @@
                 });
             });
 
+            //CLICK NUT DINH VỊ GPS
             document.getElementById("getLocationBtn")?.addEventListener("click", () => getLocationAndFillInputs());
             document.getElementById("headerGetLocationBtn")?.addEventListener("click", () => getLocationAndFillInputs());
 
@@ -3064,7 +3068,7 @@
                 });
             });
 
-            // Handle Form Submit
+            // lắng nghe sự kiện
             chatForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 const text = chatInput.value.trim();
@@ -3087,7 +3091,7 @@
                     console.error("Error saving chat history:", e);
                 }
             }
-
+            //Hiển thị tin nhắn người dùng
             function appendUserMessage(text, saveToSession = true) {
                 const msg = document.createElement("div");
                 msg.className = "message user-message";
@@ -3101,7 +3105,7 @@
                     saveChatToSession('user', text);
                 }
             }
-
+            //kết quả của AI
             function appendAiMessage(text, foods = [], saveToSession = true) {
                 const msg = document.createElement("div");
                 msg.className = "message ai-message";
@@ -3500,7 +3504,7 @@
                     typing.remove();
                 }
             }
-
+            //Gửi tin nhắn
             async function sendMessage(text) {
                 if (isTyping) return;
                 

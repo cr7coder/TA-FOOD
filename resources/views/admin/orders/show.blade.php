@@ -348,8 +348,11 @@
                             <p style="color:#1e293b; font-weight:500;">${data.TenNhaHang}</p>
                             <p><i class="fas fa-map-marker-alt"></i> ${data.DiaChiNhaHang}</p>
                             <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e9d5ff;">
-                                <h6 style="color:#A855F7; margin-bottom: 8px; font-size: 14px;"><i class="fas fa-shipping-fast" style="color:#A855F7"></i> Đối tác vận chuyển</h6>
-                                <select id="carrier-selector" class="form-control form-control-sm" onchange="changeCarrier(this.value)" ${data.TrangThai === 'Hoàn thành' || data.TrangThai === 'Đã hủy' ? 'disabled style="opacity: 0.65; cursor: not-allowed; border-radius: 6px; font-weight: 500; height: 36px; padding: 2px 8px;"' : 'style="border-radius: 6px; font-weight: 500; height: 36px; padding: 2px 8px;"'}>
+                                <h6 style="color:#A855F7; margin-bottom: 8px; font-size: 14px;">
+                                    <i class="fas fa-shipping-fast" style="color:#A855F7"></i> Đối tác vận chuyển 
+                                    <small style="color: #6b7280; font-size: 11px; font-weight: normal; margin-left: 4px;">(Can thiệp khẩn cấp)</small>
+                                </h6>
+                                <select id="carrier-selector" class="form-control form-control-sm" onchange="changeCarrier(this.value)" ${data.TrangThai === 'Chờ xác nhận' || data.TrangThai === 'Hoàn thành' || data.TrangThai === 'Đã hủy' ? 'disabled style="opacity: 0.65; cursor: not-allowed; border-radius: 6px; font-weight: 500; height: 36px; padding: 2px 8px;"' : 'style="border-radius: 6px; font-weight: 500; height: 36px; padding: 2px 8px;"'}>
                                     <option value="">-- Chưa chọn đối tác --</option>
                                     ${(carriers || []).map(c => `
                                         <option value="${c.id}" ${data.MaDoiTacVanChuyen == c.id ? 'selected' : ''}>${c.ten_doi_tac}</option>
@@ -441,7 +444,12 @@
                         </div>
                         <div class="payment-row">
                             <span>Trạng thái thanh toán:</span>
-                            <span style="color: ${data.ThanhToan === 'Chưa thanh toán' ? '#D97706' : '#10B981'};">${data.ThanhToan || 'Chưa thanh toán'}</span>
+                            <span style="font-weight: 600; color: ${
+                                data.ThanhToan === 'Đã hoàn tiền' ? '#2563eb' :
+                                data.ThanhToan === 'Thất bại' ? '#dc2626' :
+                                data.ThanhToan === 'Đã thanh toán' ? '#10b981' :
+                                data.ThanhToan === 'Chờ xác nhận' ? '#d97706' : '#64748b'
+                            };">${data.ThanhToan || 'Chưa thanh toán'}</span>
                         </div>
 
                         ${data.MinhChungThanhToan ? `
@@ -547,7 +555,8 @@
             let isDisabled = true;
             if (isActive) {
                 isDisabled = false;
-            } else if (currentStatus === 'Chờ xác nhận' && (s === 'Đã xác nhận' || s === 'Đã hủy')) {
+            } else if (currentStatus === 'Chờ xác nhận' && s === 'Đã hủy') {
+                // Admin chỉ có quyền hủy đơn khẩn cấp, không có quyền bấm xác nhận thay Nhà hàng (Seller)
                 isDisabled = false;
             } else if (currentStatus === 'Đã xác nhận' && s === 'Đã hủy') {
                 isDisabled = false;

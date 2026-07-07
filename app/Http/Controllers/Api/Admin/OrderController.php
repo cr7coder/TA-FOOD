@@ -294,6 +294,13 @@ class OrderController extends Controller
             ], 422);
         }
 
+        if ($newStatus === 'Đã xác nhận') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Admin không được phép xác nhận đơn hàng trực tiếp. Việc xác nhận đơn phải do Nhà hàng (Seller) thực hiện, hoặc hệ thống tự xác nhận khi Admin bấm "Duyệt thanh toán".'
+            ], 422);
+        }
+
         $order->TrangThai = $newStatus;
         
         if ($newStatus === 'Đã xác nhận' && $oldStatus !== 'Đã xác nhận') {
@@ -314,6 +321,16 @@ class OrderController extends Controller
 
             // Đồng bộ trạng thái thanh toán thành Đã hoàn tiền nếu thanh toán online thành công, ngược lại là Thất bại
             if ($order->thanhToan) {
+                // Hủy trực tiếp link trên cổng PayOS nếu chưa thanh toán
+                if ($order->thanhToan->payos_order_code && in_array($order->thanhToan->TrangThai, ['Chờ thanh toán', 'Thất bại'])) {
+                    try {
+                        $payOSService = app(\App\Services\PayOSService::class);
+                        $payOSService->cancelPaymentLink((int)$order->thanhToan->payos_order_code, $request->input('reason') ?? 'Quản trị viên hủy đơn');
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Cancel PayOS link failed on admin cancel: ' . $e->getMessage());
+                    }
+                }
+
                 if ($order->thanhToan->PhuongThuc !== 'COD' && $order->thanhToan->TrangThai === 'Đã thanh toán') {
                     $order->thanhToan->TrangThai = 'Đã hoàn tiền';
                 } else {
@@ -463,6 +480,13 @@ class OrderController extends Controller
     public function updateCarrier(Request $request, $id)
     {
         $order = DonHang::findOrFail($id);
+
+        if ($order->TrangThai === 'Chờ xử lý') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng chưa được xác nhận, không thể gán đối tác vận chuyển!'
+            ], 422);
+        }
 
         if (in_array($order->TrangThai, ['Hoàn thành', 'Hủy'])) {
             return response()->json([

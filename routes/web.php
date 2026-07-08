@@ -275,3 +275,9 @@ Route::middleware('auth')->group(function () {
 Route::get('/maintenance', function () {
     return view('maintenance');
 })->name('maintenance');
+
+// Utility to clear cache via web browser
+Route::get('/clear-cache-tafood-998877', function() {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    return 'Cache cleared successfully! Please reload the dashboard page.';
+});

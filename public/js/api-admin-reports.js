@@ -49,21 +49,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // KPI Bindings
     function renderKPI(kpi) {
         // Revenue Card
+        setText('kpi-revenue-title', kpi.revenue.title);
         setText('kpi-revenue', '₫' + kpi.revenue.fmt);
         renderChangeBadge('kpi-revenue-growth', kpi.revenue.change);
         setText('kpi-revenue-footer', kpi.revenue.label);
 
+        // Admin Net Card
+        if (kpi.admin_net) {
+            setText('kpi-admin-net-title', kpi.admin_net.title);
+            setText('kpi-admin-net', '₫' + kpi.admin_net.fmt);
+            renderChangeBadge('kpi-admin-net-growth', kpi.admin_net.change);
+            setText('kpi-admin-net-footer', kpi.admin_net.label);
+        }
+
         // Orders Card
+        setText('kpi-orders-title', kpi.orders.title);
         setText('kpi-orders', kpi.orders.fmt);
         renderChangeBadge('kpi-orders-growth', kpi.orders.change);
         setText('kpi-orders-footer', kpi.orders.label);
 
         // AOV Card
+        setText('kpi-aov-title', kpi.aov.title);
         setText('kpi-aov', '₫' + kpi.aov.fmt);
         renderChangeBadge('kpi-aov-growth', kpi.aov.change);
         setText('kpi-aov-footer', kpi.aov.label);
 
         // Completion Card
+        setText('kpi-completion-title', kpi.completion_rate.title);
         setText('kpi-completion', kpi.completion_rate.fmt);
         renderChangeBadge('kpi-completion-growth', kpi.completion_rate.change);
         setText('kpi-completion-footer', kpi.completion_rate.label);
@@ -82,28 +94,46 @@ document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('canvas-monthly-trend');
         if (!ctx) return;
 
+        const type = document.getElementById('select-report-type')?.value || 'revenue';
+        const isOrders = type === 'orders';
+
         const labels = monthly.map(m => m.month);
-        const revenue = monthly.map(m => m.revenue);
+        const dataValues = isOrders ? monthly.map(m => m.orders) : monthly.map(m => m.revenue);
+        const labelName = isOrders ? 'Số lượng đơn hàng' : 'Doanh thu (đ)';
+        const color = isOrders ? '#ec4899' : '#8b5cf6';
+        const gradientStart = isOrders ? 'rgba(236, 72, 153, 0.16)' : 'rgba(139, 92, 246, 0.16)';
+        const gradientEnd = isOrders ? 'rgba(236, 72, 153, 0.01)' : 'rgba(139, 92, 246, 0.01)';
 
         if (trendChartInstance) trendChartInstance.destroy();
 
         // Create gradient fill
         const canvasCtx = ctx.getContext('2d');
         const gradient = canvasCtx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(139, 92, 246, 0.16)');
-        gradient.addColorStop(1, 'rgba(139, 92, 246, 0.01)');
+        gradient.addColorStop(0, gradientStart);
+        gradient.addColorStop(1, gradientEnd);
+
+        // Update chart card title and legend indicator color
+        const chartTitleEl = ctx.closest('.chart-box').querySelector('.chart-box-title span');
+        if (chartTitleEl) {
+            chartTitleEl.textContent = isOrders ? 'Xu hướng lượng đơn hàng theo tháng' : 'Xu hướng doanh thu theo tháng';
+        }
+        const legendDotEl = ctx.closest('.chart-box').querySelector('.legend-indicator');
+        if (legendDotEl) {
+            legendDotEl.style.backgroundColor = color;
+            legendDotEl.nextElementSibling.textContent = labelName;
+        }
 
         trendChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Doanh thu (đ)',
-                    data: revenue,
-                    borderColor: '#8b5cf6',
+                    label: labelName,
+                    data: dataValues,
+                    borderColor: color,
                     backgroundColor: gradient,
                     borderWidth: 3,
-                    pointBackgroundColor: '#8b5cf6',
+                    pointBackgroundColor: color,
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 5,
@@ -123,7 +153,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         titleFont: { size: 13, weight: 'bold' },
                         bodyFont: { size: 13 },
                         callbacks: {
-                            label: ctx => ` Doanh thu: ${fmtCurrency(ctx.parsed.y)}`
+                            label: ctx => {
+                                const formattedVal = isOrders ? fmtNum(ctx.parsed.y) : fmtCurrency(ctx.parsed.y);
+                                return ` ${labelName}: ${formattedVal}`;
+                            }
                         }
                     }
                 },
@@ -137,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         ticks: {
                             color: '#6b7280',
                             font: { family: 'Outfit', size: 12 },
-                            callback: v => fmtShortNumber(v)
+                            callback: v => isOrders ? fmtNum(v) : fmtShortNumber(v)
                         }
                     }
                 }
@@ -176,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     tooltip: {
                         padding: 12,
                         callbacks: {
-                            label: ctx => ` ${ctx.label}: ${ctx.parsed}%`
+                            label: ctx => ` ${ctx.label}: ${ctx.parsed.y}%`
                         }
                     },
                     datalabels: {
@@ -424,6 +457,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function setText(id, val) {
         const el = document.getElementById(id);
         if (el) el.textContent = val;
+    }
+
+    function fmtNum(n) {
+        return new Intl.NumberFormat('vi-VN').format(n);
     }
 
     function fmtCurrency(n) {

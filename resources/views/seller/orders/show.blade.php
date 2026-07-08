@@ -255,6 +255,10 @@
                                 <span class="fw-bold text-dark">${data.FoodRevenueFormat}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
+                                <span><i class="fas fa-percentage text-danger mr-1"></i> Chiết khấu hoa hồng (${data.CommissionRate}%):</span>
+                                <span class="fw-bold text-danger">-${data.CommissionAmountFormat}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
                                 <span><i class="fas fa-shipping-fast text-secondary mr-1"></i> Chênh lệch ship (${data.PhiShipRaw >= data.CarrierCost ? 'Lãi' : 'Lỗ'}):</span>
                                 <span class="fw-bold ${data.PhiShipRaw >= data.CarrierCost ? 'text-success' : 'text-danger'}">
                                     ${data.PhiShipRaw >= data.CarrierCost ? '+' : ''}${(data.PhiShipRaw - data.CarrierCost).toLocaleString('vi-VN')} đ

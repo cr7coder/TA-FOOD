@@ -393,6 +393,10 @@
                                     <span style="font-weight:700; color:#111827;">${data.FoodRevenueFormat}</span>
                                 </div>
                                 <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                    <span>% Chiết khấu hoa hồng (${data.CommissionRate}%):</span>
+                                    <span style="font-weight:700; color:#dc2626;">-${data.CommissionAmountFormat}</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                                     <span>🚚 Chênh lệch ship (${data.PhiShipRaw >= data.CarrierCost ? 'Lãi' : 'Lỗ'}):</span>
                                     <span style="font-weight:700; color:${data.PhiShipRaw >= data.CarrierCost ? '#16a34a' : '#dc2626'};">
                                         ${data.PhiShipRaw >= data.CarrierCost ? '+' : ''}${(data.PhiShipRaw - data.CarrierCost).toLocaleString('vi-VN')} đ

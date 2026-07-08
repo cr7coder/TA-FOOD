@@ -37,105 +37,126 @@ class ReportController extends Controller
         $thisYear = $now->year;
         $thisMonth = $now->month;
 
+        // Parse period input (7, 30, 90, 365)
+        $period = $request->input('period', '365');
+        if (!in_array($period, ['7', '30', '90', '365'])) {
+            $period = '365';
+        }
+        $days = (int) $period;
+
+        // Determine labels and titles
+        $periodLabel = 'So với ' . ($days === 365 ? '12 tháng' : $days . ' ngày') . ' trước';
+        $revenueTitle = $days === 365 ? 'Doanh thu gộp (GMV)' : 'Doanh thu gộp (' . $days . ' ngày)';
+        $adminNetTitle = $days === 365 ? 'Thực thu của Sàn' : 'Thực thu Sàn (' . $days . ' ngày)';
+        $ordersTitle = $days === 365 ? 'Tổng đơn hàng' : 'Đơn hàng (' . $days . ' ngày)';
+        $aovTitle = $days === 365 ? 'Giá trị TB/đơn' : 'AOV (' . $days . ' ngày)';
+        $completionTitle = $days === 365 ? 'Tỷ lệ hoàn thành' : 'Tỷ lệ hoàn thành';
+
+        // Period boundaries
+        $startOfThisPeriod = $now->copy()->subDays($days);
+        $startOfLastPeriod = $now->copy()->subDays($days * 2);
+        $endOfLastPeriod = $startOfThisPeriod->copy();
+
         // Current and previous month boundaries
         $startOfThisMonth = $now->copy()->startOfMonth();
         $startOfLastMonth = $now->copy()->subMonth()->startOfMonth();
         $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
 
-        // ── 1. KPI 1: TOTAL REVENUE & GROWTH (SUM OF SOLUONG * GIA) ──
-        // Sum of all completed items in history
-        $revenueTotal = (float) DonHangChiTiet::whereHas('donHang', function ($q) {
-            $q->where('TrangThai', 'Hoàn thành');
-        })->sum(DB::raw('SoLuong * Gia'));
+        // ── 1. KPI 1: TOTAL REVENUE & GROWTH ──
+        $revenueTotal = (float) DonHang::where('TrangThai', 'Hoàn thành')
+            ->whereBetween('created_at', [$startOfThisPeriod, $now])
+            ->sum('TongTien');
 
-        // Sum of completed items in this month vs last month
-        $revenueThisMonth = (float) DonHangChiTiet::whereHas('donHang', function ($q) use ($startOfThisMonth, $now) {
-            $q->where('TrangThai', 'Hoàn thành')->whereBetween('created_at', [$startOfThisMonth, $now]);
-        })->sum(DB::raw('SoLuong * Gia'));
+        $revenueLastPeriod = (float) DonHang::where('TrangThai', 'Hoàn thành')
+            ->whereBetween('created_at', [$startOfLastPeriod, $endOfLastPeriod])
+            ->sum('TongTien');
 
-        $revenueLastMonth = (float) DonHangChiTiet::whereHas('donHang', function ($q) use ($startOfLastMonth, $endOfLastMonth) {
-            $q->where('TrangThai', 'Hoàn thành')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth]);
-        })->sum(DB::raw('SoLuong * Gia'));
+        $revenueGrowth = $revenueLastPeriod > 0 
+            ? round((($revenueTotal - $revenueLastPeriod) / $revenueLastPeriod) * 100, 1) 
+            : ($revenueTotal > 0 ? 100.0 : 0.0);
 
-        $revenueGrowth = $revenueLastMonth > 0 
-            ? round((($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth) * 100, 1) 
-            : ($revenueThisMonth > 0 ? 100.0 : 0.0);
+        // ── 1.1 KPI: ADMIN NET REVENUE & GROWTH ──
+        $adminNetTotal = (float) $this->calculateAdminNet($startOfThisPeriod, $now);
+        $adminNetLastPeriod = (float) $this->calculateAdminNet($startOfLastPeriod, $endOfLastPeriod);
+        $adminNetGrowth = $adminNetLastPeriod > 0 
+            ? round((($adminNetTotal - $adminNetLastPeriod) / $adminNetLastPeriod) * 100, 1) 
+            : ($adminNetTotal > 0 ? 100.0 : 0.0);
 
         // ── 2. KPI 2: TOTAL ORDERS & GROWTH ──
-        // Total orders in history
-        $ordersTotal = DonHang::count();
-
-        // Total orders this month vs last month
-        $ordersThisMonth = DonHang::whereBetween('created_at', [$startOfThisMonth, $now])->count();
-        $ordersLastMonth = DonHang::whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
-        $ordersGrowth = $ordersLastMonth > 0 
-            ? round((($ordersThisMonth - $ordersLastMonth) / $ordersLastMonth) * 100, 1) 
-            : ($ordersThisMonth > 0 ? 100.0 : 0.0);
+        $ordersTotal = DonHang::whereBetween('created_at', [$startOfThisPeriod, $now])->count();
+        $ordersLastPeriod = DonHang::whereBetween('created_at', [$startOfLastPeriod, $endOfLastPeriod])->count();
+        $ordersGrowth = $ordersLastPeriod > 0 
+            ? round((($ordersTotal - $ordersLastPeriod) / $ordersLastPeriod) * 100, 1) 
+            : ($ordersTotal > 0 ? 100.0 : 0.0);
 
         // ── 3. KPI 3: AVERAGE ORDER VALUE & GROWTH ──
-        // Completed orders count
-        $completedTotal = DonHang::where('TrangThai', 'Hoàn thành')->count();
+        $completedTotal = DonHang::where('TrangThai', 'Hoàn thành')
+            ->whereBetween('created_at', [$startOfThisPeriod, $now])
+            ->count();
         $aovTotal = $completedTotal > 0 ? round($revenueTotal / $completedTotal, 0) : 0;
 
-        // AOV this month vs last month
-        $completedThisMonth = DonHang::where('TrangThai', 'Hoàn thành')
-            ->whereBetween('created_at', [$startOfThisMonth, $now])
+        $completedLastPeriod = DonHang::where('TrangThai', 'Hoàn thành')
+            ->whereBetween('created_at', [$startOfLastPeriod, $endOfLastPeriod])
             ->count();
-        $completedLastMonth = DonHang::where('TrangThai', 'Hoàn thành')
-            ->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])
-            ->count();
-
-        $aovThisMonth = $completedThisMonth > 0 ? $revenueThisMonth / $completedThisMonth : 0;
-        $aovLastMonth = $completedLastMonth > 0 ? $revenueLastMonth / $completedLastMonth : 0;
-        $aovGrowth = $aovLastMonth > 0 
-            ? round((($aovThisMonth - $aovLastMonth) / $aovLastMonth) * 100, 1) 
-            : ($aovThisMonth > 0 ? 100.0 : 0.0);
+        $aovLastPeriod = $completedLastPeriod > 0 ? $revenueLastPeriod / $completedLastPeriod : 0;
+        $aovGrowth = $aovLastPeriod > 0 
+            ? round((($aovTotal - $aovLastPeriod) / $aovLastPeriod) * 100, 1) 
+            : ($aovTotal > 0 ? 100.0 : 0.0);
 
         // ── 4. KPI 4: COMPLETION RATE & GROWTH ──
         $completionRateTotal = $ordersTotal > 0 ? round(($completedTotal / $ordersTotal) * 100, 1) : 0;
 
-        $completionRateThisMonth = $ordersThisMonth > 0 ? ($completedThisMonth / $ordersThisMonth) * 100 : 0;
-        $completionRateLastMonth = $ordersLastMonth > 0 ? ($completedLastMonth / $ordersLastMonth) * 100 : 0;
-        $completionGrowth = $completionRateLastMonth > 0 
-            ? round((($completionRateThisMonth - $completionRateLastMonth) / $completionRateLastMonth) * 100, 1) 
-            : ($completionRateThisMonth > 0 ? 100.0 : 0.0);
+        $completionRateLastPeriod = $ordersLastPeriod > 0 ? ($completedLastPeriod / $ordersLastPeriod) * 100 : 0;
+        $completionGrowth = $completionRateLastPeriod > 0 
+            ? round((($completionRateTotal - $completionRateLastPeriod) / $completionRateLastPeriod) * 100, 1) 
+            : ($completionRateTotal > 0 ? 100.0 : 0.0);
 
         $kpi = [
             'revenue' => [
                 'total' => $revenueTotal,
                 'fmt' => number_format($revenueTotal, 0, ',', '.'),
                 'change' => $revenueGrowth,
-                'label' => 'So với tháng trước'
+                'label' => $periodLabel,
+                'title' => $revenueTitle
+            ],
+            'admin_net' => [
+                'total' => $adminNetTotal,
+                'fmt' => number_format($adminNetTotal, 0, ',', '.'),
+                'change' => $adminNetGrowth,
+                'label' => $periodLabel,
+                'title' => $adminNetTitle
             ],
             'orders' => [
                 'total' => $ordersTotal,
                 'fmt' => number_format($ordersTotal, 0, ',', '.'),
                 'change' => $ordersGrowth,
-                'label' => 'So với tháng trước'
+                'label' => $periodLabel,
+                'title' => $ordersTitle
             ],
             'aov' => [
                 'total' => $aovTotal,
                 'fmt' => number_format($aovTotal, 0, ',', '.'),
                 'change' => $aovGrowth,
-                'label' => 'So với tháng trước'
+                'label' => $periodLabel,
+                'title' => $aovTitle
             ],
             'completion_rate' => [
                 'total' => $completionRateTotal,
                 'fmt' => number_format($completionRateTotal, 1, ',', '.') . '%',
                 'change' => $completionGrowth,
-                'label' => 'Đơn thành công'
+                'label' => 'Đơn thành công (' . $completedTotal . ' đơn)',
+                'title' => $completionTitle
             ]
         ];
 
         // ── 5. MONTHLY TREND (T1 TO T12) ──
-        $dbMonthlyData = DonHangChiTiet::join('don_hang', 'don_hang.MaDonHang', '=', 'don_hang_chi_tiet.MaDonHang')
-            ->where('don_hang.TrangThai', 'Hoàn thành')
-            ->whereYear('don_hang.created_at', $thisYear)
+        $dbMonthlyData = DonHang::where('TrangThai', 'Hoàn thành')
+            ->whereYear('created_at', $thisYear)
             ->select(
-                DB::raw('MONTH(don_hang.created_at) as month'),
-                DB::raw('SUM(don_hang_chi_tiet.SoLuong * don_hang_chi_tiet.Gia) as revenue')
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('SUM(TongTien) as revenue')
             )
-            ->groupBy(DB::raw('MONTH(don_hang.created_at)'))
+            ->groupBy(DB::raw('MONTH(created_at)'))
             ->pluck('revenue', 'month');
 
         $dbMonthlyOrders = DonHang::select(
@@ -268,13 +289,13 @@ class ReportController extends Controller
             $startLastWeek = $startThisWeek->copy()->subYear();
             $endLastWeek = $endThisWeek->copy()->subYear();
 
-            $revenueThisWeek = (float) DonHangChiTiet::whereHas('donHang', function ($q) use ($startThisWeek, $endThisWeek) {
-                $q->where('TrangThai', 'Hoàn thành')->whereBetween('created_at', [$startThisWeek, $endThisWeek]);
-            })->sum(DB::raw('SoLuong * Gia'));
+            $revenueThisWeek = (float) DonHang::where('TrangThai', 'Hoàn thành')
+                ->whereBetween('created_at', [$startThisWeek, $endThisWeek])
+                ->sum('TongTien');
 
-            $revenueLastWeek = (float) DonHangChiTiet::whereHas('donHang', function ($q) use ($startLastWeek, $endLastWeek) {
-                $q->where('TrangThai', 'Hoàn thành')->whereBetween('created_at', [$startLastWeek, $endLastWeek]);
-            })->sum(DB::raw('SoLuong * Gia'));
+            $revenueLastWeek = (float) DonHang::where('TrangThai', 'Hoàn thành')
+                ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
+                ->sum('TongTien');
 
             $comparison[] = [
                 'week' => 'Tuần ' . $w,
@@ -317,5 +338,36 @@ class ReportController extends Controller
                 'top_users' => $topUsers
             ]
         ]);
+    }
+
+    private function calculateAdminNet($startDate, $endDate)
+    {
+        $orders = DonHang::with(['chiTiet.monAn.nhaHang'])
+            ->where('TrangThai', 'Hoàn thành')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $totalCommission = 0;
+        $totalVoucherCost = 0;
+
+        foreach ($orders as $order) {
+            $tamTinh = $order->chiTiet->sum(fn($i) => (float)$i->Gia * $i->SoLuong);
+            $phiVanChuyen = (float)$order->PhiVanChuyen;
+            $tongTien = (float)$order->TongTien;
+
+            // Voucher subsidy
+            $grossBeforeVoucher = $tamTinh + $phiVanChuyen;
+            $voucherSubsidy = max(0, $grossBeforeVoucher - $tongTien);
+            $totalVoucherCost += $voucherSubsidy;
+
+            // Get commission rate
+            $firstDetail = $order->chiTiet->first();
+            $restaurant = $firstDetail->monAn->nhaHang ?? null;
+            $commissionRate = $restaurant ? (float)($restaurant->commission_rate ?? 15.00) : 15.00;
+            $commissionAmount = round($tamTinh * ($commissionRate / 100), 0);
+            $totalCommission += $commissionAmount;
+        }
+
+        return $totalCommission - $totalVoucherCost;
     }
 }

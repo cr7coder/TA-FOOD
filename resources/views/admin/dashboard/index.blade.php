@@ -178,9 +178,12 @@
                     <i class="fas fa-arrow-trend-up me-1"></i>—
                 </span>
             </div>
-            <p class="kpi-label">Tổng doanh thu</p>
+            <p class="kpi-label">Doanh thu tháng này</p>
             <p class="kpi-value" id="kpi-revenue">
                 <span class="skel d-inline-block" style="width:140px;height:28px;">&nbsp;</span>
+            </p>
+            <p class="kpi-subtext text-muted small mt-1 mb-0" id="kpi-revenue-alltime" style="font-size: 0.78rem;">
+                Tích lũy: —
             </p>
         </div>
 
@@ -192,9 +195,12 @@
                     <i class="fas fa-arrow-trend-up me-1"></i>—
                 </span>
             </div>
-            <p class="kpi-label">Đơn hàng</p>
+            <p class="kpi-label">Đơn hàng tháng này</p>
             <p class="kpi-value" id="kpi-orders">
                 <span class="skel d-inline-block" style="width:80px;height:28px;">&nbsp;</span>
+            </p>
+            <p class="kpi-subtext text-muted small mt-1 mb-0" id="kpi-orders-alltime" style="font-size: 0.78rem;">
+                Tổng đơn hàng: —
             </p>
         </div>
 
@@ -206,9 +212,12 @@
                     <i class="fas fa-arrow-trend-up me-1"></i>—
                 </span>
             </div>
-            <p class="kpi-label">Người dùng</p>
+            <p class="kpi-label">Người dùng mới tháng này</p>
             <p class="kpi-value" id="kpi-users">
                 <span class="skel d-inline-block" style="width:80px;height:28px;">&nbsp;</span>
+            </p>
+            <p class="kpi-subtext text-muted small mt-1 mb-0" id="kpi-users-alltime" style="font-size: 0.78rem;">
+                Tổng thành viên: —
             </p>
         </div>
 
@@ -220,9 +229,12 @@
                     <i class="fas fa-arrow-trend-down me-1"></i>—
                 </span>
             </div>
-            <p class="kpi-label">Cửa hàng</p>
+            <p class="kpi-label">Cửa hàng mới tháng này</p>
             <p class="kpi-value" id="kpi-restaurants">
                 <span class="skel d-inline-block" style="width:60px;height:28px;">&nbsp;</span>
+            </p>
+            <p class="kpi-subtext text-muted small mt-1 mb-0" id="kpi-restaurants-alltime" style="font-size: 0.78rem;">
+                Tổng cửa hàng: —
             </p>
         </div>
     </div>
@@ -247,7 +259,7 @@
 
         {{-- Donut chart: Category distribution --}}
         <div class="dash-card">
-            <div class="dash-card-title">Phân bố danh mục</div>
+            <div class="dash-card-title">Tỷ lệ món bán ra theo danh mục</div>
             <div style="height: 280px; position: relative;">
                 <canvas id="categoryChart"></canvas>
             </div>

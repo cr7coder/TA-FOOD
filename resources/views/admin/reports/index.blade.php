@@ -149,7 +149,7 @@
     /* ── KPI Grid & Cards ── */
     .kpis-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 1.25rem;
         margin-bottom: 1.5rem;
     }
@@ -200,6 +200,7 @@
     }
 
     .kpi-avatar.green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .kpi-avatar.teal { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); }
     .kpi-avatar.blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
     .kpi-avatar.purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
     .kpi-avatar.orange { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
@@ -505,6 +506,7 @@
             <option value="orders">Đơn hàng</option>
         </select>
         <select class="filter-select" id="select-time-period">
+            <option value="7">7 ngày qua</option>
             <option value="30">30 ngày qua</option>
             <option value="90">90 ngày qua</option>
             <option value="365" selected>12 tháng qua</option>
@@ -523,12 +525,30 @@
                 </div>
             </div>
             <div class="kpi-body">
-                <p class="kpi-card-title">Tổng doanh thu</p>
+                <p class="kpi-card-title" id="kpi-revenue-title">Tổng doanh thu</p>
                 <h2 class="kpi-card-value" id="kpi-revenue">
                     <span class="skel-loading" style="width:130px; height:32px;">&nbsp;</span>
                 </h2>
             </div>
             <p class="kpi-footer" id="kpi-revenue-footer">So với cùng kỳ</p>
+        </div>
+
+        {{-- Card 1.5: Thực thu của Sàn --}}
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div class="kpi-avatar teal"><i class="fas fa-money-bill-trend-up"></i></div>
+                <div class="kpi-growth up" id="kpi-admin-net-growth">
+                    <i class="fas fa-arrow-trend-up"></i>
+                    <span>+0%</span>
+                </div>
+            </div>
+            <div class="kpi-body">
+                <p class="kpi-card-title" id="kpi-admin-net-title">Thực thu của Sàn</p>
+                <h2 class="kpi-card-value" id="kpi-admin-net">
+                    <span class="skel-loading" style="width:130px; height:32px;">&nbsp;</span>
+                </h2>
+            </div>
+            <p class="kpi-footer" id="kpi-admin-net-footer">So với cùng kỳ</p>
         </div>
 
         {{-- Card 2: Tổng Đơn Hàng --}}
@@ -541,7 +561,7 @@
                 </div>
             </div>
             <div class="kpi-body">
-                <p class="kpi-card-title">Tổng đơn hàng</p>
+                <p class="kpi-card-title" id="kpi-orders-title">Tổng đơn hàng</p>
                 <h2 class="kpi-card-value" id="kpi-orders">
                     <span class="skel-loading" style="width:80px; height:32px;">&nbsp;</span>
                 </h2>
@@ -559,7 +579,7 @@
                 </div>
             </div>
             <div class="kpi-body">
-                <p class="kpi-card-title">Giá trị TB/đơn</p>
+                <p class="kpi-card-title" id="kpi-aov-title">Giá trị TB/đơn</p>
                 <h2 class="kpi-card-value" id="kpi-aov">
                     <span class="skel-loading" style="width:100px; height:32px;">&nbsp;</span>
                 </h2>
@@ -577,7 +597,7 @@
                 </div>
             </div>
             <div class="kpi-body">
-                <p class="kpi-card-title">Tỷ lệ hoàn thành</p>
+                <p class="kpi-card-title" id="kpi-completion-title">Tỷ lệ hoàn thành</p>
                 <h2 class="kpi-card-value" id="kpi-completion">
                     <span class="skel-loading" style="width:80px; height:32px;">&nbsp;</span>
                 </h2>

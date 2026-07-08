@@ -74,7 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             ${order.MonAn}
                         </div>
                     </td>
-                    <td class="fw-bold text-primary">${order.TongTien}</td>
+                    <td class="fw-bold text-primary">
+                        <div>${order.TongTien}</div>
+                        <div class="text-muted fw-normal" style="font-size: 11px; font-weight: normal;">(Đồ ăn: ${order.FoodRevenue})</div>
+                    </td>
                     <td>
                         <span class="badge-status ${statusConfig.class}">
                             <i class="fas ${statusConfig.icon}"></i> ${order.TrangThai}

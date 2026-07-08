@@ -32,16 +32,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── KPI Cards ──────────────────────────────────────────────────────────────
     function renderKPI(kpi) {
-        setText('kpi-revenue', '₫' + kpi.revenue.fmt);
+        // Revenue
+        setText('kpi-revenue', '₫' + kpi.revenue.fmt_this_month);
+        setText('kpi-revenue-alltime', 'Tích lũy: ₫' + kpi.revenue.fmt_all_time);
         renderChange('kpi-revenue-change', kpi.revenue.change);
 
-        setText('kpi-orders', fmtNum(kpi.orders.total));
+        // Orders
+        setText('kpi-orders', fmtNum(kpi.orders.total_this_month));
+        setText('kpi-orders-alltime', 'Tổng đơn hàng: ' + fmtNum(kpi.orders.total_all_time));
         renderChange('kpi-orders-change', kpi.orders.change);
 
-        setText('kpi-users', fmtNum(kpi.users.total));
+        // Users
+        setText('kpi-users', fmtNum(kpi.users.total_this_month));
+        setText('kpi-users-alltime', 'Tổng thành viên: ' + fmtNum(kpi.users.total_all_time));
         renderChange('kpi-users-change', kpi.users.change);
 
-        setText('kpi-restaurants', fmtNum(kpi.restaurants.total));
+        // Restaurants
+        setText('kpi-restaurants', fmtNum(kpi.restaurants.total_this_month));
+        setText('kpi-restaurants-alltime', 'Tổng cửa hàng: ' + fmtNum(kpi.restaurants.total_all_time));
         renderChange('kpi-restaurants-change', kpi.restaurants.change);
     }
 

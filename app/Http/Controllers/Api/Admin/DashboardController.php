@@ -81,13 +81,18 @@ class DashboardController extends Controller
             ];
         }
 
-        // ── Category Distribution (Pie chart) ────────────────────────────────────
-        $categoryDist = MonAn::select('DanhMuc', DB::raw('count(*) as total'))
-            ->whereNotNull('DanhMuc')
-            ->groupBy('DanhMuc')
+        // ── Category Distribution (Pie chart by sales volume) ───────────────────
+        $categoryDist = \App\Models\DonHangChiTiet::join('mon_an', 'don_hang_chi_tiet.MaMonAn', '=', 'mon_an.MaMonAn')
+            ->join('don_hang', 'don_hang.MaDonHang', '=', 'don_hang_chi_tiet.MaDonHang')
+            ->where('don_hang.TrangThai', 'Hoàn thành')
+            ->select('mon_an.DanhMuc', DB::raw('SUM(don_hang_chi_tiet.SoLuong) as total'))
+            ->groupBy('mon_an.DanhMuc')
             ->orderByDesc('total')
             ->get()
-            ->map(fn($r) => ['name' => $r->DanhMuc, 'value' => $r->total]);
+            ->map(fn($r) => [
+                'name' => $r->DanhMuc ?: 'Khác',
+                'value' => (int) $r->total
+            ]);
 
         // ── Top 5 Restaurants by Revenue ─────────────────────────────────────────
         $topRestaurants = NhaHang::select(
@@ -146,10 +151,28 @@ class DashboardController extends Controller
             'success' => true,
             'data'    => [
                 'kpi' => [
-                    'revenue'     => ['total' => $revenueTotal, 'fmt' => number_format((float)$revenueTotal, 0, ',', '.'), 'change' => $revenueChange],
-                    'orders'      => ['total' => $ordersTotal,  'change' => $ordersChange],
-                    'users'       => ['total' => $usersTotal,   'change' => $usersChange],
-                    'restaurants' => ['total' => $restaurantsTotal, 'change' => $restaurantsChange],
+                    'revenue'     => [
+                        'total_all_time'   => $revenueTotal,
+                        'total_this_month'  => $revenueThis,
+                        'fmt_all_time'     => number_format((float)$revenueTotal, 0, ',', '.'),
+                        'fmt_this_month'    => number_format((float)$revenueThis, 0, ',', '.'),
+                        'change'            => $revenueChange
+                    ],
+                    'orders'      => [
+                        'total_all_time'   => $ordersTotal,
+                        'total_this_month'  => $ordersThis,
+                        'change'            => $ordersChange
+                    ],
+                    'users'       => [
+                        'total_all_time'   => $usersTotal,
+                        'total_this_month'  => $usersThis,
+                        'change'            => $usersChange
+                    ],
+                    'restaurants' => [
+                        'total_all_time'   => $restaurantsTotal,
+                        'total_this_month'  => $restaurantsThis,
+                        'change'            => $restaurantsChange
+                    ],
                 ],
                 'monthly'        => $monthlyData,
                 'category_dist'  => $categoryDist,

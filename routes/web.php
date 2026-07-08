@@ -281,3 +281,14 @@ Route::get('/clear-cache-tafood-998877', function() {
     \Illuminate\Support\Facades\Artisan::call('optimize:clear');
     return 'Cache cleared successfully! Please reload the dashboard page.';
 });
+
+// Utility to view laravel logs on production via web browser
+Route::get('/view-logs-tafood-998877', function() {
+    $logPath = storage_path('logs/laravel.log');
+    if (!file_exists($logPath)) {
+        return 'No laravel.log file found.';
+    }
+    $lines = file($logPath);
+    $lastLines = array_slice($lines, -100);
+    return '<pre>' . implode('', $lastLines) . '</pre>';
+});

@@ -279,7 +279,10 @@ Route::get('/maintenance', function () {
 // Utility to clear cache via web browser
 Route::get('/clear-cache-tafood-998877', function() {
     \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-    return 'Cache cleared successfully! Please reload the dashboard page.';
+    if (function_exists('opcache_reset')) {
+        opcache_reset();
+    }
+    return 'Cache and OPcache cleared successfully! Please reload the dashboard page.';
 });
 
 // Utility to view laravel logs on production via web browser
@@ -289,6 +292,6 @@ Route::get('/view-logs-tafood-998877', function() {
         return 'No laravel.log file found.';
     }
     $lines = file($logPath);
-    $lastLines = array_slice($lines, -100);
+    $lastLines = array_slice($lines, -1000);
     return '<pre>' . implode('', $lastLines) . '</pre>';
 });

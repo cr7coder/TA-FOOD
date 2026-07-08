@@ -382,9 +382,9 @@ Nếu không có gợi ý món cụ thể nào, hãy để mảng 'recommended_f
                         // Automatically recommend top 3 highly-rated active foods in system
                         $fallbackFoods = MonAn::where('TrangThai', 'Còn bán')
                             ->with('nhaHang')
-                            ->orderByDesc('diem_trung_binh')
-                            ->take(3)
-                            ->get();
+                            ->get()
+                            ->sortByDesc('diem_trung_binh')
+                            ->take(3);
                             
                         $recommendedFoods = $fallbackFoods->map(function ($food) {
                             return [

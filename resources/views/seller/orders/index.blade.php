@@ -75,5 +75,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/api-seller-orders.js') }}"></script>
+    <script src="{{ asset('js/api-seller-orders.js') }}?v={{ time() }}"></script>
 @endpush

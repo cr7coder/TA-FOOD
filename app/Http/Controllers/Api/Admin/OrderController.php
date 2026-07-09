@@ -15,6 +15,9 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        DonHang::cancelExpiredOrders();
+
         $query = DonHang::with(['chiTiet.monAn.nhaHang', 'nguoiDung', 'thanhToan']);
 
         // Filter by search (order code, customer name)
@@ -87,6 +90,9 @@ class OrderController extends Controller
      */
     public function stats()
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        DonHang::cancelExpiredOrders();
+
         $stats = DonHang::select('TrangThai', DB::raw('count(*) as total'))
             ->groupBy('TrangThai')
             ->get()
@@ -112,6 +118,9 @@ class OrderController extends Controller
      */
     public function show($id)
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        DonHang::cancelExpiredOrders();
+
         $order = DonHang::with(['chiTiet.monAn.nhaHang', 'nguoiDung', 'thanhToan', 'giamGia', 'doiTacVanChuyen'])
             ->findOrFail($id);
 

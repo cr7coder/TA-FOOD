@@ -151,4 +151,57 @@ class DonHang extends Model
     {
         return $query->where('TrangThai', $status);
     }
+
+    /**
+     * Auto-cancel online orders that are pending and older than 15 minutes
+     */
+    public static function cancelExpiredOrders()
+    {
+        $expiredTime = now()->subMinutes(15);
+
+        // Lấy các đơn hàng thanh toán online, đang chờ xử lý và tạo quá 15 phút
+        $expiredOrders = self::where('PhuongThucThanhToan', 'Online')
+            ->where('TrangThai', 'Chờ xử lý')
+            ->where('created_at', '<=', $expiredTime)
+            ->get();
+
+        foreach ($expiredOrders as $order) {
+            // Hủy đơn hàng
+            $order->update([
+                'TrangThai' => 'Hủy',
+                'ly_do_huy' => 'Hệ thống tự động hủy do quá hạn thanh toán',
+                'nguoi_huy' => 'system'
+            ]);
+
+            \Illuminate\Support\Facades\Log::info("Đơn hàng ORD" . str_pad($order->MaDonHang, 5, '0', STR_PAD_LEFT) . " đã bị hủy tự động do quá hạn 15 phút chưa thanh toán.");
+
+            // Hủy trạng thái thanh toán và khóa link PayOS
+            if ($order->thanhToan) {
+                if ($order->thanhToan->payos_order_code && in_array($order->thanhToan->TrangThai, ['Chờ thanh toán', 'Thất bại'])) {
+                    try {
+                        $payOSService = app(\App\Services\PayOSService::class);
+                        $payOSService->cancelPaymentLink((int)$order->thanhToan->payos_order_code, 'Quá hạn 15 phút không thanh toán');
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::warning("Không thể hủy link PayOS cho đơn {$order->MaDonHang}: " . $e->getMessage());
+                    }
+                }
+
+                $order->thanhToan->update([
+                    'TrangThai' => 'Thất bại'
+                ]);
+            }
+
+            // Gửi thông báo đến khách hàng
+            try {
+                \App\Services\NotificationService::add(
+                    $order->MaNguoiDung,
+                    "Đơn hàng bị hủy tự động",
+                    "Đơn hàng ORD" . str_pad($order->MaDonHang, 5, '0', STR_PAD_LEFT) . " đã bị hủy tự động do quá 15 phút chưa thanh toán.",
+                    $order->MaDonHang
+                );
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning("Không thể gửi thông báo tự động hủy đơn {$order->MaDonHang}: " . $e->getMessage());
+            }
+        }
+    }
 }

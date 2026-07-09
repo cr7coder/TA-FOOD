@@ -15,6 +15,9 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        DonHang::cancelExpiredOrders();
+
         $perPage = $request->input('per_page', 10);
         
         $query = DonHang::with(['chiTiet.monAn', 'giamGia', 'thanhToan'])
@@ -151,6 +154,9 @@ class OrderController extends Controller
      */
     public function show($id)
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        DonHang::cancelExpiredOrders();
+
         $order = DonHang::with(['chiTiet.monAn', 'giamGia', 'thanhToan', 'nguoiDung', 'doiTacVanChuyen'])
             ->where('MaDonHang', $id)
             ->where('MaNguoiDung', Auth::id())

@@ -28,55 +28,12 @@ class CancelExpiredOrders extends Command
      */
     public function handle()
     {
-        $expiredTime = Carbon::now()->subMinutes(15);
-
-        // Lấy các đơn hàng thanh toán online, đang chờ xử lý và tạo quá 15 phút
-        $expiredOrders = DonHang::where('PhuongThucThanhToan', 'Online')
-            ->where('TrangThai', 'Chờ xử lý')
-            ->where('created_at', '<=', $expiredTime)
-            ->get();
-
-        $count = 0;
-        foreach ($expiredOrders as $order) {
-            // Hủy đơn hàng
-            $order->update([
-                'TrangThai' => 'Hủy',
-                'ly_do_huy' => 'Hệ thống tự động hủy do quá hạn thanh toán',
-                'nguoi_huy' => 'system'
-            ]);
-
-            // Hủy trạng thái thanh toán và khóa link PayOS
-            if ($order->thanhToan) {
-                if ($order->thanhToan->payos_order_code && in_array($order->thanhToan->TrangThai, ['Chờ thanh toán', 'Thất bại'])) {
-                    try {
-                        $payOSService = app(\App\Services\PayOSService::class);
-                        $payOSService->cancelPaymentLink($order->thanhToan->payos_order_code, 'Quá hạn 15 phút không thanh toán');
-                    } catch (\Exception $e) {
-                        Log::warning("Không thể hủy link PayOS cho đơn {$order->MaDonHang}: " . $e->getMessage());
-                    }
-                }
-
-                $order->thanhToan->update([
-                    'TrangThai' => 'Thất bại'
-                ]);
-            }
-
-            // Gửi thông báo đến khách hàng
-            \App\Services\NotificationService::add(
-                $order->MaNguoiDung,
-                "Đơn hàng bị hủy tự động",
-                "Đơn hàng ORD" . str_pad($order->MaDonHang, 5, '0', STR_PAD_LEFT) . " đã bị hủy tự động do quá 15 phút chưa thanh toán.",
-                $order->MaDonHang
-            );
-            
-            $count++;
-        }
-
-        if ($count > 0) {
-            Log::info("Đã tự động hủy {$count} đơn hàng online quá hạn thanh toán.");
-            $this->info("Đã tự động hủy {$count} đơn hàng online quá hạn thanh toán.");
-        } else {
-            $this->info("Không có đơn hàng nào quá hạn.");
+        try {
+            DonHang::cancelExpiredOrders();
+            $this->info("Đã chạy tự động quét hủy đơn hàng online quá hạn thanh toán.");
+        } catch (\Exception $e) {
+            Log::error("Lỗi khi chạy lệnh orders:cancel-expired: " . $e->getMessage());
+            $this->error("Có lỗi xảy ra: " . $e->getMessage());
         }
     }
 }

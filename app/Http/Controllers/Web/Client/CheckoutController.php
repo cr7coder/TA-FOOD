@@ -1094,6 +1094,9 @@ class CheckoutController extends Controller
     // Tiếp tục thanh toán PayOS (sử dụng lại mã GD cũ)
     public function resumePayOSPayment($maDonHang)
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        \App\Models\DonHang::cancelExpiredOrders();
+
         $order = DonHang::with('thanhToan')->where('MaDonHang', $maDonHang)->where('MaNguoiDung', Auth::id())->first();
 
         if (!$order) {
@@ -1101,6 +1104,9 @@ class CheckoutController extends Controller
         }
 
         if ($order->PhuongThucThanhToan !== 'Online' || $order->TrangThai !== 'Chờ xử lý') {
+            if ($order->TrangThai === 'Hủy' && $order->nguoi_huy === 'system') {
+                return redirect()->route('orders.history')->with('error', 'Đơn hàng này đã bị tự động hủy do quá hạn 15 phút chưa thanh toán.');
+            }
             return redirect()->route('orders.history')->with('error', 'Đơn hàng này không thể thanh toán tiếp.');
         }
 

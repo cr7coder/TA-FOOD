@@ -13,6 +13,9 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        DonHang::cancelExpiredOrders();
+
         $sellerId = Auth::user()->MaNguoiDung;
         $restaurant = NhaHang::where('MaNguoiDung', $sellerId)->first();
         if (!$restaurant) return response()->json(['success' => false, 'message' => 'Lỗi'], 404);
@@ -97,6 +100,9 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        // Tự động kiểm tra và hủy các đơn hàng đã quá hạn 15 phút mà chưa thanh toán
+        DonHang::cancelExpiredOrders();
+
         $sellerId = Auth::user()->MaNguoiDung;
         $restaurant = NhaHang::where('MaNguoiDung', $sellerId)->first();
 
